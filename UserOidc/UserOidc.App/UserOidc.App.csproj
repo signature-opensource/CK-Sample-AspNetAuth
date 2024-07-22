@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="CK.DB.AspNet.Auth" Version="0.0.0--04zijur-develop" />
+    <PackageReference Include="CK.DB.User.UserOidc" Version="0.0.0--04zijul-develop" />
+    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="0.0.0--04zijum-develop" />
+    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="0.0.0--04zijun-develop" />
+    <PackageReference Include="CK.TS.AspNet.Auth" Version="0.0.0--04zijut-develop" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.7" />
+  </ItemGroup>
+</Project>

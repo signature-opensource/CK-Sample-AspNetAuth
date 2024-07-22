@@ -1,0 +1,83 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{00DEA450-164B-4616-A2C7-227640128028}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
+		Directory.Build.props = Directory.Build.props
+		NuGet.config = NuGet.config
+		README.md = README.md
+		RepositoryInfo.xml = RepositoryInfo.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserOidc", "UserOidc", "{43C65872-A7A8-4FE7-BA47-83BF03B6F368}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserBasicGoogleFacebook", "UserBasicGoogleFacebook", "{45E049D4-03B3-4EB0-AC3F-4703C4E8590B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserBasicGoogleFacebook.App", "UserBasicGoogleFacebook\UserBasicGoogleFacebook.App\UserBasicGoogleFacebook.App.csproj", "{4EFA3D0B-4C5F-46EB-A93C-883B5EEB05EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserOidc.App", "UserOidc\UserOidc.App\UserOidc.App.csproj", "{6DD98480-1B26-43CE-913C-C570DF553FFB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCakeBuilder", "CodeCakeBuilder\CodeCakeBuilder.csproj", "{CEC1094D-D1DC-4F16-8262-427F9D43D458}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserOidc.Builder", "UserOidc\UserOidc.Builder\UserOidc.Builder.csproj", "{596F5188-213A-4CA5-A34D-CD6C6DCB7B91}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserBasicGoogleFacebook.Builder", "UserBasicGoogleFacebook\UserBasicGoogleFacebook.Builder\UserBasicGoogleFacebook.Builder.csproj", "{275AD2C6-E6C7-4C42-B6F3-2279E631DAA5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserBasicGoogleFacebook.Host", "UserBasicGoogleFacebook\UserBasicGoogleFacebook.Host\UserBasicGoogleFacebook.Host.csproj", "{931ED3EB-E954-46C6-96CA-65C52A9C91F9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserOidc.Host", "UserOidc\UserOidc.Host\UserOidc.Host.csproj", "{AF50950B-E8C4-4D26-9C7A-A55CEEF6748D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4EFA3D0B-4C5F-46EB-A93C-883B5EEB05EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EFA3D0B-4C5F-46EB-A93C-883B5EEB05EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EFA3D0B-4C5F-46EB-A93C-883B5EEB05EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EFA3D0B-4C5F-46EB-A93C-883B5EEB05EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DD98480-1B26-43CE-913C-C570DF553FFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DD98480-1B26-43CE-913C-C570DF553FFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DD98480-1B26-43CE-913C-C570DF553FFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DD98480-1B26-43CE-913C-C570DF553FFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEC1094D-D1DC-4F16-8262-427F9D43D458}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEC1094D-D1DC-4F16-8262-427F9D43D458}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEC1094D-D1DC-4F16-8262-427F9D43D458}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEC1094D-D1DC-4F16-8262-427F9D43D458}.Release|Any CPU.Build.0 = Release|Any CPU
+		{596F5188-213A-4CA5-A34D-CD6C6DCB7B91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{596F5188-213A-4CA5-A34D-CD6C6DCB7B91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{596F5188-213A-4CA5-A34D-CD6C6DCB7B91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{596F5188-213A-4CA5-A34D-CD6C6DCB7B91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{275AD2C6-E6C7-4C42-B6F3-2279E631DAA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{275AD2C6-E6C7-4C42-B6F3-2279E631DAA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{275AD2C6-E6C7-4C42-B6F3-2279E631DAA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{275AD2C6-E6C7-4C42-B6F3-2279E631DAA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{931ED3EB-E954-46C6-96CA-65C52A9C91F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{931ED3EB-E954-46C6-96CA-65C52A9C91F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{931ED3EB-E954-46C6-96CA-65C52A9C91F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{931ED3EB-E954-46C6-96CA-65C52A9C91F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF50950B-E8C4-4D26-9C7A-A55CEEF6748D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF50950B-E8C4-4D26-9C7A-A55CEEF6748D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF50950B-E8C4-4D26-9C7A-A55CEEF6748D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF50950B-E8C4-4D26-9C7A-A55CEEF6748D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4EFA3D0B-4C5F-46EB-A93C-883B5EEB05EC} = {45E049D4-03B3-4EB0-AC3F-4703C4E8590B}
+		{6DD98480-1B26-43CE-913C-C570DF553FFB} = {43C65872-A7A8-4FE7-BA47-83BF03B6F368}
+		{596F5188-213A-4CA5-A34D-CD6C6DCB7B91} = {43C65872-A7A8-4FE7-BA47-83BF03B6F368}
+		{275AD2C6-E6C7-4C42-B6F3-2279E631DAA5} = {45E049D4-03B3-4EB0-AC3F-4703C4E8590B}
+		{931ED3EB-E954-46C6-96CA-65C52A9C91F9} = {45E049D4-03B3-4EB0-AC3F-4703C4E8590B}
+		{AF50950B-E8C4-4D26-9C7A-A55CEEF6748D} = {43C65872-A7A8-4FE7-BA47-83BF03B6F368}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {46786131-171C-466B-974E-6A8A5EF57C32}
+	EndGlobalSection
+EndGlobal
