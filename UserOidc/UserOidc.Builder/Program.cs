@@ -9,6 +9,7 @@ return CKomposableAppBuilder.Run( ( monitor, builder ) =>
 
     var tester = builder.EnsureDefaultTypeScriptAspectConfiguration();
     tester.TargetProjectPath = builder.GetHostFolderPath().Combine( "Clients/AspNetAuthTester" );
+    tester.TypeFilterName = "None";
 
     var angularDemo = new TypeScriptBinPathAspectConfiguration();
     tester.AddOtherConfiguration( angularDemo );
@@ -16,4 +17,5 @@ return CKomposableAppBuilder.Run( ( monitor, builder ) =>
     angularDemo.AutoInstallYarn = true;
     angularDemo.GitIgnoreCKGenFolder = true;
     angularDemo.TargetProjectPath = builder.GetHostFolderPath().Combine( "Clients/AngularDemo" );
+    tester.TypeFilterName = "TypeScriptAngularDemo";
 } );
