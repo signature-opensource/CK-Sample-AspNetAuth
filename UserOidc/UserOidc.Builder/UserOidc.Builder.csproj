@@ -6,7 +6,7 @@
     <PackageReference Include="CK.AppBuilder" Version="0.0.0--04zk0w8-develop" />
     <PackageReference Include="CK.Setupable.Engine" Version="0.0.0--04zk4si-develop" />
     <PackageReference Include="CK.SqlServer.Setup.Engine" Version="0.0.0--04zk4si-develop" />
-    <PackageReference Include="CK.StObj.TypeScript.Engine" Version="0.0.0--04zk4ss-develop" />
+    <PackageReference Include="CK.StObj.TypeScript.Engine" Version="0.0.0--04zli0f-develop" />
     <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
     <ProjectReference Include="..\UserOidc.App\UserOidc.App.csproj" />
   </ItemGroup>
