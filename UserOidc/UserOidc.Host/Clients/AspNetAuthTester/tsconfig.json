@@ -1,0 +1,18 @@
+{
+   "compilerOptions": {
+       "strict": true,
+       "target": "es2022",
+       "moduleResolution": "node",
+       "lib": ["es2022", "dom"],
+       "baseUrl": "./src",
+       "module": "ES6",
+       "outDir": "./dist/es6",
+       "sourceMap": true,
+       "declaration": true,
+       "declarationMap": true,
+       "esModuleInterop": true,
+       "resolveJsonModule": true,
+       "rootDir": "./"
+   },
+   "include": [ "index.ts" ]
+}

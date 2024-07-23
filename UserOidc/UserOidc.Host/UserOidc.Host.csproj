@@ -4,6 +4,10 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <UserSecretsId>CK-Sample-UserOidc</UserSecretsId>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\UserOidc.App\UserOidc.App.csproj" />
     <ProjectReference Include="..\UserOidc.Builder\UserOidc.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />

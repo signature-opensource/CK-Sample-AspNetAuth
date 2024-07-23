@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+    <ItemGroup>
+    <EmbeddedResource Include="**\*.ts">
+      <LogicalName>ck@$([System.String]::new('%(RelativeDir)').Replace('\','/'))%(FileName)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  
+  
+  <ItemGroup>
+    <PackageReference Include="CK.TS.AspNet.Auth" Version="0.0.0--04zijut-develop" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CK.TS.Angular\CK.TS.Angular.csproj" />
+  </ItemGroup>
+
+</Project>

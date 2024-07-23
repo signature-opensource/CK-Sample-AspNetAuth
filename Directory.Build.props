@@ -1,4 +1,8 @@
 <Project>
+  <PropertyGroup>
+    <!-- Stop Visual Studio TypeScript compilation. -->
+    <TypeScriptCompileBlocked>True</TypeScriptCompileBlocked>
+  </PropertyGroup>
   <!--<BasicDefinitions>: provides simple and useful definitions.-->
   <PropertyGroup>
     <!-- See https://www.meziantou.net/csharp-compiler-strict-mode.htm -->

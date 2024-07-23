@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "UserOidc.Host": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "Clients/AngularDemo/index.html",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:53456",
+      "hotReloadEnabled": false
+    }
+  }
+}

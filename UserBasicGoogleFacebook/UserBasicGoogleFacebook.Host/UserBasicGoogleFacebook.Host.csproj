@@ -4,6 +4,10 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <UserSecretsId>CK-Sample-UserBasicGoogleFacebook</UserSecretsId>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\UserBasicGoogleFacebook.App\UserBasicGoogleFacebook.App.csproj" />
     <ProjectReference Include="..\UserBasicGoogleFacebook.Builder\UserBasicGoogleFacebook.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />

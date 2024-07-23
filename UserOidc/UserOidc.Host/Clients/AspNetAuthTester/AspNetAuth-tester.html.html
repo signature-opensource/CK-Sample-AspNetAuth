@@ -1,0 +1,230 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <script id="script" type="module" src="dist/es6/index.js"></script>
+    <div class="header">
+        <div class="endPoint">
+            <h4 id="configName">Configuration (client version: )</h4>
+            <pre>hostName: <input id="epHostName" value="localhost" /></pre>
+            <pre> port: <input id="epPort" value="53456" type="number" min="1" max="65535" onfocus="this.previousValue = this.value" onkeydown="this.previousValue = this.value" oninput="validity.valid || (value = this.previousValue)"/></pre>
+            <pre> disableSsl: <input type="checkbox" id="epDisableSsl" checked /></pre>
+            <pre>Use Local Storage: <input type="checkbox" id="epUseLocalStorage" /></pre>
+            <pre>Skip EndPoint Version Check: <input type="checkbox" id="epCheckEndPointVersion" /></pre>
+            <button id="epApply" onclick="Sample.applyEndPoint()" disabled>Apply</button>
+        </div>
+        <div class="userStatus">
+            <pre> AuthLevel: <div class="authLevel" id="userAuthLevel">None</div></pre>
+            <pre> Username: <div id="userId">0</div></pre>
+            <pre> ActualUser: <div id="userActualUser">0</div></pre>
+        </div>
+    </div>
+    <div class="main-container">
+        <div id="function-container" class="function-container">
+            <div class="function-item">
+                <div>
+                    <h4 class="shrinkTitle"> 
+                        Refresh 
+                        <button
+                        id="refreshButtonShrink"
+                        class="shrinkButton" 
+                        onclick="Sample.shrink('refreshShrink', 'refreshButtonShrink')"
+                        >
+                            >
+                        </button>
+                    </h4>
+                </div>
+                <div class="contentShrink" id="refreshShrink">
+                    <div class="functionInput" >
+                        Full: <input type="checkbox" id="refreshFull">
+                        RequestSchemes: <input type="checkbox" id="refreshSchemes">
+                        RequestVersion: <input type="checkbox" id="refreshVersion">
+                    </div>
+                    <div class="sendButton">
+                        <button id="refreshSend" onclick="Sample.refresh()">Send</button>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="function-item">
+                <div>
+                    <h4 class="shrinkTitle">
+                        Logout
+                        <button
+                        id="logoutButtonShrink" 
+                        class="shrinkButton"
+                        onclick="Sample.shrink('logoutShrink', 'logoutButtonShrink')"
+                        >
+                            >
+                        </button>
+                    </h4>
+                </div>
+                <div class="contentShrink" id="logoutShrink">
+                    <div class="sendButton">
+                        <button id="logoutSend" onclick="Sample.logout()">Send</button>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+            <div class="function-item">
+                <div>
+                    <h4 class="shrinkTitle">
+                        StartPopupLogin
+                        <button 
+                        id="popupLoginButtonShrink"
+                        class="shrinkButton"
+                        onclick="Sample.shrink('popupLoginShrink', 'popupLoginButtonShrink')"
+                        >
+                            >
+                        </button>
+                    </h4>
+                </div>
+                <div class="contentShrink" id="popupLoginShrink">
+                    <div class="functionInput">
+                        Scheme: <select id="popupLoginSchemes"></select>
+                        <br>
+                        Remember me <input type="checkbox" id="popupLoginRememberMe">
+                        <br>
+                        Impersonate as current user <input type="checkbox" id="popupLoginImpersonateAsCurrentUser">
+                        <br>
+                        ServerData
+                        ([index:string]:string|null):
+                        <br>
+                        <textarea id="popupLoginUserData" cols="30" rows="10"></textarea>
+                    </div>
+                    <div class="sendButton">
+                        <button id="popupLoginSend" onclick="Sample.startPopupLogin()">Send</button>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="function-item">
+                <div>
+                    <h4 class="shrinkTitle">
+                        StartInlineLogin
+                        <button
+                        id="inlineLoginButtonShrink" 
+                        class="shrinkButton"
+                        onclick="Sample.shrink('inlineLoginShrink', 'inlineLoginButtonShrink')"
+                        >
+                            >
+                        </button>
+                    </h4>
+                </div>
+                <div class="contentShrink" id="inlineLoginShrink">
+                    <div class="functionInput">
+                        Scheme: <select id="inlineLoginScheme"></select>
+                        <br>
+                        ReturnUrl: <input type="text" id="inlineLoginReturnUrl">
+                        <br>
+                        Remember me <input type="checkbox" id="inlineLoginRememberMe">
+                        <br>
+                        Impersonate as current user <input type="checkbox" id="inlineLoginImpersonateAsCurrentUser">
+                        <br>
+                        ServerData
+                        ([index:string]:string|null):
+                        <br>
+                        <textarea id="inlineLoginUserData" cols="30" rows="10"></textarea>
+                    </div>
+                    <div class="sendButton">
+                        <button id="inlineLoginSend" onclick="Sample.startInlineLogin()">Send</button>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="function-item">
+                <div>
+                    <h4 class="shrinkTitle">
+                        BasicLogin
+                        <button 
+                        id="basicLoginButtonShrink"
+                        class="shrinkButton"
+                        onclick="Sample.shrink('basicLoginShrink', 'basicLoginButtonShrink')"
+                        >
+                            >
+                        </button>
+                    </h4>
+                </div>
+                <div class="contentShrink" id="basicLoginShrink">
+                    <div class="functionInput">
+                        Username: <input type="text" id="basicLoginUserName">
+                        <br>
+                        Password: <input type="text" id="basicLoginPassword">
+                        <br>
+                        Remember me <input type="checkbox" id="basicLoginRememberMe">
+                        <br>
+                        Impersonate as current user <input type="checkbox" id="basicLoginImpersonateAsCurrentUser">
+                        <br>
+                        ServerData
+                        ([index:string]:string|null):
+                        <br>
+                        <textarea id="basicLoginUserData" cols="30" rows="10"></textarea>
+                    </div>
+                    <div class="sendButton">
+                        <button id="basicLoginSend" onclick="Sample.basicLogin()">Send</button>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="function-item">
+                <div>
+                    <h4 class="shrinkTitle">
+                        Impersonate
+                        <button id="impersonateButtonShrink" class="shrinkButton" onclick="Sample.shrink('impersonateShrink', 'impersonateButtonShrink')">
+                            >
+                        </button>
+                    </h4>
+                </div>
+                <div class="contentShrink" id="impersonateShrink">
+                    <div class="functionInput">
+                        <input type="radio" name="impersonateBy" id="impersonateByUserName">UserName</input> or <input type="radio" name="impersonateBy" id="impersonateByUserId" checked>UserId</input>: <input type="text" id="impersonateUserIdOrName">
+                    </div>
+                    <div class="sendButton">
+                        <button id="impersonateSend" onclick="Sample.impersonate()">Send</button>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="function-item">
+                <div>
+                    <h4 class="shrinkTitle">
+                        UnsafeDirectLogin
+                        <button 
+                        id="unsafeDirectLoginButtonShrink"
+                        class="shrinkButton"
+                        onclick="Sample.shrink('unsafeDirectLoginShrink', 'unsafeDirectLoginButtonShrink')"
+                        >
+                            >
+                        </button>
+                    </h4>
+                </div>
+                <div class="contentShrink" id="unsafeDirectLoginShrink">
+                    <div class="functionInput">
+                        Provider: <input type="text" id="unsafeDirectLoginProvider">
+                        <br>
+                        Remember me <input type="checkbox" id="unsafeDirectLoginRememberMe">
+                        <br>
+                        Impersonate as current user <input type="checkbox" id="unsafeDirectLoginImpersonateAsCurrentUser">
+                        <br>
+                        Payload (JSON):
+                        <br>
+                        <textarea id="unsafeDirectLoginPayload" cols="30" rows="10"></textarea>
+                    </div>
+                    <div class="sendButton">
+                        <button id="unsafeDirectLoginSend" onclick="Sample.unsafeDirectLogin()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="authServiceJson">
+            <h2 id="authServiceHeader">AuthService</h2>
+            <pre id="authServiceJson">Waiting for AuthService to be created...</pre>
+        </div>
+    </div>
+</body>
+
+</html>

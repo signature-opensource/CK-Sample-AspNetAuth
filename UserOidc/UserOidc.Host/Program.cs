@@ -3,22 +3,19 @@ using CK.Core;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Diagnostics;
-using System.Linq;
+using System.IO;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Web;
 
-var builder = WebApplication.CreateSlimBuilder( new WebApplicationOptions() { EnvironmentName = Environments.Development } );
+var builder = WebApplication.CreateSlimBuilder();
 var monitor = builder.GetBuilderMonitor();
-
 builder.UseCKMonitoring();
 
 // Ordering of services doesn't matter.
@@ -83,50 +80,50 @@ builder.Services.Configure<CookiePolicyOptions>( options =>
     }
 } );
 
-var authBuilder = new AuthenticationBuilder( builder.Services );
-authBuilder.AddOpenIdConnect( "Oidc.Signature", o =>
-{
-    string authUri = builder.Configuration["Authentication:Oidc.Signature:AuthUri"] ?? "https://login.microsoftonline.com/";
-    string tenantId = builder.Configuration["Authentication:Oidc.Signature:TenantId"]!;
-    o.Authority = $"{authUri.TrimEnd( '/' )}/{tenantId}/v2.0";
-    o.CallbackPath = builder.Configuration["Authentication:Oidc.Signature:CallbackPath"] ?? "/signin-oidc-signature";
-    o.ClientId = builder.Configuration["Authentication:Oidc.Signature:ClientId"];
-    o.ClientSecret = builder.Configuration["Authentication:Oidc.Signature:ClientSecret"];
-    o.AuthenticationMethod = OpenIdConnectRedirectBehavior.RedirectGet;
-    o.ResponseMode = OpenIdConnectResponseMode.FormPost;
-    o.ResponseType = OpenIdConnectResponseType.CodeIdToken;
-    o.TokenValidationParameters = new TokenValidationParameters { ValidIssuer = o.Authority };
-    o.SaveTokens = true;
-    // The OnTicketReceived is the main adapter between the remote provider and the backend:
-    // the information from the Ticket is transfered onto the payload that is the IUserOidc payload.
-    o.Events.OnTicketReceived = c => c.WebFrontAuthOnTicketReceivedAsync<CK.Sample.User.UserOidc.App.IUserOidcInfo>( payload =>
-    {
-        payload.SchemeSuffix = "Signature";
-        payload.Sub = c.Principal.FindFirst( ClaimTypes.NameIdentifier ).Value;
-        payload.DisplayName = c.Principal.FindFirst( "name" ).Value;
-        payload.Username = c.Principal.FindFirst( "preferred_username" ).Value;
-        payload.Email = c.Principal.FindFirst( "verified_primary_email" )?.Value;
-    } );
-} );
-authBuilder.AddOpenIdConnect( "Oidc.Google", options =>
-{
-    options.Authority = builder.Configuration["Authentication:Google:AuthUri"] ?? "https://accounts.google.com/o/oauth2/auth";
-    options.CallbackPath = builder.Configuration["Authentication:Google:CallbackPath"] ?? "/signin-oidc-google";
-    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    options.TokenValidationParameters = new TokenValidationParameters { ValidIssuer = options.Authority };
-    options.Scope.Add( "email" );
-    options.SaveTokens = true;
-    options.Events.OnRemoteFailure = f => f.WebFrontAuthOnRemoteFailureAsync();
-    options.Events.OnTicketReceived = c => c.WebFrontAuthOnTicketReceivedAsync<CK.Sample.User.UserOidc.App.IUserOidcInfo>( payload =>
-    {
-        payload.SchemeSuffix = "Google";
-        payload.Sub = c.Principal.FindFirst( ClaimTypes.NameIdentifier ).Value;
-        payload.DisplayName = c.Principal.FindFirst( "name" ).Value;
-        payload.Username = c.Principal.FindFirst( "name" ).Value;
-        payload.Email = c.Principal.FindFirst( ClaimTypes.Email ).Value;
-    } );
-} );
+//var authBuilder = new AuthenticationBuilder( builder.Services );
+//authBuilder.AddOpenIdConnect( "Oidc.Signature", o =>
+//{
+//    string authUri = builder.Configuration["Authentication:Oidc.Signature:AuthUri"] ?? "https://login.microsoftonline.com/";
+//    string tenantId = builder.Configuration["Authentication:Oidc.Signature:TenantId"]!;
+//    o.Authority = $"{authUri.TrimEnd( '/' )}/{tenantId}/v2.0";
+//    o.CallbackPath = builder.Configuration["Authentication:Oidc.Signature:CallbackPath"] ?? "/signin-oidc-signature";
+//    o.ClientId = builder.Configuration["Authentication:Oidc.Signature:ClientId"];
+//    o.ClientSecret = builder.Configuration["Authentication:Oidc.Signature:ClientSecret"];
+//    o.AuthenticationMethod = OpenIdConnectRedirectBehavior.RedirectGet;
+//    o.ResponseMode = OpenIdConnectResponseMode.FormPost;
+//    o.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+//    o.TokenValidationParameters = new TokenValidationParameters { ValidIssuer = o.Authority };
+//    o.SaveTokens = true;
+//    // The OnTicketReceived is the main adapter between the remote provider and the backend:
+//    // the information from the Ticket is transfered onto the payload that is the IUserOidc payload.
+//    o.Events.OnTicketReceived = c => c.WebFrontAuthOnTicketReceivedAsync<CK.Sample.User.UserOidc.App.IUserOidcInfo>( payload =>
+//    {
+//        payload.SchemeSuffix = "Signature";
+//        payload.Sub = c.Principal.FindFirst( ClaimTypes.NameIdentifier ).Value;
+//        payload.DisplayName = c.Principal.FindFirst( "name" ).Value;
+//        payload.Username = c.Principal.FindFirst( "preferred_username" ).Value;
+//        payload.Email = c.Principal.FindFirst( "verified_primary_email" )?.Value;
+//    } );
+//} );
+//authBuilder.AddOpenIdConnect( "Oidc.Google", options =>
+//{
+//    options.Authority = builder.Configuration["Authentication:Google:AuthUri"] ?? "https://accounts.google.com/o/oauth2/auth";
+//    options.CallbackPath = builder.Configuration["Authentication:Google:CallbackPath"] ?? "/signin-oidc-google";
+//    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+//    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+//    options.TokenValidationParameters = new TokenValidationParameters { ValidIssuer = options.Authority };
+//    options.Scope.Add( "email" );
+//    options.SaveTokens = true;
+//    options.Events.OnRemoteFailure = f => f.WebFrontAuthOnRemoteFailureAsync();
+//    options.Events.OnTicketReceived = c => c.WebFrontAuthOnTicketReceivedAsync<CK.Sample.User.UserOidc.App.IUserOidcInfo>( payload =>
+//    {
+//        payload.SchemeSuffix = "Google";
+//        payload.Sub = c.Principal.FindFirst( ClaimTypes.NameIdentifier ).Value;
+//        payload.DisplayName = c.Principal.FindFirst( "name" ).Value;
+//        payload.Username = c.Principal.FindFirst( "name" ).Value;
+//        payload.Email = c.Principal.FindFirst( ClaimTypes.Email ).Value;
+//    } );
+//} );
 
 // CK.AspNet introduces the AppendApplicationBuilder and helpers that
 // handle services and middleware registrations at the same time.
@@ -138,16 +135,21 @@ builder.AddUnsafeAllowAllCors();
 builder.AddWebFrontAuth( options => options.ExpireTimeSpan = TimeSpan.FromDays( 1 ) );
 builder.AppendApplicationBuilder( app => app.UseEndpoints( endpoints => endpoints.MapControllers() ) );
 
+var map = StObjContextRoot.Load( System.Reflection.Assembly.GetExecutingAssembly(), monitor );
 // CK.AspNet exposes this helper.
-var map = CK.Core.StObjContextRoot.Load( System.Reflection.Assembly.GetExecutingAssembly(), monitor );
 var app = builder.CKBuild( map );
-
 app.Urls.Add( "http://[::1]:53456" );
-await app.StartAsync().ConfigureAwait( false );
+
+app.UseStaticFiles( new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider( Path.Combine( builder.Environment.ContentRootPath, "Clients/AspNetAuthTester/" ) ),
+    RequestPath = ""
+} );
 
 Process process = new Process();
 process.StartInfo.UseShellExecute = true;
-process.StartInfo.FileName = $"Clients/AspNetAuthTester/index.html";
+process.StartInfo.FileName = $"http://localhost:53456/AspNetAuth-tester.html";
 process.Start();
 
+await app.RunAsync().ConfigureAwait( false );
 

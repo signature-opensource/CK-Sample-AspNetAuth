@@ -331,17 +331,15 @@ $StObjGen/
 CodeCakeBuilder/MemoryKey.*.txt
 CodeCakeBuilder/UnitTestsDone.*.txt
 
-appsettings.Development.json
+# Yarn - Not using Zero-Install (.yarn/cache and .pnp.* are not commited).
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
-/WFATester/.yarn/cache/
-/WFATester/.pnp.*
-/WFATester/.yarn/*
-!/WFATester/.yarn/patches
-!/WFATester/.yarn/plugins
-!/WFATester/.yarn/releases
-!/WFATester/.yarn/sdks
-!/WFATester/.yarn/versions
+# Because we can have subordinated .yarn folder we must exclude any .yarn/install-state.gz.
+**/.yarn/install-state.gz
 
-/WFATester/WFATester.version.ts
-/UserBasicGoogleFacebook/CKSetup/WorkingDir/
-/UserOidc/CKSetup/WorkingDir/
