@@ -3,9 +3,9 @@ using CK.TS.Angular;
 
 namespace CK.NG.AspNet.Auth
 {
-    [TypeScriptPackage]
+    [CKGenModule]
     [TypeScriptContentFiles( "Res" )]
-    public class Package : AngularPackage
+    public class TSPackage : CKGenModule
     {
         void StObjConstruct( CK.AspNet.Auth.TSPackage auth )
         {

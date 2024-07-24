@@ -17,5 +17,5 @@ return CKomposableAppBuilder.Run( ( monitor, builder ) =>
     angularDemo.AutoInstallYarn = true;
     angularDemo.GitIgnoreCKGenFolder = true;
     angularDemo.TargetProjectPath = builder.GetHostFolderPath().Combine( "Clients/AngularDemo" );
-    tester.TypeFilterName = "TypeScriptAngularDemo";
+    angularDemo.TypeFilterName = "TypeScriptAngularDemo";
 } );

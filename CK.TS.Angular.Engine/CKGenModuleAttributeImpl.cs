@@ -6,9 +6,9 @@ using System;
 
 namespace CK.TS.Angular.Engine
 {
-    public class AngularPackageAttributeImpl : TypeScriptPackageAttributeImpl
+    public class CKGenModuleAttributeImpl : TypeScriptPackageAttributeImpl
     {
-        public AngularPackageAttributeImpl( IActivityMonitor monitor, TypeScriptPackageAttribute attr, Type type, TypeScriptAspect aspect )
+        public CKGenModuleAttributeImpl( IActivityMonitor monitor, TypeScriptPackageAttribute attr, Type type, TypeScriptAspect aspect )
             : base( monitor, attr, type, aspect )
         {
         }

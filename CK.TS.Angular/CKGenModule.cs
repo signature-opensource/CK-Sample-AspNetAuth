@@ -4,7 +4,7 @@ using CK.StObj.TypeScript;
 namespace CK.TS.Angular
 {
     [CKTypeDefiner]
-    public abstract class AngularPackage : TypeScriptPackage
+    public abstract class CKGenModule : TypeScriptPackage
     {
     }
 }
