@@ -8,7 +8,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CK.TS.AspNet.Auth" Version="0.0.0--04zll5h-develop" />
+    <PackageReference Include="CK.TS.AspNet.Auth" Version="0.0.0--04zlofw-develop" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CK.TS.Angular\CK.TS.Angular.csproj" />

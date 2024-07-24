@@ -3,6 +3,6 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.StObj.TypeScript.Engine" Version="0.0.0--04zll5h-develop" />
+    <PackageReference Include="CK.StObj.TypeScript.Engine" Version="0.0.0--04zlofw-develop" />
   </ItemGroup>
 </Project>
