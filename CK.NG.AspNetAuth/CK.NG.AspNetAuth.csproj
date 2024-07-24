@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <!-- Temporary -->
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="**\*.ts">
@@ -12,5 +14,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CK.TS.Angular\CK.TS.Angular.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Res\" />
   </ItemGroup>
 </Project>
