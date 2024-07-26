@@ -10,7 +10,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CK.TS.AspNet.Auth" Version="0.0.0--04zlofw-develop" />
+    <PackageReference Include="CK.TS.AspNet.Auth" Version="0.0.0--04zrd9r-develop" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Res\" />
