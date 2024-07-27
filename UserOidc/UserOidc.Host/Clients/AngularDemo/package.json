@@ -1,10 +1,6 @@
 {
-  "name": "aspnetauthtester",
+  "name": "angulardemo",
   "private": true,
-  "workspaces": [],
-  "scripts": {
-    "build": "tsc -p tsconfig.json"
-  },
   "devDependencies": {
     "typescript": "=5.4.5"
   },
@@ -13,5 +9,7 @@
   },
   "peerDependencies": {
     "axios": "=1.7.2"
-  }
+  },
+  "scripts": {},
+  "workspaces": []
 }
