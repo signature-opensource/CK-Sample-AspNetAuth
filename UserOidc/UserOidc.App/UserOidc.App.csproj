@@ -12,7 +12,4 @@
     <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="0.0.0--052zkur-develop" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.7" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\CK.NG.AspNetAuth\CK.NG.AspNetAuth.csproj" />
-  </ItemGroup>
 </Project>
