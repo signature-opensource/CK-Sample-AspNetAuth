@@ -1,18 +1,12 @@
-using CK.AspNet.Auth;
 using CK.Core;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Security.Claims;
 
 var builder = WebApplication.CreateSlimBuilder();
 var monitor = builder.GetBuilderMonitor();
