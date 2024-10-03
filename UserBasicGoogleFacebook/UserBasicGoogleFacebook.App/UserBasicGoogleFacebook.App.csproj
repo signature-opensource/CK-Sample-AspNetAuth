@@ -10,15 +10,15 @@
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="CK.DB.AspNet.Auth" Version="0.0.0--0538tqq-develop" />
-    <PackageReference Include="CK.DB.User.UserFacebook" Version="0.0.0--0538tqm-develop" />
-    <PackageReference Include="CK.DB.User.UserOidc" Version="0.0.0--0538tqj-develop" />
-    <PackageReference Include="CK.DB.User.UserGoogle" Version="0.0.0--0538tqj-develop" />
-    <PackageReference Include="CK.DB.User.UserGoogle.EMailColumns" Version="0.0.0--0538tqj-develop" />
-    <PackageReference Include="CK.DB.User.UserPassword" Version="0.0.0--0538tqp-develop" />
-    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="0.0.0--0538tql-develop" />
-    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="0.0.0--0538tql-develop" />
-    <PackageReference Include="CK.DB.Zone.SimpleNaming" Version="0.0.0--0538tqj-develop" />
+    <PackageReference Include="CK.DB.AspNet.Auth" Version="0.0.0--053bu2a-develop" />
+    <PackageReference Include="CK.DB.User.UserFacebook" Version="0.0.0--053bu26-develop" />
+    <PackageReference Include="CK.DB.User.UserOidc" Version="0.0.0--053bu24-develop" />
+    <PackageReference Include="CK.DB.User.UserGoogle" Version="0.0.0--053bu24-develop" />
+    <PackageReference Include="CK.DB.User.UserGoogle.EMailColumns" Version="0.0.0--053bu24-develop" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="0.0.0--053bu29-develop" />
+    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="0.0.0--053bu26-develop" />
+    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="0.0.0--053bu26-develop" />
+    <PackageReference Include="CK.DB.Zone.SimpleNaming" Version="0.0.0--053bu24-develop" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.7" />
