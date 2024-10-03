@@ -3,7 +3,7 @@ environment:
     secure: 8VAzdXgUQaJyFoU3WLf2iPFV/8zPDm9qV4TfOpx8/rg=
 version: build{build}
 image: Visual Studio 2022
-clone_folder: C:\CKli-World\CK-Sample\CK-Sample-WebFrontAuth
+clone_folder: C:\CKli-World\CK-Sample\CK-Sample-AspNetAuth
 on_finish:
 - ps: Get-ChildItem -Recurse *.log -exclude LastRun.log | % { Push-AppveyorArtifact $_.FullName }
 test: false
