@@ -66,8 +66,8 @@ public class WebFrontAuthAutoCreateAccountService : IWebFrontAuthAutoCreateAccou
             }
             monitor.Warn( $"""
                            Auto creation of account is for scheme '{context.InitialScheme}' is limited to users with '@signature.one' mail.
-                               User '{userOidcInfo.Username}' must be explicitly registered.
-                               """ );
+                           User '{userOidcInfo.Username}' must be explicitly registered.
+                           """ );
         }
         else if( context.InitialScheme == "Oidc.Google" )
         {

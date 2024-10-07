@@ -1,7 +1,7 @@
 
 using CK.Setup;
 
-return CKomposableAppBuilder.Run( ( monitor, builder ) =>
+return await CKomposableAppBuilder.RunAsync( ( monitor, builder ) =>
 {
     builder.EngineConfiguration.EnsureAspect<SetupableAspectConfiguration>();
     var sql = builder.EngineConfiguration.EnsureAspect<SqlSetupAspectConfiguration>();
