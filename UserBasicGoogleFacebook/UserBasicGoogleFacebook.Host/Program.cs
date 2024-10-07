@@ -111,7 +111,7 @@ authBuilder.AddFacebook( "Facebook", o =>
     {
         o.AppId = builder.Configuration["Authentication:Facebook:ClientId"];
         o.AppSecret = builder.Configuration["Authentication:Facebook:ClientSecret"];
-        
+
         o.Events.OnRemoteFailure = f => f.WebFrontAuthOnRemoteFailureAsync();
 
         o.Events.OnTicketReceived = c => c.WebFrontAuthOnTicketReceivedAsync<UserBasicGoogleFacebook.App.Model.IUserFacebookInfo>( payload =>

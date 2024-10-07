@@ -5,24 +5,23 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UserBasicGoogleFacebook.App.Auth
+namespace UserBasicGoogleFacebook.App.Auth;
+
+[Route( "/api/config" )]
+public class ConfigController : Controller
 {
-    [Route( "/api/config" )]
-    public class ConfigController : Controller
+    private IConfiguration _configuration { get; set; }
+
+    public ConfigController(
+        IConfiguration configuration
+    )
     {
-        private IConfiguration _configuration { get; set; }
+        _configuration = configuration;
+    }
 
-        public ConfigController(
-            IConfiguration configuration
-        )
-        {
-            _configuration = configuration;
-        }
-
-        [HttpGet( "getAppSettings" )]
-        public JsonResult GetAppSettings()
-        {
-            return Json( _configuration.ToString() );
-        }
+    [HttpGet( "getAppSettings" )]
+    public JsonResult GetAppSettings()
+    {
+        return Json( _configuration.ToString() );
     }
 }
