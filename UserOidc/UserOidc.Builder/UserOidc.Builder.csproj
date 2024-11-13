@@ -4,10 +4,10 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppBuilder" Version="27.0.0-a00-00-0037-develop" />
-    <PackageReference Include="CK.Setupable.Engine" Version="27.0.0-a00-00-0023-develop" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="27.0.0-a00-00-0023-develop" />
-    <PackageReference Include="CK.StObj.TypeScript.Engine" Version="0.20.0-a01-00-0055-develop" />
+    <PackageReference Include="CK.AppBuilder" Version="27.0.0-a00-00-0038-develop" />
+    <PackageReference Include="CK.Setupable.Engine" Version="27.0.0-a00-00-0024-develop" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="27.0.0-a00-00-0024-develop" />
+    <PackageReference Include="CK.StObj.TypeScript.Engine" Version="0.20.0-a01-00-0056-develop" />
     <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
     <ProjectReference Include="..\UserOidc.App\UserOidc.App.csproj" />
   </ItemGroup>
