@@ -10,15 +10,15 @@
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="CK.DB.AspNet.Auth" Version="24.1.1--0007-develop" />
-    <PackageReference Include="CK.DB.User.UserFacebook" Version="9.0.1--0007-develop" />
-    <PackageReference Include="CK.DB.User.UserOidc" Version="22.0.1--0007-develop" />
-    <PackageReference Include="CK.DB.User.UserGoogle" Version="22.0.1--0007-develop" />
-    <PackageReference Include="CK.DB.User.UserGoogle.EMailColumns" Version="22.0.1--0007-develop" />
-    <PackageReference Include="CK.DB.User.UserPassword" Version="22.0.1--0007-develop" />
-    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="22.0.1--0007-develop" />
-    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="14.0.1--0007-develop" />
-    <PackageReference Include="CK.DB.Zone.SimpleNaming" Version="22.0.1--0007-develop" />
+    <PackageReference Include="CK.DB.AspNet.Auth" Version="24.1.1--0008-develop" />
+    <PackageReference Include="CK.DB.User.UserFacebook" Version="9.0.1--0008-develop" />
+    <PackageReference Include="CK.DB.User.UserOidc" Version="22.0.1--0008-develop" />
+    <PackageReference Include="CK.DB.User.UserGoogle" Version="22.0.1--0008-develop" />
+    <PackageReference Include="CK.DB.User.UserGoogle.EMailColumns" Version="22.0.1--0008-develop" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="22.0.1--0008-develop" />
+    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="22.0.1--0008-develop" />
+    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="14.0.1--0008-develop" />
+    <PackageReference Include="CK.DB.Zone.SimpleNaming" Version="22.0.1--0008-develop" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.11" />
