@@ -5,8 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.AppBuilder" Version="28.1.1--0009-develop" />
-    <PackageReference Include="CK.Setupable.Engine" Version="28.1.1--0008-develop" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="28.1.1--0008-develop" />
+    <PackageReference Include="CK.Setupable.Engine" Version="28.1.1--0009-develop" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="28.1.1--0009-develop" />
     <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
     <ProjectReference Include="..\UserBasicGoogleFacebook.App\UserBasicGoogleFacebook.App.csproj" />
   </ItemGroup>
