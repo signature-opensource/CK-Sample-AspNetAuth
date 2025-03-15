@@ -17,7 +17,7 @@
     <PackageReference Include="CK.DB.User.UserGoogle.EMailColumns" Version="23.1.1--0027-develop" />
     <PackageReference Include="CK.DB.User.UserPassword" Version="23.1.1--0028-develop" />
     <PackageReference Include="CK.DB.Actor.ActorEMail" Version="23.1.1--0029-develop" />
-    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="15.1.1--0028-develop" />
+    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="15.1.1--0029-develop" />
     <PackageReference Include="CK.DB.Zone.SimpleNaming" Version="23.1.1--0027-develop" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.11" />
