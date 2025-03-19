@@ -6,10 +6,10 @@
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="CK.DB.AspNet.Auth" Version="26.0.0" />
-    <PackageReference Include="CK.DB.User.UserOidc" Version="24.0.0" />
-    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="24.0.0" />
-    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="16.0.0" />
+    <PackageReference Include="CK.DB.AspNet.Auth" Version="26.0.1" />
+    <PackageReference Include="CK.DB.User.UserOidc" Version="24.0.1" />
+    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="24.0.1" />
+    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="16.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.11" />
   </ItemGroup>
 </Project>
