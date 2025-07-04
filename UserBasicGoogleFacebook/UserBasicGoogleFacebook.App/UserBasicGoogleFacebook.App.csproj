@@ -10,15 +10,15 @@
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="CK.DB.AspNet.Auth" Version="26.1.0" />
-    <PackageReference Include="CK.DB.User.UserFacebook" Version="11.1.0" />
-    <PackageReference Include="CK.DB.User.UserOidc" Version="24.1.0" />
-    <PackageReference Include="CK.DB.User.UserGoogle" Version="24.1.0" />
-    <PackageReference Include="CK.DB.User.UserGoogle.EMailColumns" Version="24.1.0" />
-    <PackageReference Include="CK.DB.User.UserPassword" Version="24.1.0" />
-    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="24.1.0" />
-    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="16.1.0" />
-    <PackageReference Include="CK.DB.Zone.SimpleNaming" Version="24.1.0" />
+    <PackageReference Include="CK.DB.AspNet.Auth" Version="27.0.0" />
+    <PackageReference Include="CK.DB.User.UserFacebook" Version="12.0.0" />
+    <PackageReference Include="CK.DB.User.UserOidc" Version="25.0.0" />
+    <PackageReference Include="CK.DB.User.UserGoogle" Version="25.0.0" />
+    <PackageReference Include="CK.DB.User.UserGoogle.EMailColumns" Version="25.0.0" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="25.0.0" />
+    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="25.0.0" />
+    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="17.0.0" />
+    <PackageReference Include="CK.DB.Zone.SimpleNaming" Version="25.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.11" />
