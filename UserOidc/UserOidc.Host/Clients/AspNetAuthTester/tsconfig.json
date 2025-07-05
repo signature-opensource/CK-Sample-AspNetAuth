@@ -8,8 +8,21 @@
     "skipLibCheck": true,
     "paths": {
       "@local/ck-gen/*": [
-        "ck-gen/src/*"
+        "ck-gen/src/*",
+        "./ck-gen/*"
+      ],
+      "@local/ck-gen": [
+        "./ck-gen"
       ]
-    }
+    },
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "moduleResolution": "NodeNext"
   }
 }
