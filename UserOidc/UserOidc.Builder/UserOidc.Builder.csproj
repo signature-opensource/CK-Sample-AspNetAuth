@@ -8,7 +8,7 @@
     <PackageReference Include="CK.Cris.Engine" Version="0.39.2--0015-develop" />
     <PackageReference Include="CK.Setupable.Engine" Version="30.0.1--0019-develop" />
     <PackageReference Include="CK.SqlServer.Setup.Engine" Version="30.0.1--0019-develop" />
-    <PackageReference Include="CK.TypeScript.Engine" Version="0.26.3--0069-develop" />
+    <PackageReference Include="CK.TypeScript.Engine" Version="0.26.3--0070-develop" />
     <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
     <ProjectReference Include="..\UserOidc.App\UserOidc.App.csproj" />
   </ItemGroup>
