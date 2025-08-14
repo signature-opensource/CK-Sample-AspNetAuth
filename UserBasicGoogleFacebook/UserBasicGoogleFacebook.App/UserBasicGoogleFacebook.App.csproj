@@ -10,15 +10,15 @@
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="CK.DB.AspNet.Auth" Version="27.0.2--0020-develop" />
-    <PackageReference Include="CK.DB.User.UserFacebook" Version="12.0.1--0016-develop" />
-    <PackageReference Include="CK.DB.User.UserOidc" Version="25.0.1--0019-develop" />
-    <PackageReference Include="CK.DB.User.UserGoogle" Version="25.0.1--0019-develop" />
-    <PackageReference Include="CK.DB.User.UserGoogle.EMailColumns" Version="25.0.1--0019-develop" />
-    <PackageReference Include="CK.DB.User.UserPassword" Version="25.0.1--0019-develop" />
-    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="25.0.1--0017-develop" />
-    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="17.0.1--0016-develop" />
-    <PackageReference Include="CK.DB.Zone.SimpleNaming" Version="25.0.1--0019-develop" />
+    <PackageReference Include="CK.DB.AspNet.Auth" Version="27.0.2--0021-develop" />
+    <PackageReference Include="CK.DB.User.UserFacebook" Version="12.0.1--0017-develop" />
+    <PackageReference Include="CK.DB.User.UserOidc" Version="25.0.1--0020-develop" />
+    <PackageReference Include="CK.DB.User.UserGoogle" Version="25.0.1--0020-develop" />
+    <PackageReference Include="CK.DB.User.UserGoogle.EMailColumns" Version="25.0.1--0020-develop" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="25.0.1--0020-develop" />
+    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="25.0.1--0018-develop" />
+    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="17.0.1--0017-develop" />
+    <PackageReference Include="CK.DB.Zone.SimpleNaming" Version="25.0.1--0020-develop" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.11" />
