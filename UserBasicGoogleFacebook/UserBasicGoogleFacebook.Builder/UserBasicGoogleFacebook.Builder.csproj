@@ -4,10 +4,10 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppBuilder" Version="30.0.1--0050-develop" />
-    <PackageReference Include="CK.Cris.Engine" Version="0.39.2--0035-develop" />
-    <PackageReference Include="CK.Setupable.Engine" Version="30.0.1--0039-develop" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="30.0.1--0039-develop" />
+    <PackageReference Include="CK.AppBuilder" Version="30.0.1--0051-develop" />
+    <PackageReference Include="CK.Cris.Engine" Version="0.39.2--0036-develop" />
+    <PackageReference Include="CK.Setupable.Engine" Version="30.0.1--0040-develop" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="30.0.1--0040-develop" />
     <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
     <ProjectReference Include="..\UserBasicGoogleFacebook.App\UserBasicGoogleFacebook.App.csproj" />
   </ItemGroup>
