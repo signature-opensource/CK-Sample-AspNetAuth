@@ -10,6 +10,6 @@
     <PackageReference Include="CK.DB.User.UserOidc" Version="25.0.1--0044-develop" />
     <PackageReference Include="CK.DB.Actor.ActorEMail" Version="25.0.1--0042-develop" />
     <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="17.0.1--0041-develop" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.20" />
   </ItemGroup>
 </Project>
