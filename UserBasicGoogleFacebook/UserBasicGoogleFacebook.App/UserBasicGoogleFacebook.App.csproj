@@ -10,15 +10,15 @@
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="CK.DB.AspNet.Auth" Version="28.0.3--0003-develop" />
-    <PackageReference Include="CK.DB.User.UserFacebook" Version="13.0.3--0003-develop" />
-    <PackageReference Include="CK.DB.User.UserOidc" Version="26.0.3--0003-develop" />
-    <PackageReference Include="CK.DB.User.UserGoogle" Version="26.0.3--0003-develop" />
-    <PackageReference Include="CK.DB.User.UserGoogle.EMailColumns" Version="26.0.3--0003-develop" />
-    <PackageReference Include="CK.DB.User.UserPassword" Version="26.0.3--0003-develop" />
-    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="26.0.3--0003-develop" />
-    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="18.0.3--0003-develop" />
-    <PackageReference Include="CK.DB.Zone.SimpleNaming" Version="26.0.3--0003-develop" />
+    <PackageReference Include="CK.DB.AspNet.Auth" Version="28.0.3--0004-develop" />
+    <PackageReference Include="CK.DB.User.UserFacebook" Version="13.0.3--0004-develop" />
+    <PackageReference Include="CK.DB.User.UserOidc" Version="26.0.3--0004-develop" />
+    <PackageReference Include="CK.DB.User.UserGoogle" Version="26.0.3--0004-develop" />
+    <PackageReference Include="CK.DB.User.UserGoogle.EMailColumns" Version="26.0.3--0004-develop" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="26.0.3--0004-develop" />
+    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="26.0.3--0004-develop" />
+    <PackageReference Include="CK.DB.Actor.ActorPhoneNumber" Version="18.0.3--0004-develop" />
+    <PackageReference Include="CK.DB.Zone.SimpleNaming" Version="26.0.3--0004-develop" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.20" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.20" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.20" />
