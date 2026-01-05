@@ -5,10 +5,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.AppBuilder" Version="32.1.1" />
-    <PackageReference Include="CK.Cris.Engine" Version="0.42.1" />
-    <PackageReference Include="CK.Setupable.Engine" Version="32.1.1" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="32.1.1" />
-    <PackageReference Include="CK.TypeScript.Engine" Version="0.30.1" />
+    <PackageReference Include="CK.Cris.Engine" Version="0.42.2" />
+    <PackageReference Include="CK.Setupable.Engine" Version="32.1.2" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="32.1.2" />
+    <PackageReference Include="CK.TypeScript.Engine" Version="0.30.2" />
     <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
     <ProjectReference Include="..\UserOidc.App\UserOidc.App.csproj" />
   </ItemGroup>
