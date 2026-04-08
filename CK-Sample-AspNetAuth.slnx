@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="appveyor.yml" />
+    <File Path="Directory.Build.props" />
+    <File Path="NuGet.config" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/UserBasicGoogleFacebook/">
+    <Project Path="UserBasicGoogleFacebook/UserBasicGoogleFacebook.App/UserBasicGoogleFacebook.App.csproj" />
+    <Project Path="UserBasicGoogleFacebook/UserBasicGoogleFacebook.Builder/UserBasicGoogleFacebook.Builder.csproj" />
+    <Project Path="UserBasicGoogleFacebook/UserBasicGoogleFacebook.Host/UserBasicGoogleFacebook.Host.csproj" />
+  </Folder>
+  <Folder Name="/UserOidc/">
+    <Project Path="UserOidc/UserOidc.App/UserOidc.App.csproj" />
+    <Project Path="UserOidc/UserOidc.Builder/UserOidc.Builder.csproj" />
+    <Project Path="UserOidc/UserOidc.Host/UserOidc.Host.csproj" />
+  </Folder>
+</Solution>
