@@ -5,7 +5,7 @@
   </Aspect>
 
   <BinPaths>
-    <BinPath Path="../UserBasicGoogleFacebook.App/bin/[Debug|Release]/net8.0">
+    <BinPath Path="../UserBasicGoogleFacebook.App/bin/[Debug|Release]/net10.0">
       <ProjectPath>../UserBasicGoogleFacebook.Host</ProjectPath>
     </BinPath>
   </BinPaths>
