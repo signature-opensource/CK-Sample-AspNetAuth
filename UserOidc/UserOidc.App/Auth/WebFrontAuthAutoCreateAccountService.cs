@@ -49,7 +49,7 @@ public class WebFrontAuthAutoCreateAccountService : IWebFrontAuthAutoCreateAccou
                 int userId = await _userTable.CreateUserAsync( ctx, 1, userOidcInfo.Username );
 
                 // Add the user to signature code group ( by design 4 is Signature Code group id )
-                await _groupTable.AddUserAsync( ctx, 1, 4, userId );
+                await _groupTable.AddMemberAsync( ctx, 1, 4, userId );
 
                 // Associate OpenID Sub
                 await _userOidcTable.CreateOrUpdateOidcUserAsync( ctx, 1, userId, userOidcInfo, UCLMode.CreateOnly );
@@ -76,7 +76,7 @@ public class WebFrontAuthAutoCreateAccountService : IWebFrontAuthAutoCreateAccou
             int userId = await _userTable.CreateUserAsync( ctx, 1, userOidcInfo.Username );
 
             // Add the user to signature code group ( by design 4 is Signature Code group id )
-            await _groupTable.AddUserAsync( ctx, 1, 4, userId );
+            await _groupTable.AddMemberAsync( ctx, 1, 4, userId );
 
             // Associate OpenID Sub
             await _userOidcTable.CreateOrUpdateOidcUserAsync( ctx, 1, userId, userOidcInfo, UCLMode.CreateOnly );
