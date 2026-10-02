@@ -1,0 +1,2 @@
+# Yarn generates the sdks files with LF line endings.
+sdks/** text eol=lf
