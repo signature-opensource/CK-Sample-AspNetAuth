@@ -1,2 +1,3 @@
-# Yarn generates the sdks files with LF line endings.
+# Yarn generates the sdks files with LF line endings, except integrations.yml.
 sdks/** text eol=lf
+sdks/integrations.yml text eol=crlf
