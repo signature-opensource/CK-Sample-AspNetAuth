@@ -5,9 +5,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.AppBuilder" Version="35.0.0-juliet.0.ci.8" />
-    <PackageReference Include="CK.Cris.Engine" Version="2.0.0-juliet.0.ci.13" />
-    <PackageReference Include="CK.Setupable.Engine" Version="35.0.0-juliet.0.ci.12" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="35.0.0-juliet.0.ci.12" />
+    <PackageReference Include="CK.Cris.Engine" Version="2.0.0-juliet.0.ci.15" />
+    <PackageReference Include="CK.Setupable.Engine" Version="35.0.0-juliet.0.ci.14" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="35.0.0-juliet.0.ci.14" />
     <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
     <ProjectReference Include="..\UserBasicGoogleFacebook.App\UserBasicGoogleFacebook.App.csproj" />
   </ItemGroup>
