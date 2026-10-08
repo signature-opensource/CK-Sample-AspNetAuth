@@ -8,6 +8,14 @@
     <ProjectReference Include="..\Front.App\Front.App.csproj" />
     <ProjectReference Include="..\Front.Builder\Front.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />
   </ItemGroup>
+  <!-- The builder runs during the build and writes the generated code: the default glob of the source files has already
+       been evaluated (on a clean build, it misses it). The generated files are included just before the compilation. -->
+  <Target Name="IncludeGeneratedCode" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <Compile Remove="$(MSBuildProjectDirectory)/$StObjGen/**/*.cs" />
+      <Compile Include="$(MSBuildProjectDirectory)/$StObjGen/**/*.cs" />
+    </ItemGroup>
+  </Target>
   <ItemGroup>
     <!-- The Angular application is built by its own tool chain (see the README). -->
     <Compile Remove="Clients/**" />

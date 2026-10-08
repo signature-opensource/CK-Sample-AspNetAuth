@@ -9,4 +9,12 @@
     <ProjectReference Include="..\AuthCenter.App\AuthCenter.App.csproj" />
     <ProjectReference Include="..\AuthCenter.Builder\AuthCenter.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />
   </ItemGroup>
+  <!-- The builder runs during the build and writes the generated code: the default glob of the source files has already
+       been evaluated (on a clean build, it misses it). The generated files are included just before the compilation. -->
+  <Target Name="IncludeGeneratedCode" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <Compile Remove="$(MSBuildProjectDirectory)/$StObjGen/**/*.cs" />
+      <Compile Include="$(MSBuildProjectDirectory)/$StObjGen/**/*.cs" />
+    </ItemGroup>
+  </Target>
 </Project>

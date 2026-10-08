@@ -28,8 +28,7 @@ The demo data is created at the start of the AuthCenter when missing (`DemoData`
 
 Requires SQL Server (the AuthCenter's database is `CKSampleAuthCenter` on `.`), Node and Yarn.
 
-1. Build the solution: the builders generate the code (and the database). The first build of a host may miss its
-   generated code (it is created during the build): build it again.
+1. Build the solution: the builders generate the code of the hosts (and the database).
 2. Build the Angular application: in `Front/Front.Host/Clients/App`, `yarn install` then `yarn build`.
 3. Start `AuthCenter.Host`, then `Front.Host`, and open `http://localhost:5300`.
 
