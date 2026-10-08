@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>CK.Sample.AuthCenter</RootNamespace>
+    <UserSecretsId>CK-Sample-AuthCenter</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AuthCenter.App\AuthCenter.App.csproj" />
+    <ProjectReference Include="..\AuthCenter.Builder\AuthCenter.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>CK.Sample.Front</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Front.App\Front.App.csproj" />
+    <ProjectReference Include="..\Front.Builder\Front.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The Angular application is built by its own tool chain (see the README). -->
+    <Compile Remove="Clients/**" />
+    <Content Remove="Clients/**" />
+    <None Remove="Clients/**" />
+  </ItemGroup>
+</Project>

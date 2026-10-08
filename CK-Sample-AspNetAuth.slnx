@@ -7,14 +7,14 @@
     <File Path="NuGet.config" />
     <File Path="README.md" />
   </Folder>
-  <Folder Name="/UserBasicGoogleFacebook/">
-    <Project Path="UserBasicGoogleFacebook/UserBasicGoogleFacebook.App/UserBasicGoogleFacebook.App.csproj" />
-    <Project Path="UserBasicGoogleFacebook/UserBasicGoogleFacebook.Builder/UserBasicGoogleFacebook.Builder.csproj" />
-    <Project Path="UserBasicGoogleFacebook/UserBasicGoogleFacebook.Host/UserBasicGoogleFacebook.Host.csproj" />
+  <Folder Name="/AuthCenter/">
+    <Project Path="AuthCenter/AuthCenter.App/AuthCenter.App.csproj" />
+    <Project Path="AuthCenter/AuthCenter.Builder/AuthCenter.Builder.csproj" />
+    <Project Path="AuthCenter/AuthCenter.Host/AuthCenter.Host.csproj" />
   </Folder>
-  <Folder Name="/UserOidc/">
-    <Project Path="UserOidc/UserOidc.App/UserOidc.App.csproj" />
-    <Project Path="UserOidc/UserOidc.Builder/UserOidc.Builder.csproj" />
-    <Project Path="UserOidc/UserOidc.Host/UserOidc.Host.csproj" />
+  <Folder Name="/Front/">
+    <Project Path="Front/Front.App/Front.App.csproj" />
+    <Project Path="Front/Front.Builder/Front.Builder.csproj" />
+    <Project Path="Front/Front.Host/Front.Host.csproj" />
   </Folder>
 </Solution>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>False</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CK.AppBuilder" Version="35.0.0" />
+    <PackageReference Include="CK.Cris.Engine" Version="2.0.1-0.cris-auth.0.ci.15" />
+    <PackageReference Include="CK.Cris.Executor.Engine" Version="2.0.1-0.cris-auth.0.ci.15" />
+    <PackageReference Include="CK.Poco.Exchange.Engine" Version="35.0.1-0.cris-auth.0.ci.3" />
+    <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="35.0.1-0.cris-auth.0.ci.3" />
+    <PackageReference Include="CK.Setupable.Engine" Version="35.0.1-0.cris-auth.0.ci.10" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="35.0.1-0.cris-auth.0.ci.10" />
+    <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
+    <ProjectReference Include="..\AuthCenter.App\AuthCenter.App.csproj" />
+  </ItemGroup>
+</Project>
