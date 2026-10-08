@@ -14,6 +14,6 @@
     <!-- The login providers: Basic (user name and password), Oidc, Weak (passwordless operators, Unsafe level). -->
     <PackageReference Include="CK.DB.User.UserPassword" Version="30.0.1-0.cris-auth.0.ci.7" />
     <PackageReference Include="CK.DB.User.UserOidc" Version="30.0.1-0.cris-auth.0.ci.9" />
-    <PackageReference Include="CK.DB.Actor.WeakActor" Version="2.0.1-0.cris-auth.0.ci.4" />
+    <PackageReference Include="CK.DB.Actor.WeakActor" Version="2.0.1-0.cris-auth.0.ci.5" />
   </ItemGroup>
 </Project>
