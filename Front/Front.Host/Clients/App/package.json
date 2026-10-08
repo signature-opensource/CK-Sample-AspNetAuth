@@ -47,7 +47,7 @@
     "@angular/build": "^20.3.39",
     "@angular/cli": "^20.3.39",
     "@angular/compiler-cli": "^20.3",
-    "@types/jest": "^30.0.0",
+    "@types/jest": "^30",
     "@types/luxon": "^3.6.2",
     "@types/node": "^26.6.4",
     "@yarnpkg/sdks": "^3.3.1",
@@ -66,5 +66,6 @@
   },
   "peerDependencies": {
     "axios": "^1.7.7"
-  }
+  },
+  "packageManager": "yarn@4.8.1"
 }

@@ -19,10 +19,11 @@ public static class AuthCenterHost
     /// </summary>
     /// <param name="args">The command line arguments.</param>
     /// <param name="configure">Optional configuration overrides (the tests use them).</param>
+    /// <param name="contentRoot">Optional content root (where the appsettings.json is). Defaults to the current directory.</param>
     /// <returns>The application, not started.</returns>
-    public static async Task<WebApplication> BuildAsync( string[] args, Action<IConfigurationBuilder>? configure = null )
+    public static async Task<WebApplication> BuildAsync( string[] args, Action<IConfigurationBuilder>? configure = null, string? contentRoot = null )
     {
-        var builder = WebApplication.CreateSlimBuilder( args );
+        var builder = WebApplication.CreateSlimBuilder( new WebApplicationOptions { Args = args, ContentRootPath = contentRoot } );
         configure?.Invoke( builder.Configuration );
         builder.UseCKMonitoring();
         builder.AddApplicationIdentityServiceConfiguration();

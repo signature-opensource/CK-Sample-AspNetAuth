@@ -1,0 +1,208 @@
+using CK.AppIdentity;
+using CK.Core;
+using CK.Sample.AuthCenter;
+using CK.Sample.Front;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using NUnit.Framework;
+using Shouldly;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Web;
+using static CK.Testing.MonitorTestHelper;
+
+namespace CK.Sample.Tests;
+
+/// <summary>
+/// The sample, end to end: its two hosts run in this process (with their own ports and an OpenID Connect scheme on the
+/// <see cref="FakeIdentityProvider"/>), and a "browser" (an HttpClient that keeps the cookies) talks to the front. The
+/// front relays the session commands to the AuthCenter over the AppIdentity channel.
+/// <para>
+/// This crosses CK-AppIdentity-Transport (the AuthCenter, the relay) and CK-Cris-TypeScript (the HTTP front) on a real
+/// database: their own tests use fakes on the other side.
+/// </para>
+/// </summary>
+[TestFixture]
+[NonParallelizable]
+public class SampleTests
+{
+    const string FrontUrl = "http://127.0.0.1:5310";
+    const string AuthCenterAddress = "tcp:127.0.0.1:37310";
+    const string Callback = FrontUrl + "/.auth/oidc/callback";
+
+    FakeIdentityProvider _idp = null!;
+    WebApplication _authCenter = null!;
+    WebApplication _front = null!;
+
+    [OneTimeSetUp]
+    public async Task StartTheHostsAsync()
+    {
+        // A fresh AppIdentity store for each run (the identity keys, the pinned remotes, the sessions): the default one
+        // is in the user's profile, shared with the manual runs of the sample.
+        var store = TestHelper.TestProjectFolder.AppendPart( "TestStore" );
+        if( Directory.Exists( store ) ) Directory.Delete( store, recursive: true );
+        ApplicationIdentityServiceConfiguration.DefaultStoreRootPath = store;
+        _idp = new FakeIdentityProvider();
+        _authCenter = await AuthCenterHost.BuildAsync( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
+        {
+            ["Urls"] = "http://127.0.0.1:5311",
+            ["CK-AppIdentity:ListeningAddress:0"] = AuthCenterAddress,
+            ["CK-AppIdentity:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
+            ["CK-AppIdentity:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
+            ["CK-AppIdentity:AuthCenter:Oidc:Test:ClientSecret"] = FakeIdentityProvider.ClientSecret,
+            ["CK-AppIdentity:AuthCenter:Oidc:Test:CallbackUrls:0"] = Callback,
+            // Albert is bound to the "albert-sub" identity of the "Test" scheme.
+            ["Demo:OidcScheme"] = "Test",
+            ["Demo:OidcSub"] = "albert-sub"
+        } ), TestHelper.SolutionFolder.Combine( "AuthCenter/AuthCenter.Host" ) );
+        await _authCenter.StartAsync();
+        _front = FrontHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
+        {
+            ["Urls"] = FrontUrl,
+            ["CK-AppIdentity:Parties:0:Address"] = AuthCenterAddress
+        } ), TestHelper.SolutionFolder.Combine( "Front/Front.Host" ) );
+        await _front.StartAsync();
+    }
+
+    [OneTimeTearDown]
+    public async Task StopTheHostsAsync()
+    {
+        if( _front != null ) await _front.DisposeAsync();
+        if( _authCenter != null ) await _authCenter.DisposeAsync();
+        _idp?.Dispose();
+    }
+
+    /// <summary>
+    /// A browser of the front's origin: it keeps the cookies, sends the Origin header and the bearer token.
+    /// </summary>
+    sealed class Browser : IDisposable
+    {
+        readonly HttpClient _http;
+
+        public Browser()
+        {
+            Cookies = new CookieContainer();
+            _http = new HttpClient( new HttpClientHandler { CookieContainer = Cookies, AllowAutoRedirect = false } ) { BaseAddress = new Uri( FrontUrl ) };
+            _http.DefaultRequestHeaders.Add( "Origin", FrontUrl );
+        }
+
+        public CookieContainer Cookies { get; }
+
+        public string? Token { get; set; }
+
+        public int ActorId { get; set; }
+
+        // Posts a command (["Type",{...}] in the TypeScript set) and returns the "result" of the answer.
+        public async Task<JsonElement> SendAsync( string path, string command )
+        {
+            using var m = new HttpRequestMessage( HttpMethod.Post, path ) { Content = new StringContent( command, Encoding.UTF8, "application/json" ) };
+            if( Token != null ) m.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue( "Bearer", Token );
+            using var r = await _http.SendAsync( m );
+            r.StatusCode.ShouldBe( HttpStatusCode.OK );
+            return JsonDocument.Parse( await r.Content.ReadAsStringAsync() ).RootElement.GetProperty( "result" ).Clone();
+        }
+
+        // A session command on "/.cris/auth": a successful session result becomes the current session.
+        public async Task<JsonElement> SessionAsync( string command )
+        {
+            var r = await SendAsync( "/.cris/auth", command );
+            if( r.ValueKind == JsonValueKind.Array && r[1].TryGetProperty( "token", out var token ) && token.ValueKind == JsonValueKind.String )
+            {
+                Token = token.GetString();
+                ActorId = r[1].GetProperty( "info" ).GetProperty( "unsafeActor" ).GetProperty( "actorId" ).GetInt32();
+            }
+            return r;
+        }
+
+        public Task<JsonElement> HelloAsync() => SendAsync( "/.cris", $$"""["CK.Sample.Front.IHelloCommand",{"actorId":{{ActorId}}}]""" );
+
+        public Task<HttpResponseMessage> GetAsync( string path ) => _http.GetAsync( path );
+
+        public void Dispose() => _http.Dispose();
+    }
+
+    static string Text( JsonElement result ) => result.ValueKind == JsonValueKind.Array ? result[1].ToString() : result.ToString();
+
+    [Test]
+    public async Task a_basic_login_through_the_front_opens_a_session_on_the_AuthCenter_Async()
+    {
+        using var b = new Browser();
+        var login = await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+        login[0].GetString().ShouldBe( "CK.IO.Authentication.ISessionResult" );
+        b.Token.ShouldNotBeNull();
+        var cookies = b.Cookies.GetAllCookies();
+        cookies.ShouldContain( c => c.Name == "ck-auth-binding" && c.Path == "/.cris" && c.HttpOnly );
+        cookies.ShouldContain( c => c.Name == "ck-auth-refresh" && c.Path == "/.cris/auth" && c.HttpOnly );
+
+        Text( await b.HelloAsync() ).ShouldBe( "Hello Albert, at the Critical level." );
+
+        // The refresh slides the session (at most Normal: Critical requires a login).
+        await b.SessionAsync( """["CK.IO.Authentication.IRefreshSessionCommand",{}]""" );
+        Text( await b.HelloAsync() ).ShouldBe( "Hello Albert, at the Normal level." );
+
+        // Logout: the session ends on the AuthCenter, the cookies are cleared.
+        await b.SendAsync( "/.cris/auth", """["CK.IO.Authentication.ILogoutSessionCommand",{}]""" );
+        b.Cookies.GetAllCookies().ShouldNotContain( c => c.Name == "ck-auth-binding" && !c.Expired );
+        Text( await b.HelloAsync() ).ShouldContain( "match the current authentication" );
+    }
+
+    [Test]
+    public async Task a_stolen_token_is_useless_without_the_binding_cookie_Async()
+    {
+        using var victim = new Browser();
+        await victim.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+        using var thief = new Browser { Token = victim.Token, ActorId = victim.ActorId };
+        Text( await thief.HelloAsync() ).ShouldContain( "match the current authentication" );
+        Text( await victim.HelloAsync() ).ShouldStartWith( "Hello Albert" );
+    }
+
+    [Test]
+    public async Task a_wrong_password_fails_Async()
+    {
+        using var b = new Browser();
+        var r = await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"not-the-password","rememberMe":false}]""" );
+        r[1].GetProperty( "success" ).GetBoolean().ShouldBeFalse();
+        b.Token.ShouldBeNull();
+    }
+
+    [Test]
+    public async Task a_weak_actor_logs_in_at_the_Unsafe_level_and_cannot_send_a_Normal_command_Async()
+    {
+        using var b = new Browser();
+        var r = await b.SessionAsync( """["CK.IO.Authentication.Weak.IWeakLoginCommand",{"weakActorName":"Operator"}]""" );
+        r[1].GetProperty( "info" ).GetProperty( "unsafeActor" ).GetProperty( "level" ).GetInt32().ShouldBe( 1, "Unsafe." );
+        b.Token.ShouldNotBeNull();
+        Text( await b.HelloAsync() ).ShouldNotStartWith( "Hello" );
+    }
+
+    [Test]
+    public async Task an_oidc_login_through_the_front_and_the_AuthCenter_Async()
+    {
+        using var b = new Browser();
+        // The schemes come from the AuthCenter.
+        Text( await b.SendAsync( "/.cris", """["CK.IO.Authentication.IGetLoginSchemesQCommand",{}]""" ) ).ShouldContain( "Oidc.Test" );
+
+        // Start: the front relays it, the AuthCenter returns the provider's URL; the front sets the remote login cookie.
+        var start = await b.SessionAsync( """["CK.IO.Authentication.IStartLoginCommand",{"scheme":"Oidc.Test","inlineMode":false,"rememberMe":false}]""" );
+        var url = start[1].GetProperty( "url" ).GetString().ShouldNotBeNull();
+        b.Cookies.GetAllCookies().ShouldContain( c => c.Name == "ck-auth-login" && c.Path == "/.auth/oidc/callback" );
+
+        // The user logs in at the provider, that redirects the browser to the front's callback.
+        var (redirect, code, state) = _idp.Authorize( url, "albert-sub" );
+        redirect.ShouldBe( Callback );
+        using var callback = await b.GetAsync( $"/.auth/oidc/callback?state={HttpUtility.UrlEncode( state )}&code={HttpUtility.UrlEncode( code )}" );
+        callback.StatusCode.ShouldBe( HttpStatusCode.OK );
+        (await callback.Content.ReadAsStringAsync()).ShouldContain( "\"success\":true" );
+        _idp.RedeemCount.ShouldBeGreaterThan( 0, "The AuthCenter redeemed the code." );
+
+        // The page has no token: the client refreshes with the session cookies set by the callback.
+        await b.SessionAsync( """["CK.IO.Authentication.IRefreshSessionCommand",{}]""" );
+        Text( await b.HelloAsync() ).ShouldBe( "Hello Albert, at the Normal level." );
+    }
+}

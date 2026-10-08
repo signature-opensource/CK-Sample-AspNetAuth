@@ -54,3 +54,11 @@ In the user-secrets of AuthCenter.Host (`dotnet user-secrets` in `AuthCenter/Aut
 
 The callback URL is the Front's (`/.auth/oidc/callback`): register it at the provider. Only the AuthCenter knows the
 client secret (it redeems the code); the Front relays the start of the login and the callback.
+
+## The tests
+
+[Tests/Sample.Tests](Tests/Sample.Tests) runs the two hosts in one process (their own ports, a fresh AppIdentity store,
+an OpenID Connect scheme on a fake provider) and talks to the front like a browser (an HTTP client that keeps the
+cookies): Basic login, refresh and logout, a stolen token without its binding cookie, a wrong password, the Weak
+login (refused by a Normal command), and an OIDC login (start, provider, callback, refresh). It needs the database
+created by the AuthCenter's builder.

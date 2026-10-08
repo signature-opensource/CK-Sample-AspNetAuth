@@ -17,4 +17,7 @@
     <Project Path="Front/Front.Builder/Front.Builder.csproj" />
     <Project Path="Front/Front.Host/Front.Host.csproj" />
   </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Sample.Tests/Sample.Tests.csproj" />
+  </Folder>
 </Solution>

@@ -3303,7 +3303,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^30.0.0":
+"@types/jest@npm:^30":
   version: 30.0.0
   resolution: "@types/jest@npm:30.0.0"
   dependencies:
@@ -3872,7 +3872,7 @@ __metadata:
     "@fortawesome/free-regular-svg-icons": "npm:^7"
     "@fortawesome/free-solid-svg-icons": "npm:^7"
     "@ngx-translate/core": "npm:^17"
-    "@types/jest": "npm:^30.0.0"
+    "@types/jest": "npm:^30"
     "@types/luxon": "npm:^3.6.2"
     "@types/node": "npm:^26.6.4"
     "@yarnpkg/sdks": "npm:^3.3.1"

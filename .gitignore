@@ -343,3 +343,6 @@ CodeCakeBuilder/UnitTestsDone.*.txt
 # Because we can have subordinated .yarn folder we must exclude any .yarn/install-state.gz.
 **/.yarn/install-state.gz
 
+
+# The AppIdentity store of the tests (identity keys, pinned remotes, sessions).
+TestStore/
