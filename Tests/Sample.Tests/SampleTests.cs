@@ -200,6 +200,7 @@ public class SampleTests
         callback.StatusCode.ShouldBe( HttpStatusCode.OK );
         (await callback.Content.ReadAsStringAsync()).ShouldContain( "\"success\":true" );
         _idp.RedeemCount.ShouldBeGreaterThan( 0, "The AuthCenter redeemed the code." );
+        _idp.LastAuthMethod.ShouldBe( "client_secret_basic", "The default client authentication." );
 
         // The page has no token: the client refreshes with the session cookies set by the callback.
         await b.SessionAsync( """["CK.IO.Authentication.IRefreshSessionCommand",{}]""" );

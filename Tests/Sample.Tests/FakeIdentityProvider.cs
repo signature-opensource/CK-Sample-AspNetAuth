@@ -19,7 +19,7 @@ namespace CK.Sample.Tests;
 /// <summary>
 /// (A copy of the one of CK.AppIdentity.Cris.AuthCenter.Tests: test helpers are not packaged.)
 /// A minimal OpenID Connect provider on a loopback port: discovery, JWKS and token endpoint (authorization code with
-/// PKCE, client_secret_post). The "browser" part of the authorization is <see cref="Authorize"/>: the user logs in
+/// PKCE, client_secret_basic or client_secret_post). The "browser" part of the authorization is <see cref="Authorize"/>: the user logs in
 /// and the provider "redirects" (it returns the code and the state).
 /// </summary>
 public sealed class FakeIdentityProvider : IDisposable
@@ -52,6 +52,27 @@ public sealed class FakeIdentityProvider : IDisposable
     /// Gets the base URL: the authority and the issuer.
     /// </summary>
     public string BaseUrl { get; }
+
+    /// <summary>
+    /// Gets or sets the expected client identifier. Defaults to <see cref="ClientId"/>.
+    /// </summary>
+    public string ExpectedClientId { get; set; } = ClientId;
+
+    /// <summary>
+    /// Gets or sets the expected client secret. Defaults to <see cref="ClientSecret"/>.
+    /// </summary>
+    public string ExpectedClientSecret { get; set; } = ClientSecret;
+
+    /// <summary>
+    /// Gets or sets the token_endpoint_auth_methods_supported of the discovery document (null: not announced, both
+    /// secret methods are accepted). A method that is not announced is refused.
+    /// </summary>
+    public string[]? AuthMethods { get; set; }
+
+    /// <summary>
+    /// Gets the client authentication method of the last token request ("client_secret_basic" or "client_secret_post").
+    /// </summary>
+    public string? LastAuthMethod { get; private set; }
 
     /// <summary>
     /// Gets or sets the issuer written in the identity tokens. Defaults to <see cref="BaseUrl"/>.
@@ -123,7 +144,7 @@ public sealed class FakeIdentityProvider : IDisposable
         var path = ctx.Request.Url!.AbsolutePath;
         if( path == "/.well-known/openid-configuration" )
         {
-            await WriteJsonAsync( ctx, new Dictionary<string, object>
+            var discovery = new Dictionary<string, object>
             {
                 ["issuer"] = BaseUrl,
                 ["authorization_endpoint"] = BaseUrl + "/authorize",
@@ -132,7 +153,9 @@ public sealed class FakeIdentityProvider : IDisposable
                 ["response_types_supported"] = new[] { "code" },
                 ["subject_types_supported"] = new[] { "public" },
                 ["id_token_signing_alg_values_supported"] = new[] { "RS256" }
-            } );
+            };
+            if( AuthMethods != null ) discovery["token_endpoint_auth_methods_supported"] = AuthMethods;
+            await WriteJsonAsync( ctx, discovery );
         }
         else if( path == "/jwks" )
         {
@@ -150,12 +173,18 @@ public sealed class FakeIdentityProvider : IDisposable
         {
             using var reader = new System.IO.StreamReader( ctx.Request.InputStream );
             var form = HttpUtility.ParseQueryString( await reader.ReadToEndAsync() );
+            var (method, clientId, secret) = ReadClientAuthentication( ctx.Request, form );
+            LastAuthMethod = method;
+            if( method == null || (AuthMethods != null && !AuthMethods.Contains( method )) || clientId != ExpectedClientId || secret != ExpectedClientSecret )
+            {
+                ctx.Response.StatusCode = 401;
+                await WriteJsonAsync( ctx, new Dictionary<string, object> { ["error"] = "invalid_client" } );
+                return;
+            }
             if( form["grant_type"] != "authorization_code"
-                || form["client_id"] != ClientId
-                || form["client_secret"] != ClientSecret
                 || !_grants.TryRemove( form["code"] ?? "", out var g )
                 || g.RedirectUri != form["redirect_uri"]
-                || g.ClientId != ClientId
+                || g.ClientId != ExpectedClientId
                 || Base64Url.EncodeToString( SHA256.HashData( Encoding.ASCII.GetBytes( form["code_verifier"] ?? "" ) ) ) != g.Challenge )
             {
                 ctx.Response.StatusCode = 400;
@@ -167,7 +196,7 @@ public sealed class FakeIdentityProvider : IDisposable
             var idToken = new JsonWebTokenHandler().CreateToken( new SecurityTokenDescriptor
             {
                 Issuer = TokenIssuer ?? BaseUrl,
-                Audience = TokenAudience ?? ClientId,
+                Audience = TokenAudience ?? ExpectedClientId,
                 IssuedAt = now,
                 NotBefore = now,
                 Expires = now.AddMinutes( 5 ),
@@ -186,6 +215,25 @@ public sealed class FakeIdentityProvider : IDisposable
         {
             ctx.Response.StatusCode = 404;
         }
+    }
+
+    // One method only (RFC 6749 section 2.3): the Basic header (form-url-encoded id and secret, section 2.3.1) or the
+    // client_secret in the body.
+    static (string? Method, string? ClientId, string? Secret) ReadClientAuthentication( HttpListenerRequest request, System.Collections.Specialized.NameValueCollection form )
+    {
+        var header = request.Headers["Authorization"];
+        var inBody = form["client_secret"] != null;
+        if( header != null )
+        {
+            if( inBody || !header.StartsWith( "Basic ", StringComparison.Ordinal ) ) return (null, null, null);
+            var decoded = Encoding.UTF8.GetString( Convert.FromBase64String( header.Substring( 6 ) ) );
+            var colon = decoded.IndexOf( ':' );
+            if( colon < 0 ) return (null, null, null);
+            var id = WebUtility.UrlDecode( decoded.Substring( 0, colon ) );
+            if( form["client_id"] != null && form["client_id"] != id ) return (null, null, null);
+            return ("client_secret_basic", id, WebUtility.UrlDecode( decoded.Substring( colon + 1 ) ));
+        }
+        return inBody ? ("client_secret_post", form["client_id"], form["client_secret"]) : (null, null, null);
     }
 
     static async Task WriteJsonAsync( HttpListenerContext ctx, object o )
