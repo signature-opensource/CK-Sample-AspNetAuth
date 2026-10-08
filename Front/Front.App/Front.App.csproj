@@ -8,7 +8,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!-- The front side of the AuthCenter feature: the relay of the session commands, the token reader. -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter" Version="2.0.1-0.cris-auth.0.ci.29" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter" Version="2.0.1-0.cris-auth.0.ci.30" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="2.0.1-0.cris-auth.0.ci.3" />
     <PackageReference Include="CK.AspNet" Version="23.0.1-0.cris-auth.0.ci.1" />
     <!-- The HTTP front of the authentication and the Angular client (with the Basic login form). -->

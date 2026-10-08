@@ -8,12 +8,12 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!-- The AuthCenter feature: sessions, tokens, the relay of the fronts, OpenID Connect. -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter" Version="2.0.1-0.cris-auth.0.ci.29" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter" Version="2.0.1-0.cris-auth.0.ci.30" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="2.0.1-0.cris-auth.0.ci.3" />
     <PackageReference Include="CK.AspNet" Version="23.0.1-0.cris-auth.0.ci.1" />
     <!-- The login providers: Basic (user name and password), Oidc, Weak (passwordless operators, Unsafe level). -->
-    <PackageReference Include="CK.DB.User.UserPassword" Version="30.0.1-0.cris-auth.0.ci.7" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="30.0.1-0.cris-auth.0.ci.8" />
     <PackageReference Include="CK.DB.User.UserOidc" Version="30.0.1-0.cris-auth.0.ci.9" />
-    <PackageReference Include="CK.DB.Actor.WeakActor" Version="2.0.1-0.cris-auth.0.ci.5" />
+    <PackageReference Include="CK.DB.Actor.WeakActor" Version="2.0.1-0.cris-auth.0.ci.6" />
   </ItemGroup>
 </Project>
