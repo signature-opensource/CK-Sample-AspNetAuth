@@ -20,7 +20,7 @@ Angular application of the Front) and `*.Host` (the program).
 |---|---|---|
 | `Basic` | CK.DB.User.UserPassword | `Albert` / `pass` (the `Demo:AlbertPassword` setting). Critical level. |
 | `Weak` | CK.DB.Actor.WeakActor | `Operator`: passwordless, at the Unsafe level (the application's commands that require Normal refuse it). |
-| `Oidc.<Suffix>` | CK.DB.User.UserOidc | Configured on the AuthCenter (see below). Only an identity bound to a user can log in: there is no automatic account creation. |
+| `Oidc.<Suffix>` | CK.DB.User.UserOidc | `Oidc.Duende` out of the box: "Continue with Duende", then `bob` / `bob` at the Duende demo server (bound to Albert). Other schemes: see below. Only an identity bound to a user can log in: there is no automatic account creation. |
 
 The demo data is created at the start of the AuthCenter when missing (`DemoData`).
 
@@ -45,15 +45,23 @@ Requires SQL Server (the AuthCenter's database is `CKSampleAuthCenter` on `.`), 
 
 1. Build the solution: the builders generate the code of the hosts (and the database).
 2. Build the Angular application: in `Front/Front.Host/Clients/App`, `yarn install` then `yarn build`.
-3. Start `AuthCenter.Host`, then `Front.Host`, and open `http://localhost:5300`: log in as `Albert` / `pass` (Basic) or
-   as `Operator` (Weak).
+3. Start `AuthCenter.Host`, then `Front.Host`, and open `http://localhost:5300`: log in as `Albert` / `pass` (Basic), as `Operator`
+   (Weak), or with "Continue with Duende" then `bob` / `bob` (OpenID Connect, logs in as Albert).
 
 The two hosts pin each other's identity at their first connection (`AutoTrustKey: Once`): in production, the keys are
 pinned explicitly.
 
 ### OpenID Connect
 
-In the user-secrets of AuthCenter.Host (`dotnet user-secrets` in `AuthCenter/AuthCenter.Host`), for Google:
+The default configuration (`AuthCenter/AuthCenter.Host/appsettings.json`) has the scheme `Oidc.Duende`: the public demo
+server of Duende IdentityServer (`https://demo.duendesoftware.com`) with its public test client
+(`interactive.confidential` / `secret`, authorization code with PKCE). This secret is published by Duende for testing: it
+protects nothing. The demo data binds Albert to its user `bob` (`Demo:OidcSub` is bob's `sub`, "2"), so "Continue with
+Duende" then `bob` / `bob` logs in as Albert. It needs the Internet and depends on a server that we do not control:
+no test uses it (the tests use a fake provider).
+
+A real provider (with a real secret) goes in the user-secrets of AuthCenter.Host (`dotnet user-secrets` in
+`AuthCenter/AuthCenter.Host`). For Google (the `Demo` keys then bind Albert to your account instead of bob):
 
 ```json
 {
