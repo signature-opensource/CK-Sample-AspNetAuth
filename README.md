@@ -58,7 +58,8 @@ pinned explicitly.
 
 ### OpenID Connect
 
-The default configuration (`AuthCenter/AuthCenter.Host/appsettings.json`) has the scheme `Oidc.Duende`: the public demo
+OpenID Connect is a package of its own: the AuthCenter references CK.AppIdentity.Cris.AuthCenter.Oidc (without it, an
+"AuthCenter:Oidc" section is a configuration error). The default configuration (`AuthCenter/AuthCenter.Host/appsettings.json`) has the scheme `Oidc.Duende`: the public demo
 server of Duende IdentityServer (`https://demo.duendesoftware.com`) with its public test client
 (`interactive.confidential` / `secret`, authorization code with PKCE). This secret is published by Duende for testing: it
 protects nothing. The demo data binds Albert to its user `bob` (`Demo:OidcSub` is bob's `sub`, "2"), so "Continue with
