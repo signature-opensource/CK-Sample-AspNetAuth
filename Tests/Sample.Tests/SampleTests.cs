@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using Shouldly;
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -15,6 +16,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
+using System.Threading;
 using static CK.Testing.MonitorTestHelper;
 
 namespace CK.Sample.Tests;
@@ -205,5 +207,53 @@ public class SampleTests
         // The page has no token: the client refreshes with the session cookies set by the callback.
         await b.SessionAsync( """["CK.IO.Authentication.IRefreshSessionCommand",{}]""" );
         Text( await b.HelloAsync() ).ShouldBe( "Hello Albert, at the Normal level." );
+    }
+
+    /// <summary>
+    /// The UI smoke test (Front.Host/Clients/App/ui-smoke/ui-smoke.mjs) on the built Angular application, in a headless
+    /// browser: the public page, the login page (with the "Test" OpenID Connect button), a wrong password, the Weak login
+    /// (its hello is refused), the Basic login (the private page in the back-office layout), the user info box, a reload
+    /// and the sign out. Ignored when the application is not built (<c>yarn build</c>), or without Node or a browser.
+    /// </summary>
+    [Test]
+    [CancelAfter( 180_000 )]
+    public async Task the_Angular_application_passes_the_UI_smoke_test_Async( CancellationToken cancellation )
+    {
+        var app = TestHelper.SolutionFolder.Combine( "Front/Front.Host/Clients/App" );
+        if( !File.Exists( app.Combine( "dist/App/browser/index.html" ) ) )
+        {
+            Assert.Ignore( "The Angular application is not built (yarn build in Front/Front.Host/Clients/App)." );
+        }
+        var screenshots = TestHelper.TestProjectFolder.AppendPart( "UISmoke" );
+        var start = new ProcessStartInfo( "node" )
+        {
+            WorkingDirectory = app,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
+        foreach( var a in new[] { "ui-smoke/ui-smoke.mjs", "--url", FrontUrl, "--oidc", "Test", "--out", screenshots.Path } )
+        {
+            start.ArgumentList.Add( a );
+        }
+        Process? node;
+        try
+        {
+            node = Process.Start( start );
+        }
+        catch( System.ComponentModel.Win32Exception )
+        {
+            node = null;
+        }
+        if( node == null ) Assert.Ignore( "Node is not available." );
+        using( node )
+        {
+            var output = node.StandardOutput.ReadToEndAsync( cancellation );
+            var error = node.StandardError.ReadToEndAsync( cancellation );
+            await node.WaitForExitAsync( cancellation );
+            var text = await output + await error;
+            TestHelper.Monitor.Info( $"UI smoke test (screenshots in '{screenshots}'):{Environment.NewLine}{text}" );
+            if( node.ExitCode == 2 ) Assert.Ignore( "No browser for the UI smoke test (set CK_BROWSER)." );
+            node.ExitCode.ShouldBe( 0, text );
+        }
     }
 }

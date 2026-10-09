@@ -1,0 +1,198 @@
+// UI smoke test of the sample: drives the built Angular application in a headless Chromium browser (Edge or Chrome,
+// through the DevTools protocol) against running hosts, with the demo data of the AuthCenter (Albert / pass, the weak
+// actor Operator).
+//
+//   node ui-smoke/ui-smoke.mjs [--url http://localhost:5300] [--out <folder>] [--oidc <SchemeSuffix>] [--browser <exe>]
+//
+// --oidc checks that the login page has the button of this OpenID Connect scheme (the flow itself is covered by the
+// HTTP tests). The browser is --browser, else the CK_BROWSER environment variable, else Edge or Chrome at their usual
+// places. Exit code: 0 on success, 1 on failure, 2 when no browser is found. A screenshot is taken at each step (and on
+// failure) in --out (default: ui-smoke/screenshots).
+import { spawn } from 'node:child_process';
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { createServer } from 'node:net';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const args = Object.fromEntries( process.argv.slice( 2 ).reduce( ( a, v, i, all ) => v.startsWith( '--' ) ? [...a, [v.substring( 2 ), all[i + 1]]] : a, [] ) );
+const base = ( args.url ?? 'http://localhost:5300' ).replace( /\/$/, '' );
+const out = args.out ?? join( dirname( fileURLToPath( import.meta.url ) ), 'screenshots' );
+const browserPath = args.browser ?? process.env.CK_BROWSER ?? [
+  'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
+  'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
+  'C:/Program Files/Google/Chrome/Application/chrome.exe',
+  '/usr/bin/microsoft-edge',
+  '/usr/bin/google-chrome',
+  '/usr/bin/chromium',
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+].find( p => existsSync( p ) );
+if( !browserPath || !existsSync( browserPath ) ) {
+  console.log( 'No browser found (use --browser or CK_BROWSER).' );
+  process.exit( 2 );
+}
+mkdirSync( out, { recursive: true } );
+
+const sleep = ms => new Promise( r => setTimeout( r, ms ) );
+const freePort = () => new Promise( r => { const s = createServer().listen( 0, '127.0.0.1', () => { const p = s.address().port; s.close( () => r( p ) ); } ); } );
+
+// The browser, on its own profile.
+const port = await freePort();
+const profile = mkdtempSync( join( tmpdir(), 'ck-ui-smoke-' ) );
+const browser = spawn( browserPath, ['--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
+                                     '--no-first-run', '--no-default-browser-check', '--window-size=1400,900', 'about:blank'],
+                       { stdio: 'ignore' } );
+let version;
+for( let i = 0; i < 100 && !version; ++i ) {
+  try { version = await ( await fetch( `http://127.0.0.1:${port}/json/version` ) ).json(); } catch { await sleep( 100 ); }
+}
+if( !version ) {
+  console.log( `The browser '${browserPath}' did not start.` );
+  browser.kill();
+  process.exit( 1 );
+}
+
+// The DevTools protocol on a new page.
+const target = await ( await fetch( `http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' } ) ).json();
+const ws = new WebSocket( target.webSocketDebuggerUrl );
+await new Promise( r => ws.addEventListener( 'open', r ) );
+let id = 0;
+const pending = new Map();
+ws.addEventListener( 'message', e => {
+  const m = JSON.parse( e.data );
+  if( m.id && pending.has( m.id ) ) { pending.get( m.id )( m ); pending.delete( m.id ); }
+} );
+const send = ( method, params = {} ) => new Promise( r => { const i = ++id; pending.set( i, r ); ws.send( JSON.stringify( { id: i, method, params } ) ); } );
+const evaluate = async expr => ( await send( 'Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true } ) ).result?.result?.value;
+
+class SmokeFailure extends Error { }
+let step = 'start';
+const shot = async name => {
+  const r = await send( 'Page.captureScreenshot', { format: 'png' } );
+  if( r.result ) writeFileSync( join( out, `${name}.png` ), Buffer.from( r.result.data, 'base64' ) );
+};
+const path = () => evaluate( 'location.pathname' );
+const exists = selector => evaluate( `!!document.querySelector(${JSON.stringify( selector )})` );
+const text = async selector => ( await evaluate( `document.querySelector(${JSON.stringify( selector )})?.innerText` ) ?? '' ).replace( /\s+/g, ' ' ).trim();
+const waitFor = async ( selector, ms = 15000 ) => {
+  for( let t = 0; t < ms; t += 100 ) {
+    if( await exists( selector ) ) return;
+    await sleep( 100 );
+  }
+  throw new SmokeFailure( `'${selector}' did not appear (at ${await path()}).` );
+};
+const check = ( condition, message ) => { if( !condition ) throw new SmokeFailure( message ); };
+// The Angular reactive forms listen to the input event.
+const fill = ( selector, value ) => evaluate( `(() => { const e = document.querySelector(${JSON.stringify( selector )}); e.value = ${JSON.stringify( value )}; e.dispatchEvent( new Event( 'input', { bubbles: true } ) ); })()` );
+const click = async selector => {
+  await waitFor( selector );
+  await evaluate( `document.querySelector(${JSON.stringify( selector )}).click()` );
+};
+const navigate = async url => { await send( 'Page.navigate', { url: base + url } ); await sleep( 300 ); };
+const run = async ( name, action ) => {
+  step = name;
+  await action();
+  await sleep( 300 );
+  await shot( name );
+  console.log( `ok   ${name}` );
+};
+const helloResult = async () => {
+  await click( 'sample-home button' );
+  await waitFor( 'sample-home nz-alert' );
+  return text( 'sample-home nz-alert' );
+};
+
+let failed = false;
+try {
+  await send( 'Page.enable' );
+  await send( 'Emulation.setDeviceMetricsOverride', { width: 1400, height: 900, deviceScaleFactor: 1, mobile: false } );
+
+  await run( '1-anonymous-public-home', async () => {
+    await navigate( '/' );
+    await waitFor( 'sample-public-home nz-result' );
+    check( !await exists( 'sample-home' ), 'The anonymous must not see the hello card.' );
+  } );
+
+  await run( '2-login-page', async () => {
+    await click( 'sample-public-home button' );
+    await waitFor( 'ck-weak-login-form input' );
+    check( await path() === '/auth', 'The login page is /auth.' );
+    check( await exists( 'ck-basic-login-form input[formcontrolname=password]' ), 'The Basic form is on the login page.' );
+    if( args.oidc ) {
+      await waitFor( 'button.ck-login-provider-btn' );
+      check( ( await text( '.ck-login-providers' ) ).includes( args.oidc ), `The '${args.oidc}' OpenID Connect button is on the login page.` );
+    }
+  } );
+
+  await run( '3-wrong-password', async () => {
+    await fill( 'ck-basic-login-form input[formcontrolname=userName]', 'Albert' );
+    await fill( 'ck-basic-login-form input[formcontrolname=password]', 'not-the-password' );
+    await click( 'ck-basic-login-form button.login-form-button' );
+    await sleep( 1500 );
+    check( await path() === '/auth', 'A wrong password stays on the login page.' );
+  } );
+
+  await run( '4-weak-login', async () => {
+    await fill( 'ck-weak-login-form input', 'Operator' );
+    await click( 'ck-weak-login-form button' );
+    await waitFor( 'sample-public-home sample-home' );
+    const card = await text( 'sample-home' );
+    check( card.includes( 'Operator' ) && card.includes( 'Unsafe' ), `The weak actor is on the public page at the Unsafe level (${card}).` );
+    const hello = await helloResult();
+    check( hello.includes( 'Normal authentication level required' ), `The hello of a weak actor is refused (${hello}).` );
+  } );
+
+  await run( '5-weak-sign-out', async () => {
+    await click( '.sample-public-home-actions button:nth-child(2)' );
+    await waitFor( 'ck-logout' );
+  } );
+
+  await run( '6-basic-login', async () => {
+    await navigate( '/auth' );
+    await fill( 'ck-basic-login-form input[formcontrolname=userName]', 'Albert' );
+    await fill( 'ck-basic-login-form input[formcontrolname=password]', 'pass' );
+    await click( 'ck-basic-login-form button.login-form-button' );
+    await waitFor( 'ck-backoffice-layout sample-home' );
+    check( await path() === '/', 'Albert is redirected to the private home.' );
+    const hello = await helloResult();
+    check( hello.includes( 'Hello Albert' ), `Albert's hello succeeds (${hello}).` );
+  } );
+
+  await run( '7-user-info-box', async () => {
+    await click( 'ck-user-info-box nz-avatar' );
+    await waitFor( '.ck-user-info-box-username' );
+    check( await text( '.ck-user-info-box-username' ) === 'Albert', 'The user info box shows Albert.' );
+  } );
+
+  await run( '8-reload', async () => {
+    await navigate( '/' );
+    await waitFor( 'ck-backoffice-layout sample-home' );
+  } );
+
+  await run( '9-sign-out', async () => {
+    await click( 'ck-user-info-box nz-avatar' );
+    await click( '.ck-user-info-box-menu-item.logout' );
+    await waitFor( 'ck-logout' );
+    await navigate( '/' );
+    await waitFor( 'sample-public-home nz-result' );
+  } );
+  console.log( 'UI smoke test passed.' );
+}
+catch( e ) {
+  failed = true;
+  console.log( `FAIL ${step}: ${e instanceof SmokeFailure ? e.message : e?.stack ?? e}` );
+  await shot( `failure-${step}` ).catch( () => { } );
+}
+finally {
+  ws.close();
+  // Closes the browser (and its child processes) cleanly, then its profile.
+  try {
+    const b = new WebSocket( version.webSocketDebuggerUrl );
+    await new Promise( r => b.addEventListener( 'open', r ) );
+    b.send( JSON.stringify( { id: 1, method: 'Browser.close' } ) );
+  } catch { browser.kill(); }
+  for( let i = 0; i < 20; ++i ) {
+    try { rmSync( profile, { recursive: true, force: true } ); break; } catch { await sleep( 250 ); }
+  }
+}
+process.exit( failed ? 1 : 0 );

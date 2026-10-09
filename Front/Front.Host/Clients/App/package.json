@@ -7,6 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "jest",
+    "smoke": "node ui-smoke/ui-smoke.mjs",
     "ck-watch": "dotnet \"$PROJECT_CWD/../../../Front.Builder/bin/Debug/net10.0/CK.TypeScript.LiveEngine.dll\""
   },
   "prettier": {

@@ -77,3 +77,17 @@ an OpenID Connect scheme on a fake provider) and talks to the front like a brows
 cookies): Basic login, refresh and logout, a stolen token without its binding cookie, a wrong password, the Weak
 login (refused by a Normal command), and an OIDC login (start, provider, callback, refresh). It needs the database
 created by the AuthCenter's builder.
+
+### The UI smoke test
+
+[Front/Front.Host/Clients/App/ui-smoke/ui-smoke.mjs](Front/Front.Host/Clients/App/ui-smoke/ui-smoke.mjs) drives the
+built Angular application in a headless Edge or Chrome (DevTools protocol, no dependency): the public page, the login
+page, a wrong password, the Weak login (its hello is refused), the Basic login (the private page in the back-office
+layout), the user info box, a reload and the sign out. It takes a screenshot at each step (and on failure).
+
+- `yarn smoke` (in `Front/Front.Host/Clients/App`) runs it against the running hosts (`--url`, default
+  `http://localhost:5300`; `--oidc <Suffix>` also checks the button of an OpenID Connect scheme; the browser is found at
+  its usual places, or `--browser` / `CK_BROWSER`).
+- `the_Angular_application_passes_the_UI_smoke_test_Async` (Sample.Tests) runs it against the hosts of the tests. It is
+  **ignored** when the application is not built (`yarn build`) or without Node or a browser. The screenshots are in
+  `Tests/Sample.Tests/UISmoke`. It tests the built `dist`: rebuild the application after a change.

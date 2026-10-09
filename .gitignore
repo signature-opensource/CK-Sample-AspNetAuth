@@ -346,3 +346,6 @@ CodeCakeBuilder/UnitTestsDone.*.txt
 
 # The AppIdentity store of the tests (identity keys, pinned remotes, sessions).
 TestStore/
+
+# The screenshots of the UI smoke test run by the tests.
+Tests/**/UISmoke/
