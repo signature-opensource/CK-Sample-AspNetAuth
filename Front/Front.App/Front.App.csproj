@@ -11,9 +11,12 @@
     <PackageReference Include="CK.AppIdentity.Cris.AuthCenter" Version="2.0.1-0.cris-auth.0.ci.31" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="2.0.1-0.cris-auth.0.ci.3" />
     <PackageReference Include="CK.AspNet" Version="23.0.1-0.cris-auth.0.ci.1" />
-    <!-- The HTTP front of the authentication and the Angular client (with the Basic login form). -->
-    <PackageReference Include="CK.Cris.AspNet.Authentication" Version="2.0.1-0.cris-auth.0.ci.12" />
-    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="2.0.1-0.cris-auth.0.ci.12" />
-    <PackageReference Include="CK.IO.Authentication.Weak" Version="2.0.1-0.cris-auth.0.ci.10" />
+    <!-- The HTTP front of the authentication and the Angular client (with the Basic and Weak login forms). -->
+    <PackageReference Include="CK.Cris.AspNet.Authentication" Version="2.0.1-0.cris-auth.0.ci.13" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="2.0.1-0.cris-auth.0.ci.13" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Weak" Version="2.0.1-0.cris-auth.0.ci.13" />
+    <!-- The application shell (side bar, top bar with the UserInfoBox) and the public page (where a weak actor lands). -->
+    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="2.0.1-0.cris-auth.0.ci.5" />
+    <PackageReference Include="CK.Ng.PublicPage" Version="2.0.1-0.cris-auth.0.ci.6" />
   </ItemGroup>
 </Project>

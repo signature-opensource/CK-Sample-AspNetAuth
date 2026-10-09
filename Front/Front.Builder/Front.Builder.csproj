@@ -8,7 +8,7 @@
     <PackageReference Include="CK.AppBuilder" Version="35.0.1-0.cris-auth.0.ci.3" />
     <PackageReference Include="CK.Cris.Engine" Version="2.0.1-0.cris-auth.0.ci.15" />
     <PackageReference Include="CK.Cris.Executor.Engine" Version="2.0.1-0.cris-auth.0.ci.15" />
-    <PackageReference Include="CK.Cris.AspNet.Engine" Version="2.0.1-0.cris-auth.0.ci.12" />
+    <PackageReference Include="CK.Cris.AspNet.Engine" Version="2.0.1-0.cris-auth.0.ci.13" />
     <PackageReference Include="CK.Poco.Exchange.Engine" Version="35.0.1-0.cris-auth.0.ci.3" />
     <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="35.0.1-0.cris-auth.0.ci.3" />
     <PackageReference Include="CK.TypeScript.Engine" Version="2.0.1-0.cris-auth.0.ci.6" />

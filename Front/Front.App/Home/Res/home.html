@@ -1,0 +1,13 @@
+<nz-card nzTitle="Hello">
+    <p>
+        Logged in as <b>{{ actor().actorName }}</b>, at the <b>{{ level() }}</b> level.
+        @if( isUnsafe() ) { It is not authenticated: the commands that require the Normal level refuse it. }
+    </p>
+    <button nz-button nzType="primary" (click)="hello()">Say hello (requires the Normal level)</button>
+    @if( answer() ) {
+        <nz-alert class="sample-home-result" nzType="success" nzShowIcon [nzMessage]="answer()" />
+    }
+    @if( error() ) {
+        <nz-alert class="sample-home-result" nzType="error" nzShowIcon [nzMessage]="error()" />
+    }
+</nz-card>

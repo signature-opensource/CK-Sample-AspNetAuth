@@ -1,0 +1,13 @@
+@if( isKnown() ) {
+    <sample-home />
+    <div class="sample-public-home-actions">
+        <button nz-button routerLink="/auth">Log in</button>
+        <button nz-button routerLink="/auth/logout">Sign out</button>
+    </div>
+} @else {
+    <nz-result nzStatus="info" nzTitle="CK-Sample-AspNetAuth" nzSubTitle="Log in with Basic (Albert / pass), OpenID Connect or as the weak actor Operator.">
+        <div nz-result-extra>
+            <button nz-button nzType="primary" routerLink="/auth">Log in</button>
+        </div>
+    </nz-result>
+}

@@ -24,13 +24,29 @@ Angular application of the Front) and `*.Host` (the program).
 
 The demo data is created at the start of the AuthCenter when missing (`DemoData`).
 
+## The Angular application
+
+It is made of standard packages: the sample's own code is minimal.
+
+| Route | What | From |
+|---|---|---|
+| `/auth` | The login page: the Basic form, the Weak form, a button per OpenID Connect scheme. | CK.Ng.Cris.AspNet.Authentication (+ `.Basic`, `.Weak`) |
+| `/` (Normal level at least) | The private page in the back-office layout (side bar, top bar with the user info box and the sign out). Its home says hello. | CK.Ng.Cris.AspNet.Authentication, CK.Ng.Zorro.BackOffice |
+| `/` (otherwise) | The public page: the anonymous is invited to log in; a weak actor (Unsafe level, not authenticated) sees who it is and its hello is refused. | CK.Ng.PublicPage |
+| `/auth/logout` | The sign out. | CK.Ng.Cris.AspNet.Authentication |
+
+The sample's code ([Front.App](Front/Front.App)): the `IHelloCommand` (Normal level) and its handler,
+`HomeComponent` (the hello card, routed in the private page), `PublicHomeComponent` (routed in the public page) and
+`Res/private-page.t`, a transformer that puts the private page in the back-office layout.
+
 ## Running it
 
 Requires SQL Server (the AuthCenter's database is `CKSampleAuthCenter` on `.`), Node and Yarn.
 
 1. Build the solution: the builders generate the code of the hosts (and the database).
 2. Build the Angular application: in `Front/Front.Host/Clients/App`, `yarn install` then `yarn build`.
-3. Start `AuthCenter.Host`, then `Front.Host`, and open `http://localhost:5300`.
+3. Start `AuthCenter.Host`, then `Front.Host`, and open `http://localhost:5300`: log in as `Albert` / `pass` (Basic) or
+   as `Operator` (Weak).
 
 The two hosts pin each other's identity at their first connection (`AutoTrustKey: Once`): in production, the keys are
 pinned explicitly.
