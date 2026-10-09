@@ -1,0 +1,6 @@
+{
+    // The logo of the "Oidc.Duende" button of the login page (captured from the favicon of the Duende demo server).
+    "mappings": {
+        "duende.png": "login-providers"
+    }
+}

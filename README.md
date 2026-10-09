@@ -59,6 +59,8 @@ server of Duende IdentityServer (`https://demo.duendesoftware.com`) with its pub
 protects nothing. The demo data binds Albert to its user `bob` (`Demo:OidcSub` is bob's `sub`, "2"), so "Continue with
 Duende" then `bob` / `bob` logs in as Albert. It needs the Internet and depends on a server that we do not control:
 no test uses it (the tests use a fake provider).
+The logo of its button is the sample's (`Front/Front.App/Res/ts-assets`, mapped to `login-providers/duende.png`): the
+login page looks for `login-providers/<suffix>.png`, and an application adds the logos of its own schemes this way.
 
 A real provider (with a real secret) goes in the user-secrets of AuthCenter.Host (`dotnet user-secrets` in
 `AuthCenter/AuthCenter.Host`). For Google (the `Demo` keys then bind Albert to your account instead of bob):
