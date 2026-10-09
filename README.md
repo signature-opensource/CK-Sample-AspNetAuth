@@ -43,6 +43,11 @@ The sample's code ([Front.App](Front/Front.App)): the `IHelloCommand` (Normal le
 
 Requires SQL Server (the AuthCenter's database is `CKSampleAuthCenter` on `.`), Node and Yarn.
 
+**`AuthCenter/Start.ps1`** does it all: it builds the hosts (restoring the CK packages from the local CKli feed when it
+exists) and the Angular application, starts the AuthCenter then the Front (each in its own window), waits until the
+Front reaches its AuthCenter, opens the browser and stops both hosts when Enter is pressed (`-SkipBuild` starts what is
+already built, `-NoBrowser` does not open the browser). By hand:
+
 1. Build the solution: the builders generate the code of the hosts (and the database).
 2. Build the Angular application: in `Front/Front.Host/Clients/App`, `yarn install` then `yarn build`.
 3. Start `AuthCenter.Host`, then `Front.Host`, and open `http://localhost:5300`: log in as `Albert` / `pass` (Basic), as `Operator`
