@@ -8,15 +8,15 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!-- The front side of the AuthCenter feature: the relay of the session commands, the token reader. -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter" Version="2.0.3-0.cris-auth.0.ci.9" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter" Version="2.0.3-0.cris-auth.0.ci.11" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="2.0.2-0.cris-auth.0.ci.2" />
     <PackageReference Include="CK.AspNet" Version="23.0.2-0.cris-auth.0.ci.2" />
     <!-- The HTTP front of the authentication and the Angular client (with the Basic and Weak login forms). -->
-    <PackageReference Include="CK.Cris.AspNet.Authentication" Version="2.0.2-0.cris-auth.0.ci.7" />
-    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="2.0.2-0.cris-auth.0.ci.7" />
-    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Weak" Version="2.0.2-0.cris-auth.0.ci.7" />
+    <PackageReference Include="CK.Cris.AspNet.Authentication" Version="2.0.2-0.cris-auth.0.ci.8" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="2.0.2-0.cris-auth.0.ci.8" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Weak" Version="2.0.2-0.cris-auth.0.ci.8" />
     <!-- The application shell (side bar, top bar with the UserInfoBox) and the public page (where a weak actor lands). -->
-    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="2.0.3-0.cris-auth.0.ci.3" />
-    <PackageReference Include="CK.Ng.PublicPage" Version="2.0.2-0.cris-auth.0.ci.3" />
+    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="2.0.3-0.cris-auth.0.ci.4" />
+    <PackageReference Include="CK.Ng.PublicPage" Version="2.0.2-0.cris-auth.0.ci.4" />
   </ItemGroup>
 </Project>

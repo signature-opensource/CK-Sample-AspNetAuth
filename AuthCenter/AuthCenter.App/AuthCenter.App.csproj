@@ -8,14 +8,14 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!-- The AuthCenter feature: sessions, tokens, the relay of the fronts. -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter" Version="2.0.3-0.cris-auth.0.ci.9" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter" Version="2.0.3-0.cris-auth.0.ci.11" />
     <!-- The OpenID Connect scheme family ("Package First": its "AuthCenter:Oidc" section requires it). -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Oidc" Version="2.0.3-0.cris-auth.0.ci.9" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Oidc" Version="2.0.3-0.cris-auth.0.ci.11" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="2.0.2-0.cris-auth.0.ci.2" />
     <PackageReference Include="CK.AspNet" Version="23.0.2-0.cris-auth.0.ci.2" />
     <!-- The login providers: Basic (user name and password), Oidc, Weak (passwordless operators, Unsafe level). -->
-    <PackageReference Include="CK.DB.User.UserPassword" Version="30.0.3-0.cris-auth.0.ci.3" />
-    <PackageReference Include="CK.DB.User.UserOidc" Version="30.0.3-0.cris-auth.0.ci.5" />
-    <PackageReference Include="CK.DB.Actor.WeakActor" Version="2.0.3-0.cris-auth.0.ci.4" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="30.0.3-0.cris-auth.0.ci.5" />
+    <PackageReference Include="CK.DB.User.UserOidc" Version="30.0.3-0.cris-auth.0.ci.9" />
+    <PackageReference Include="CK.DB.Actor.WeakActor" Version="2.0.3-0.cris-auth.0.ci.5" />
   </ItemGroup>
 </Project>
