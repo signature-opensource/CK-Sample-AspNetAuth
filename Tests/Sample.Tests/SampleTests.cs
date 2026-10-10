@@ -59,6 +59,8 @@ public class SampleTests
             ["CK-AppIdentity:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
             ["CK-AppIdentity:AuthCenter:Oidc:Test:ClientSecret"] = FakeIdentityProvider.ClientSecret,
             ["CK-AppIdentity:AuthCenter:Oidc:Test:CallbackUrls:0"] = Callback,
+            // An unknown identity of the "Test" scheme creates its user (SampleAccountCreation).
+            ["CK-AppIdentity:AuthCenter:Oidc:Test:AllowAccountCreation"] = "true",
             // Albert is bound to the "albert-sub" identity of the "Test" scheme.
             ["Demo:OidcScheme"] = "Test",
             ["Demo:OidcSub"] = "albert-sub"
@@ -207,6 +209,39 @@ public class SampleTests
         // The page has no token: the client refreshes with the session cookies set by the callback.
         await b.SessionAsync( """["CK.IO.Authentication.IRefreshSessionCommand",{}]""" );
         Text( await b.HelloAsync() ).ShouldBe( "Hello Albert, at the Normal level." );
+    }
+
+    [Test]
+    public async Task an_unknown_oidc_identity_creates_its_user_named_from_the_claims_Async()
+    {
+        // Like bob at the Duende demo server: a "name", no "preferred_username". The user name is normalized and, on a
+        // clash, suffixed. A run after the first one finds the identities already bound: same users, same names.
+        _idp.IdTokenClaims["name"] = "Bob Smith";
+        try
+        {
+            using var bob = new Browser();
+            await OidcLoginAsync( bob, "bob-sub" );
+            Text( await bob.HelloAsync() ).ShouldBe( "Hello Bob-Smith, at the Normal level." );
+
+            using var otherBob = new Browser();
+            await OidcLoginAsync( otherBob, "other-bob-sub" );
+            Text( await otherBob.HelloAsync() ).ShouldBe( "Hello Bob-Smith-2, at the Normal level." );
+            otherBob.ActorId.ShouldNotBe( bob.ActorId );
+        }
+        finally
+        {
+            _idp.IdTokenClaims.Clear();
+        }
+    }
+
+    async Task OidcLoginAsync( Browser b, string sub )
+    {
+        var start = await b.SessionAsync( """["CK.IO.Authentication.IStartLoginCommand",{"scheme":"Oidc.Test","inlineMode":false,"rememberMe":false}]""" );
+        var url = start[1].GetProperty( "url" ).GetString().ShouldNotBeNull();
+        var (_, code, state) = _idp.Authorize( url, sub );
+        using var callback = await b.GetAsync( $"/.auth/oidc/callback?state={HttpUtility.UrlEncode( state )}&code={HttpUtility.UrlEncode( code )}" );
+        (await callback.Content.ReadAsStringAsync()).ShouldContain( "\"success\":true" );
+        await b.SessionAsync( """["CK.IO.Authentication.IRefreshSessionCommand",{}]""" );
     }
 
     /// <summary>

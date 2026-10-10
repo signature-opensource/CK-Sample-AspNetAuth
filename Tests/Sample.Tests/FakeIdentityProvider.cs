@@ -95,6 +95,29 @@ public sealed class FakeIdentityProvider : IDisposable
     public string? TokenAtHash { get; set; }
 
     /// <summary>
+    /// Gets the claims added to the identity tokens (besides the protocol claims and "sub").
+    /// </summary>
+    public Dictionary<string, object> IdTokenClaims { get; } = new();
+
+    /// <summary>
+    /// Gets or sets the claims of the UserInfo endpoint (besides "sub"). When null, the provider has no UserInfo endpoint.
+    /// </summary>
+    public Dictionary<string, object>? UserInfoClaims { get; set; }
+
+    /// <summary>
+    /// Gets or sets a "sub" that replaces the one of the user in the UserInfo response (a provider that lies).
+    /// </summary>
+    public string? UserInfoSub { get; set; }
+
+    /// <summary>
+    /// Gets the number of UserInfo calls.
+    /// </summary>
+    public int UserInfoCount { get; private set; }
+
+    // The subject of the last issued access token (a single access token value is used).
+    string? _lastSub;
+
+    /// <summary>
     /// Gets the number of the redeemed codes.
     /// </summary>
     public int RedeemCount { get; private set; }
@@ -155,7 +178,19 @@ public sealed class FakeIdentityProvider : IDisposable
                 ["id_token_signing_alg_values_supported"] = new[] { "RS256" }
             };
             if( AuthMethods != null ) discovery["token_endpoint_auth_methods_supported"] = AuthMethods;
+            if( UserInfoClaims != null ) discovery["userinfo_endpoint"] = BaseUrl + "/userinfo";
             await WriteJsonAsync( ctx, discovery );
+        }
+        else if( path == "/userinfo" && UserInfoClaims != null )
+        {
+            ++UserInfoCount;
+            if( ctx.Request.Headers["Authorization"] != "Bearer " + AccessToken || _lastSub == null )
+            {
+                ctx.Response.StatusCode = 401;
+                return;
+            }
+            var userInfo = new Dictionary<string, object>( UserInfoClaims ) { ["sub"] = UserInfoSub ?? _lastSub };
+            await WriteJsonAsync( ctx, userInfo );
         }
         else if( path == "/jwks" )
         {
@@ -192,7 +227,15 @@ public sealed class FakeIdentityProvider : IDisposable
                 return;
             }
             ++RedeemCount;
+            _lastSub = g.Sub;
             var now = DateTime.UtcNow;
+            var claims = new Dictionary<string, object>( IdTokenClaims )
+            {
+                ["sub"] = g.Sub,
+                ["nonce"] = TokenNonce ?? g.Nonce,
+                // The left half of the SHA-256 of the access token.
+                ["at_hash"] = TokenAtHash ?? Base64Url.EncodeToString( SHA256.HashData( Encoding.ASCII.GetBytes( AccessToken ) ).AsSpan( 0, 16 ) )
+            };
             var idToken = new JsonWebTokenHandler().CreateToken( new SecurityTokenDescriptor
             {
                 Issuer = TokenIssuer ?? BaseUrl,
@@ -200,13 +243,7 @@ public sealed class FakeIdentityProvider : IDisposable
                 IssuedAt = now,
                 NotBefore = now,
                 Expires = now.AddMinutes( 5 ),
-                Claims = new Dictionary<string, object>
-                {
-                    ["sub"] = g.Sub,
-                    ["nonce"] = TokenNonce ?? g.Nonce,
-                    // The left half of the SHA-256 of the access token.
-                    ["at_hash"] = TokenAtHash ?? Base64Url.EncodeToString( SHA256.HashData( Encoding.ASCII.GetBytes( AccessToken ) ).AsSpan( 0, 16 ) )
-                },
+                Claims = claims,
                 SigningCredentials = new SigningCredentials( _key, SecurityAlgorithms.RsaSha256 )
             } );
             await WriteJsonAsync( ctx, new Dictionary<string, object> { ["access_token"] = AccessToken, ["token_type"] = "Bearer", ["id_token"] = idToken } );
