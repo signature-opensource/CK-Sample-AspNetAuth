@@ -22,8 +22,6 @@ export class Home {
   protected readonly isUnsafe = computed( () => this.actor().level === AuthLevel.Unsafe );
   protected readonly answer = signal( '' );
   protected readonly error = signal( '' );
-  // The name of the last passkey registered here.
-  protected readonly registered = signal( '' );
 
   async hello(): Promise<void> {
     this.answer.set( '' );

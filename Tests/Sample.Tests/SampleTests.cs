@@ -119,7 +119,8 @@ public class SampleTests
         public async Task<JsonElement> SessionAsync( string command )
         {
             var r = await SendAsync( "/.cris/auth", command );
-            if( r.ValueKind == JsonValueKind.Array && r[1].TryGetProperty( "token", out var token ) && token.ValueKind == JsonValueKind.String )
+            if( r.ValueKind == JsonValueKind.Array && r[1].ValueKind == JsonValueKind.Object
+                && r[1].TryGetProperty( "token", out var token ) && token.ValueKind == JsonValueKind.String )
             {
                 Token = token.GetString();
                 ActorId = r[1].GetProperty( "info" ).GetProperty( "unsafeActor" ).GetProperty( "actorId" ).GetInt32();
@@ -135,6 +136,9 @@ public class SampleTests
     }
 
     static string Text( JsonElement result ) => result.ValueKind == JsonValueKind.Array ? result[1].ToString() : result.ToString();
+
+    // A string result is typed: ["string","..."] (an error is a CrisResultError object).
+    static bool IsString( JsonElement result ) => (result.ValueKind == JsonValueKind.Array ? result[1] : result).ValueKind == JsonValueKind.String;
 
     [Test]
     public async Task a_basic_login_through_the_front_opens_a_session_on_the_AuthCenter_Async()
@@ -196,8 +200,8 @@ public class SampleTests
 
         // The login start: usernameless (no allowed credentials), user verification required, bound to "localhost".
         var start = await b.SessionAsync( """["CK.IO.Authentication.Passkey.IStartPasskeyLoginCommand",{}]""" );
-        start.ValueKind.ShouldBe( JsonValueKind.String, Text( start ) );
-        using( var options = JsonDocument.Parse( start.GetString()! ) )
+        IsString( start ).ShouldBeTrue( Text( start ) );
+        using( var options = JsonDocument.Parse( Text( start ) ) )
         {
             options.RootElement.GetProperty( "rpId" ).GetString().ShouldBe( "localhost" );
             options.RootElement.GetProperty( "userVerification" ).GetString().ShouldBe( "required" );
@@ -206,8 +210,8 @@ public class SampleTests
         }
 
         // Adding a passkey requires a recent login (Critical): the anonymous is refused.
-        var registration = await b.SessionAsync( $$"""["CK.IO.Authentication.Passkey.IStartPasskeyRegistrationCommand",{"actorId":0}]""" );
-        registration.ValueKind.ShouldNotBe( JsonValueKind.String, "The anonymous cannot register a passkey." );
+        var registration = await b.SessionAsync( """["CK.IO.Authentication.Passkey.IStartPasskeyRegistrationCommand",{"actorId":0}]""" );
+        IsString( registration ).ShouldBeFalse( $"The anonymous cannot register a passkey ({Text( registration )})." );
     }
 
     [Test]

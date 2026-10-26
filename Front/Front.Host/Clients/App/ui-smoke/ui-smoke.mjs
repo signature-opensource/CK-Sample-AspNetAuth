@@ -170,7 +170,7 @@ try {
   await run( '7-passkey-registration', async () => {
     // Enabled at the Critical level only: right after a login.
     await click( 'ck-passkey-registration-button button:not([disabled])' );
-    await waitFor( '.sample-home-passkey-result' );
+    for( let t = 0; t < 15000 && await passkeyCount() === 0; t += 100 ) await sleep( 100 );
     check( await passkeyCount() === 1, 'The authenticator holds the new passkey.' );
   } );
 
