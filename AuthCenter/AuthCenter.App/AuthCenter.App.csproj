@@ -7,8 +7,8 @@
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <!-- The AuthCenter feature: sessions, tokens, the relay of the fronts. -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter" Version="2.0.3-0.cris-auth.0.ci.15" />
+    <!-- The Local side of the AuthCenter feature (this application IS the AuthCenter): sessions, tokens, the relay of the fronts. -->
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Local" Version="2.0.3-0.cris-auth.0.ci.15" />
     <!-- The OpenID Connect scheme family ("Package First": its "AuthCenter:Oidc" section requires it). -->
     <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Oidc" Version="2.0.3-0.cris-auth.0.ci.15" />
     <!-- The passkey (WebAuthn) scheme family: the ceremonies and their verification ("AuthCenter:Passkey" section). -->
