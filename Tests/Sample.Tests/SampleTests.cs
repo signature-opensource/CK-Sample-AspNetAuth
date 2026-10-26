@@ -4,14 +4,17 @@ using CK.Sample.AuthCenter;
 using CK.Sample.Front;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Shouldly;
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -136,6 +139,64 @@ public class SampleTests
     }
 
     static string Text( JsonElement result ) => result.ValueKind == JsonValueKind.Array ? result[1].ToString() : result.ToString();
+
+    // A typed value ["Type",value] or the value itself.
+    static JsonElement Value( JsonElement result ) => result.ValueKind == JsonValueKind.Array && result.GetArrayLength() == 2 && result[0].ValueKind == JsonValueKind.String ? result[1] : result;
+
+    static bool IsSuccess( JsonElement result ) => Value( result ) is { ValueKind: JsonValueKind.Object } o && o.TryGetProperty( "success", out var s ) && s.GetBoolean();
+
+    // The passkeys listed by IGetPasskeysQCommand: (passkeyId, name).
+    static List<(int Id, string Name)> Passkeys( JsonElement result )
+    {
+        var list = Value( result );
+        list.ValueKind.ShouldBe( JsonValueKind.Array, result.ToString() );
+        return list.EnumerateArray().Select( Value ).Select( p => (p.GetProperty( "passkeyId" ).GetInt32(), p.GetProperty( "name" ).GetString()!) ).ToList();
+    }
+
+    [Test]
+    public async Task the_user_manages_its_login_methods_at_the_AuthCenter_through_the_front_Async()
+    {
+        // The front has no database: these ICommandAuthCenter commands are posted to "/.cris/auth-center" and relayed with
+        // the browser's proof (its token and its binding) to the AuthCenter, that establishes the identity again.
+        using var anonymous = new Browser();
+        Value( await anonymous.SendAsync( "/.cris/auth-center", """["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":1}]""" ) ).ValueKind.ShouldNotBe( JsonValueKind.Array, "Refused: not a list." );
+
+        using var b = new Browser();
+        await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+        var albertId = b.ActorId;
+        // A passkey of Albert, stored directly in the AuthCenter.
+        var store = _authCenter.Services.GetRequiredService<IPasskeyStore>();
+        var handle = await store.GetOrCreateUserHandleAsync( TestHelper.Monitor, albertId );
+        (await store.CreateAsync( TestHelper.Monitor, new PasskeyCredential( RandomNumberGenerator.GetBytes( 32 ), albertId, handle, RandomNumberGenerator.GetBytes( 77 ), 0, true, false, Guid.Empty, [], "Sample key" ) )).ShouldBeTrue();
+
+        // The ICommandAuthCenter commands are refused on "/.cris" (their route is declared).
+        Text( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) ).ShouldContain( "/.cris/auth-center" );
+
+        var listed = Passkeys( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) );
+        var passkeyId = listed.Single( p => p.Name == "Sample key" ).Id;
+        IsSuccess( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPasskey.IRenamePasskeyCommand",{"actorId":{{albertId}},"passkeyId":{{passkeyId}},"name":"Renamed key"}]""" ) ).ShouldBeTrue();
+        Passkeys( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) )
+            .ShouldContain( (passkeyId, "Renamed key") );
+        // Albert has the Basic scheme: this passkey is not his last login method. The delete requires the Critical level of the login.
+        IsSuccess( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPasskey.IDeletePasskeyCommand",{"actorId":{{albertId}},"actualActorId":{{albertId}},"passkeyId":{{passkeyId}}}]""" ) ).ShouldBeTrue();
+        Passkeys( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) )
+            .ShouldNotContain( p => p.Id == passkeyId );
+
+        // Albert changes his password, then logs in with it (and restores it).
+        IsSuccess( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPassword.ISetPasswordCommand",{"actorId":{{albertId}},"userId":{{albertId}},"password":"new-pass"}]""" ) ).ShouldBeTrue();
+        using( var again = new Browser() )
+        {
+            var login = await again.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"new-pass","rememberMe":false}]""" );
+            again.Token.ShouldNotBeNull( Text( login ) );
+        }
+        IsSuccess( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPassword.ISetPasswordCommand",{"actorId":{{albertId}},"userId":{{albertId}},"password":"pass"}]""" ) ).ShouldBeTrue();
+
+        // After the logout, the same token is refused (the relay's session check is tested in CK-AppIdentity-Transport).
+        var token = b.Token;
+        await b.SendAsync( "/.cris/auth", """["CK.IO.Authentication.ILogoutSessionCommand",{}]""" );
+        b.Token = token;
+        Value( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) ).ValueKind.ShouldNotBe( JsonValueKind.Array, "Refused: not a list." );
+    }
 
     // A string result is typed: ["string","..."] (an error is a CrisResultError object).
     static bool IsString( JsonElement result ) => (result.ValueKind == JsonValueKind.Array ? result[1] : result).ValueKind == JsonValueKind.String;

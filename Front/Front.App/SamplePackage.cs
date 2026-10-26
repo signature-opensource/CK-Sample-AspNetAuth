@@ -1,4 +1,6 @@
 using CK.Core;
+using CK.IO.User.UserPasskey;
+using CK.IO.User.UserPassword;
 using CK.Ng.Cris.AspNet.Authentication.Basic;
 using CK.Ng.Cris.AspNet.Authentication.Weak;
 using CK.Ng.PublicPage;
@@ -22,6 +24,11 @@ namespace CK.Sample.Front;
 [Requires<NgCrisAuthenticationBasicPackage, NgCrisAuthenticationWeakPackage>]
 [Requires<LayoutComponent, PublicPageComponent>]
 [RegisterTypeScriptType( typeof( IHelloCommand ) )]
+// The user's self-service on its login methods: executed by the AuthCenter, posted to "/.cris/auth-center".
+[RegisterTypeScriptType( typeof( IGetPasskeysQCommand ) )]
+[RegisterTypeScriptType( typeof( IRenamePasskeyCommand ) )]
+[RegisterTypeScriptType( typeof( IDeletePasskeyCommand ) )]
+[RegisterTypeScriptType( typeof( ISetPasswordCommand ) )]
 public class SamplePackage : TypeScriptPackage
 {
 }

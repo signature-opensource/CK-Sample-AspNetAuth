@@ -16,6 +16,9 @@
     <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="2.0.2-0.cris-auth.0.ci.9" />
     <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Passkey" Version="2.0.2-0.cris-auth.0.ci.9" />
     <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Weak" Version="2.0.2-0.cris-auth.0.ci.9" />
+    <!-- The self-service commands of the login methods (ICommandAuthCenter: relayed to the AuthCenter, that handles them). -->
+    <PackageReference Include="CK.IO.User.UserPasskey" Version="0.0.0-0.cris-auth.0.ci.2" />
+    <PackageReference Include="CK.IO.User.UserPassword" Version="30.0.3-0.cris-auth.0.ci.5" />
     <!-- The application shell (side bar, top bar with the UserInfoBox) and the public page (where a weak actor lands). -->
     <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="2.0.3-0.cris-auth.0.ci.5" />
     <PackageReference Include="CK.Ng.PublicPage" Version="2.0.2-0.cris-auth.0.ci.4" />
