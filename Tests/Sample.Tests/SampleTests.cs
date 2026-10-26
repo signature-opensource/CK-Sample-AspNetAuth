@@ -257,7 +257,7 @@ public class SampleTests
     public async Task the_passkey_ceremonies_are_served_through_the_front_Async()
     {
         using var b = new Browser();
-        Text( await b.SendAsync( "/.cris", """["CK.IO.Authentication.IGetLoginSchemesQCommand",{}]""" ) ).ShouldContain( "Passkey" );
+        Text( await b.SendAsync( "/.cris/auth-center", """["CK.IO.Authentication.IGetLoginSchemesQCommand",{}]""" ) ).ShouldContain( "Passkey" );
 
         // The login start: usernameless (no allowed credentials), user verification required, bound to "localhost".
         var start = await b.SessionAsync( """["CK.IO.Authentication.Passkey.IStartPasskeyLoginCommand",{}]""" );
@@ -280,7 +280,7 @@ public class SampleTests
     {
         using var b = new Browser();
         // The schemes come from the AuthCenter.
-        Text( await b.SendAsync( "/.cris", """["CK.IO.Authentication.IGetLoginSchemesQCommand",{}]""" ) ).ShouldContain( "Oidc.Test" );
+        Text( await b.SendAsync( "/.cris/auth-center", """["CK.IO.Authentication.IGetLoginSchemesQCommand",{}]""" ) ).ShouldContain( "Oidc.Test" );
 
         // Start: the front relays it, the AuthCenter returns the provider's URL; the front sets the remote login cookie.
         var start = await b.SessionAsync( """["CK.IO.Authentication.IStartLoginCommand",{"scheme":"Oidc.Test","inlineMode":false,"rememberMe":false}]""" );
