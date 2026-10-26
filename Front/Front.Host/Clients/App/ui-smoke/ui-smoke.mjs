@@ -1,6 +1,7 @@
 // UI smoke test of the sample: drives the built Angular application in a headless Chromium browser (Edge or Chrome,
 // through the DevTools protocol) against running hosts, with the demo data of the AuthCenter (Albert / pass, the weak
-// actor Operator).
+// actor Operator). The passkeys use a virtual authenticator of the DevTools protocol (WebAuthn domain): Albert adds a
+// passkey after his Basic login, then logs in with it (each run adds a passkey to Albert).
 //
 //   node ui-smoke/ui-smoke.mjs [--url http://localhost:5300] [--out <folder>] [--oidc <SchemeSuffix>] [--browser <exe>]
 //
@@ -103,9 +104,17 @@ const helloResult = async () => {
 };
 
 let failed = false;
+let passkeyCount;
 try {
   await send( 'Page.enable' );
   await send( 'Emulation.setDeviceMetricsOverride', { width: 1400, height: 900, deviceScaleFactor: 1, mobile: false } );
+  // A platform authenticator that stores discoverable credentials and verifies the user (the AuthCenter requires both).
+  await send( 'WebAuthn.enable', { enableUI: false } );
+  const authenticatorId = ( await send( 'WebAuthn.addVirtualAuthenticator', {
+    options: { protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true }
+  } ) ).result?.authenticatorId;
+  check( authenticatorId, 'The browser must support the WebAuthn virtual authenticators.' );
+  passkeyCount = async () => ( await send( 'WebAuthn.getCredentials', { authenticatorId } ) ).result?.credentials?.length ?? 0;
 
   await run( '1-anonymous-public-home', async () => {
     await navigate( '/' );
@@ -158,24 +167,44 @@ try {
     check( hello.includes( 'Hello Albert' ), `Albert's hello succeeds (${hello}).` );
   } );
 
-  await run( '7-user-info-box', async () => {
+  await run( '7-passkey-registration', async () => {
+    // Enabled at the Critical level only: right after a login.
+    await click( 'ck-passkey-registration-button button:not([disabled])' );
+    await waitFor( '.sample-home-passkey-result' );
+    check( await passkeyCount() === 1, 'The authenticator holds the new passkey.' );
+  } );
+
+  await run( '8-user-info-box', async () => {
     await click( 'ck-user-info-box nz-avatar' );
     await waitFor( '.ck-user-info-box-username' );
     check( await text( '.ck-user-info-box-username' ) === 'Albert', 'The user info box shows Albert.' );
   } );
 
-  await run( '8-reload', async () => {
+  await run( '9-reload', async () => {
     await navigate( '/' );
     await waitFor( 'ck-backoffice-layout sample-home' );
   } );
 
-  await run( '9-sign-out', async () => {
+  const signOut = async () => {
     await click( 'ck-user-info-box nz-avatar' );
     await click( '.ck-user-info-box-menu-item.logout' );
     await waitFor( 'ck-logout' );
     await navigate( '/' );
     await waitFor( 'sample-public-home nz-result' );
+  };
+
+  await run( '10-sign-out', signOut );
+
+  await run( '11-passkey-login', async () => {
+    await navigate( '/auth' );
+    await click( 'ck-passkey-login-button button' );
+    await waitFor( 'ck-backoffice-layout sample-home' );
+    check( await path() === '/', 'Albert is redirected to the private home.' );
+    const card = await text( 'sample-home' );
+    check( card.includes( 'Albert' ) && card.includes( 'Critical' ), `Albert is logged in with his passkey at the Critical level (${card}).` );
   } );
+
+  await run( '12-passkey-sign-out', signOut );
   console.log( 'UI smoke test passed.' );
 }
 catch( e ) {

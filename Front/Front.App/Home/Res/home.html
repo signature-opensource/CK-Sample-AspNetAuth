@@ -11,3 +11,12 @@
         <nz-alert class="sample-home-result" nzType="error" nzShowIcon [nzMessage]="error()" />
     }
 </nz-card>
+@if( !isUnsafe() ) {
+    <nz-card class="sample-home-passkeys" nzTitle="Passkeys">
+        <p>Add a passkey to this account, then log in with it from the login page (no password).</p>
+        <ck-passkey-registration-button (registered)="registered.set( $event )" />
+        @if( registered() ) {
+            <nz-alert class="sample-home-passkey-result" nzType="success" nzShowIcon nzMessage="Passkey '{{ registered() }}' added." />
+        }
+    </nz-card>
+}

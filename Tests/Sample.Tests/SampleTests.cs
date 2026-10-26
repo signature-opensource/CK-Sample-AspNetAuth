@@ -34,7 +34,8 @@ namespace CK.Sample.Tests;
 [NonParallelizable]
 public class SampleTests
 {
-    const string FrontUrl = "http://127.0.0.1:5310";
+    // "localhost", not 127.0.0.1: the passkeys are bound to a domain name (the RP ID), never to an IP address.
+    const string FrontUrl = "http://localhost:5310";
     const string AuthCenterAddress = "tcp:127.0.0.1:37310";
     const string Callback = FrontUrl + "/.auth/oidc/callback";
 
@@ -63,7 +64,9 @@ public class SampleTests
             ["CK-AppIdentity:AuthCenter:Oidc:Test:AllowAccountCreation"] = "true",
             // Albert is bound to the "albert-sub" identity of the "Test" scheme.
             ["Demo:OidcScheme"] = "Test",
-            ["Demo:OidcSub"] = "albert-sub"
+            ["Demo:OidcSub"] = "albert-sub",
+            // The passkey ceremonies are served by the test front (the RP ID "localhost" is the configured one).
+            ["CK-AppIdentity:AuthCenter:Passkey:Origins:0"] = FrontUrl
         } ), TestHelper.SolutionFolder.Combine( "AuthCenter/AuthCenter.Host" ) );
         await _authCenter.StartAsync();
         _front = FrontHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
@@ -183,6 +186,28 @@ public class SampleTests
         r[1].GetProperty( "info" ).GetProperty( "unsafeActor" ).GetProperty( "level" ).GetInt32().ShouldBe( 1, "Unsafe." );
         b.Token.ShouldNotBeNull();
         Text( await b.HelloAsync() ).ShouldNotStartWith( "Hello" );
+    }
+
+    [Test]
+    public async Task the_passkey_ceremonies_are_served_through_the_front_Async()
+    {
+        using var b = new Browser();
+        Text( await b.SendAsync( "/.cris", """["CK.IO.Authentication.IGetLoginSchemesQCommand",{}]""" ) ).ShouldContain( "Passkey" );
+
+        // The login start: usernameless (no allowed credentials), user verification required, bound to "localhost".
+        var start = await b.SessionAsync( """["CK.IO.Authentication.Passkey.IStartPasskeyLoginCommand",{}]""" );
+        start.ValueKind.ShouldBe( JsonValueKind.String, Text( start ) );
+        using( var options = JsonDocument.Parse( start.GetString()! ) )
+        {
+            options.RootElement.GetProperty( "rpId" ).GetString().ShouldBe( "localhost" );
+            options.RootElement.GetProperty( "userVerification" ).GetString().ShouldBe( "required" );
+            options.RootElement.GetProperty( "challenge" ).GetString().ShouldNotBeNullOrEmpty();
+            if( options.RootElement.TryGetProperty( "allowCredentials", out var allowed ) ) allowed.GetArrayLength().ShouldBe( 0 );
+        }
+
+        // Adding a passkey requires a recent login (Critical): the anonymous is refused.
+        var registration = await b.SessionAsync( $$"""["CK.IO.Authentication.Passkey.IStartPasskeyRegistrationCommand",{"actorId":0}]""" );
+        registration.ValueKind.ShouldNotBe( JsonValueKind.String, "The anonymous cannot register a passkey." );
     }
 
     [Test]
