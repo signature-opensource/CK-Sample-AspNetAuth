@@ -17,14 +17,19 @@ namespace CK.Sample.Front;
 ///   bar shows the UserInfoBox (Res/private-page.t);</item>
 ///   <item>the public page (CK.Ng.PublicPage), where the anonymous and the weak actors land.</item>
 /// </list>
-/// The sample's own code is its <see cref="IHelloCommand"/>, the <see cref="HomeComponent"/> (the private home) and the
-/// <see cref="PublicHomeComponent"/> (the public home).
+/// The sample's own code is its <see cref="IHelloCommand"/>, the <see cref="HomeComponent"/> (the private home), the
+/// <see cref="PublicHomeComponent"/> (the public home) and the <see cref="ArchitectureComponent"/> (where the commands
+/// execute, with which identity, the topology and a console of refused calls).
 /// </summary>
 [TypeScriptPackage]
 [Requires<NgCrisAuthenticationBasicPackage, NgCrisAuthenticationWeakPackage>]
 [Requires<LayoutComponent, PublicPageComponent>]
 [RegisterTypeScriptType( typeof( IHelloCommand ) )]
-// The user's self-service on its login methods: executed by the AuthCenter, posted to "/.cris/auth-center".
+// The architecture page: a party command (handled by every party), the deferred question, the topology.
+[RegisterTypeScriptType( typeof( IWhoAmIQCommand ) )]
+[RegisterTypeScriptType( typeof( IAskLaterQCommand ) )]
+[RegisterTypeScriptType( typeof( IGetTopologyQCommand ) )]
+// The user's self-service on its login methods: handled by the AuthCenter (posted to "/.cris" and dispatched).
 [RegisterTypeScriptType( typeof( IGetPasskeysQCommand ) )]
 [RegisterTypeScriptType( typeof( IRenamePasskeyCommand ) )]
 [RegisterTypeScriptType( typeof( IDeletePasskeyCommand ) )]

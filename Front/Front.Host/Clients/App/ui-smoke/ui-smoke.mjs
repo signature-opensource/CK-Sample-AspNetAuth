@@ -185,6 +185,25 @@ try {
     await waitFor( 'ck-backoffice-layout sample-home' );
   } );
 
+  await run( '10-architecture', async () => {
+    await navigate( '/architecture' );
+    // The buttons of the first card: one per party (the front, then its AuthCenter), once the topology is read.
+    const atAuthCenter = 'sample-architecture nz-card:first-of-type button:nth-of-type(2)';
+    await waitFor( atAuthCenter );
+    check( ( await text( 'sample-architecture' ) ).includes( 'Connected' ), 'The topology shows the connected AuthCenter.' );
+    await click( atAuthCenter );
+    await waitFor( 'sample-architecture nz-alert' );
+    const answer = await text( 'sample-architecture nz-alert' );
+    check( answer.includes( 'AuthCenter' ) && answer.includes( 'Albert' ) && answer.includes( 'Critical' ),
+           `Albert's proof is verified by the AuthCenter: Critical there (${answer}).` );
+    // The console: the first predefined request is refused.
+    await click( '.sample-architecture-requests a' );
+    await click( 'sample-architecture button.ant-btn-primary' );
+    await waitFor( '.sample-architecture-response' );
+    const response = await text( '.sample-architecture-response' );
+    check( response.includes( 'not accepted from HTTP' ), `The [Internal] operation is refused (${response}).` );
+  } );
+
   const signOut = async () => {
     await click( 'ck-user-info-box nz-avatar' );
     await click( '.ck-user-info-box-menu-item.logout' );
@@ -193,9 +212,9 @@ try {
     await waitFor( 'sample-public-home nz-result' );
   };
 
-  await run( '10-sign-out', signOut );
+  await run( '11-sign-out', signOut );
 
-  await run( '11-passkey-login', async () => {
+  await run( '12-passkey-login', async () => {
     await navigate( '/auth' );
     await click( 'ck-passkey-login-button button' );
     await waitFor( 'ck-backoffice-layout sample-home' );
@@ -204,7 +223,7 @@ try {
     check( card.includes( 'Albert' ) && card.includes( 'Critical' ), `Albert is logged in with his passkey at the Critical level (${card}).` );
   } );
 
-  await run( '12-passkey-sign-out', signOut );
+  await run( '13-passkey-sign-out', signOut );
   console.log( 'UI smoke test passed.' );
 }
 catch( e ) {

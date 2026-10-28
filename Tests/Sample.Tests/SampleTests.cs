@@ -1,5 +1,6 @@
 using CK.AppIdentity;
 using CK.Core;
+using CK.Cris;
 using CK.Sample.AuthCenter;
 using CK.Sample.Front;
 using Microsoft.AspNetCore.Builder;
@@ -156,46 +157,44 @@ public class SampleTests
     [Test]
     public async Task the_user_manages_its_login_methods_at_the_AuthCenter_through_the_front_Async()
     {
-        // The front has no database: these ICommandAuthCenter commands are posted to "/.cris/auth-center" and relayed with
-        // the browser's proof (its token and its binding) to the AuthCenter, that establishes the identity again.
+        // The front has no database: these commands are posted to "/.cris" and dispatched to the AuthCenter (that handles
+        // them) with the browser's proof (its token and its binding): the AuthCenter verifies it.
         using var anonymous = new Browser();
-        Value( await anonymous.SendAsync( "/.cris/auth-center", """["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":1}]""" ) ).ValueKind.ShouldNotBe( JsonValueKind.Array, "Refused: not a list." );
+        Value( await anonymous.SendAsync( "/.cris", """["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":1}]""" ) ).ValueKind.ShouldNotBe( JsonValueKind.Array, "Refused: not a list." );
 
         using var b = new Browser();
         await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
         var albertId = b.ActorId;
-        // A passkey of Albert, stored directly in the AuthCenter.
+        // A passkey of Albert, stored directly in the AuthCenter (a unique name: the database outlives the test runs).
+        var keyName = $"Sample key {Guid.NewGuid():N}";
         var store = _authCenter.Services.GetRequiredService<IPasskeyStore>();
         var handle = await store.GetOrCreateUserHandleAsync( TestHelper.Monitor, albertId );
-        (await store.CreateAsync( TestHelper.Monitor, new PasskeyCredential( RandomNumberGenerator.GetBytes( 32 ), albertId, handle, RandomNumberGenerator.GetBytes( 77 ), 0, true, false, Guid.Empty, [], "Sample key" ) )).ShouldBeTrue();
+        (await store.CreateAsync( TestHelper.Monitor, new PasskeyCredential( RandomNumberGenerator.GetBytes( 32 ), albertId, handle, RandomNumberGenerator.GetBytes( 77 ), 0, true, false, Guid.Empty, [], keyName ) )).ShouldBeTrue();
 
-        // The ICommandAuthCenter commands are refused on "/.cris" (their route is declared).
-        Text( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) ).ShouldContain( "/.cris/auth-center" );
-
-        var listed = Passkeys( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) );
-        var passkeyId = listed.Single( p => p.Name == "Sample key" ).Id;
-        IsSuccess( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPasskey.IRenamePasskeyCommand",{"actorId":{{albertId}},"passkeyId":{{passkeyId}},"name":"Renamed key"}]""" ) ).ShouldBeTrue();
-        Passkeys( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) )
+        var listed = Passkeys( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) );
+        var passkeyId = listed.Single( p => p.Name == keyName ).Id;
+        IsSuccess( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPasskey.IRenamePasskeyCommand",{"actorId":{{albertId}},"passkeyId":{{passkeyId}},"name":"Renamed key"}]""" ) ).ShouldBeTrue();
+        Passkeys( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) )
             .ShouldContain( (passkeyId, "Renamed key") );
         // Albert has the Basic scheme: this passkey is not his last login method. The delete requires the Critical level of the login.
-        IsSuccess( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPasskey.IDeletePasskeyCommand",{"actorId":{{albertId}},"actualActorId":{{albertId}},"passkeyId":{{passkeyId}}}]""" ) ).ShouldBeTrue();
-        Passkeys( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) )
+        IsSuccess( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPasskey.IDeletePasskeyCommand",{"actorId":{{albertId}},"actualActorId":{{albertId}},"passkeyId":{{passkeyId}}}]""" ) ).ShouldBeTrue();
+        Passkeys( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) )
             .ShouldNotContain( p => p.Id == passkeyId );
 
         // Albert changes his password, then logs in with it (and restores it).
-        IsSuccess( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPassword.ISetPasswordCommand",{"actorId":{{albertId}},"userId":{{albertId}},"password":"new-pass"}]""" ) ).ShouldBeTrue();
+        IsSuccess( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPassword.ISetPasswordCommand",{"actorId":{{albertId}},"userId":{{albertId}},"password":"new-pass"}]""" ) ).ShouldBeTrue();
         using( var again = new Browser() )
         {
             var login = await again.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"new-pass","rememberMe":false}]""" );
             again.Token.ShouldNotBeNull( Text( login ) );
         }
-        IsSuccess( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPassword.ISetPasswordCommand",{"actorId":{{albertId}},"userId":{{albertId}},"password":"pass"}]""" ) ).ShouldBeTrue();
+        IsSuccess( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPassword.ISetPasswordCommand",{"actorId":{{albertId}},"userId":{{albertId}},"password":"pass"}]""" ) ).ShouldBeTrue();
 
-        // After the logout, the same token is refused (the relay's session check is tested in CK-AppIdentity-Transport).
+        // After the logout, the same token is refused (the binding cookie is gone: the request is anonymous at the front).
         var token = b.Token;
         await b.SendAsync( "/.cris/auth", """["CK.IO.Authentication.ILogoutSessionCommand",{}]""" );
         b.Token = token;
-        Value( await b.SendAsync( "/.cris/auth-center", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) ).ValueKind.ShouldNotBe( JsonValueKind.Array, "Refused: not a list." );
+        Value( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) ).ValueKind.ShouldNotBe( JsonValueKind.Array, "Refused: not a list." );
     }
 
     // A string result is typed: ["string","..."] (an error is a CrisResultError object).
@@ -257,7 +256,7 @@ public class SampleTests
     public async Task the_passkey_ceremonies_are_served_through_the_front_Async()
     {
         using var b = new Browser();
-        Text( await b.SendAsync( "/.cris/auth-center", """["CK.IO.Authentication.IGetLoginSchemesQCommand",{}]""" ) ).ShouldContain( "Passkey" );
+        Text( await b.SendAsync( "/.cris", """["CK.IO.Authentication.IGetLoginSchemesQCommand",{}]""" ) ).ShouldContain( "Passkey" );
 
         // The login start: usernameless (no allowed credentials), user verification required, bound to "localhost".
         var start = await b.SessionAsync( """["CK.IO.Authentication.Passkey.IStartPasskeyLoginCommand",{}]""" );
@@ -280,7 +279,7 @@ public class SampleTests
     {
         using var b = new Browser();
         // The schemes come from the AuthCenter.
-        Text( await b.SendAsync( "/.cris/auth-center", """["CK.IO.Authentication.IGetLoginSchemesQCommand",{}]""" ) ).ShouldContain( "Oidc.Test" );
+        Text( await b.SendAsync( "/.cris", """["CK.IO.Authentication.IGetLoginSchemesQCommand",{}]""" ) ).ShouldContain( "Oidc.Test" );
 
         // Start: the front relays it, the AuthCenter returns the provider's URL; the front sets the remote login cookie.
         var start = await b.SessionAsync( """["CK.IO.Authentication.IStartLoginCommand",{"scheme":"Oidc.Test","inlineMode":false,"rememberMe":false}]""" );
@@ -337,8 +336,9 @@ public class SampleTests
     /// <summary>
     /// The UI smoke test (Front.Host/Clients/App/ui-smoke/ui-smoke.mjs) on the built Angular application, in a headless
     /// browser: the public page, the login page (with the "Test" OpenID Connect button), a wrong password, the Weak login
-    /// (its hello is refused), the Basic login (the private page in the back-office layout), the user info box, a reload
-    /// and the sign out. Ignored when the application is not built (<c>yarn build</c>), or without Node or a browser.
+    /// (its hello is refused), the Basic login (the private page in the back-office layout), the user info box, a reload,
+    /// the Architecture page (a command dispatched to the AuthCenter, a refused call of its console), the sign out and
+    /// the passkey login. Ignored when the application is not built (<c>yarn build</c>), or without Node or a browser.
     /// </summary>
     [Test]
     [CancelAfter( 180_000 )]
@@ -380,5 +380,116 @@ public class SampleTests
             if( node.ExitCode == 2 ) Assert.Ignore( "No browser for the UI smoke test (set CK_BROWSER)." );
             node.ExitCode.ShouldBe( 0, text );
         }
+    }
+
+    // The names of the front and of its AuthCenter, from the topology.
+    static async Task<(string Front, int FrontId, string AuthCenter, JsonElement Topology)> TopologyAsync( Browser b )
+    {
+        var t = Value( await b.SendAsync( "/.cris", """["CK.Sample.Front.IGetTopologyQCommand",{"actorId":""" + b.ActorId + "}]" ) );
+        var center = t.GetProperty( "remotes" ).EnumerateArray().Select( Value ).Single( r => r.GetProperty( "isAuthCenter" ).GetBoolean() );
+        return (t.GetProperty( "localPartyFullName" ).GetString()!, t.GetProperty( "localPartyActorId" ).GetInt32(), center.GetProperty( "fullName" ).GetString()!, t);
+    }
+
+    static async Task<JsonElement> WhoAmIAsync( Browser b, string target )
+        => Value( await b.SendAsync( "/.cris", $$"""["CK.Sample.IWhoAmIQCommand",{"actorId":{{b.ActorId}},"targetPartyFullName":"{{target}}"}]""" ) );
+
+    static async Task<JsonElement> AskLaterAsync( Browser b, string target )
+        => Value( await b.SendAsync( "/.cris", $$"""["CK.Sample.Front.IAskLaterQCommand",{"actorId":{{b.ActorId}},"targetPartyFullName":"{{target}}"}]""" ) );
+
+    [Test]
+    public async Task the_same_command_executes_here_and_there_with_the_proved_identity_Async()
+    {
+        using var b = new Browser();
+        await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+        var (front, frontId, authCenter, _) = await TopologyAsync( b );
+        frontId.ShouldBeGreaterThan( 0, "The front got its PartyActorId from its AuthCenter." );
+
+        // Here: a direct request, the front is its own caller party.
+        var here = await WhoAmIAsync( b, front );
+        here.GetProperty( "partyFullName" ).GetString().ShouldBe( front );
+        here.GetProperty( "actorName" ).GetString().ShouldBe( "Albert" );
+        here.GetProperty( "level" ).GetString().ShouldBe( "Critical" );
+        here.GetProperty( "callerPartyId" ).GetInt32().ShouldBe( frontId );
+
+        // There: dispatched to the AuthCenter with the user's proof: the level is the proved one, the front is the caller.
+        var there = await WhoAmIAsync( b, authCenter );
+        there.GetProperty( "partyFullName" ).GetString().ShouldBe( authCenter );
+        there.GetProperty( "actorName" ).GetString().ShouldBe( "Albert" );
+        there.GetProperty( "level" ).GetString().ShouldBe( "Critical" );
+        there.GetProperty( "callerPartyId" ).GetInt32().ShouldBe( frontId );
+    }
+
+    [Test]
+    public async Task asked_later_the_front_only_vouches_and_the_AuthCenter_caps_the_level_Async()
+    {
+        using var b = new Browser();
+        await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+        var (front, frontId, authCenter, _) = await TopologyAsync( b );
+
+        // In the front's background, at the front: the same party, the identity is kept.
+        (await AskLaterAsync( b, front )).GetProperty( "level" ).GetString().ShouldBe( "Critical" );
+        // In the front's background, at the AuthCenter: no proof, the front vouches: Normal at most.
+        var later = await AskLaterAsync( b, authCenter );
+        later.GetProperty( "partyFullName" ).GetString().ShouldBe( authCenter );
+        later.GetProperty( "actorName" ).GetString().ShouldBe( "Albert" );
+        later.GetProperty( "level" ).GetString().ShouldBe( "Normal" );
+        later.GetProperty( "callerPartyId" ).GetInt32().ShouldBe( frontId );
+    }
+
+    [Test]
+    public async Task a_Critical_command_deferred_by_the_front_is_refused_by_the_AuthCenter_Async()
+    {
+        using var b = new Browser();
+        await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+        var albertId = b.ActorId;
+        // The front submits a password change for Albert to its background executor: no proof, the AuthCenter refuses.
+        var pocos = _front.Services.GetRequiredService<PocoDirectory>();
+        var command = pocos.Create<CK.IO.User.UserPassword.ISetPasswordCommand>( c =>
+        {
+            c.ActorId = albertId;
+            c.UserId = albertId;
+            c.Password = "deferred";
+        } );
+        var executed = await _front.Services.GetRequiredService<CrisBackgroundExecutorService>()
+                                            .Submit( TestHelper.Monitor, command, null ).ExecutedCommand.WaitAsync( TimeSpan.FromSeconds( 30 ) );
+        executed.Result.ShouldBeAssignableTo<ICrisResultError>()!.Errors.Select( e => e.ResName ).ShouldContain( "Authentication.CallerPartyRefused" );
+        // The password is unchanged.
+        using var again = new Browser();
+        await again.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+        again.Token.ShouldNotBeNull();
+    }
+
+    [Test]
+    public async Task the_topology_shows_the_parties_their_ids_and_the_routes_Async()
+    {
+        using var b = new Browser();
+        await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+        var (_, frontId, _, topology) = await TopologyAsync( b );
+        var center = topology.GetProperty( "remotes" ).EnumerateArray().Select( Value ).Single( r => r.GetProperty( "isAuthCenter" ).GetBoolean() );
+        center.GetProperty( "partyActorId" ).GetInt32().ShouldBeGreaterThan( 0 );
+        center.GetProperty( "partyActorId" ).GetInt32().ShouldNotBe( frontId );
+        center.GetProperty( "connection" ).GetString().ShouldBe( "Connected" );
+        var accepted = center.GetProperty( "acceptedCommands" ).EnumerateArray().Select( c => c.GetString() ).ToList();
+        // The AuthCenter accepts the party command, the self-service, and its internal operations (the front is inside the System).
+        accepted.ShouldContain( "CK.Sample.IWhoAmIQCommand" );
+        accepted.ShouldContain( "CK.IO.User.UserPasskey.IGetPasskeysQCommand" );
+        accepted.ShouldContain( "CK.IO.Authentication.IOpenSessionOperationCommand" );
+    }
+
+    [Test]
+    public async Task the_protected_calls_of_the_console_are_refused_Async()
+    {
+        using var b = new Browser();
+        // An [Internal] operation on "/.cris/net" (all the exchangeable types): refused before its validation.
+        using var m = new HttpRequestMessage( HttpMethod.Post, "/.cris/net" )
+        {
+            Content = new StringContent( """["CK.IO.Authentication.IOpenSessionOperationCommand",{"scheme":"Basic","nextRefreshSecretHash":"x","nextBindingSecretHash":"y"}]""", Encoding.UTF8, "application/json" )
+        };
+        m.Headers.Add( "Origin", FrontUrl );
+        using var http = new HttpClient { BaseAddress = new Uri( FrontUrl ) };
+        using var r = await http.SendAsync( m );
+        (await r.Content.ReadAsStringAsync()).ShouldContain( "is not accepted from HTTP" );
+        // A login on "/.cris" must be sent to "/.cris/auth".
+        Text( await b.SendAsync( "/.cris", """["CK.IO.Authentication.Weak.IWeakLoginCommand",{"weakActorName":"Operator"}]""" ) ).ShouldContain( "/.cris/auth" );
     }
 }

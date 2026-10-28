@@ -1,0 +1,85 @@
+<nz-card nzTitle="Here and there">
+    <p>
+        <b>Who am I?</b> is a party command handled by every party of the sample: it executes where its target is. The
+        browser always posts it to the front's <code>/.cris</code>; the front executes it, or dispatches it to its
+        AuthCenter over the AppIdentity channel, with your proof (your token and its binding secret). The AuthCenter
+        verifies it: it keeps your level, Critical included.
+    </p>
+    @for( p of parties(); track p ) {
+        <button nz-button class="sample-architecture-button" (click)="whoAmI( p )">Who am I at {{ p }}?</button>
+    }
+</nz-card>
+
+<nz-card class="sample-architecture-card" nzTitle="Later">
+    <p>
+        The same question, asked by the front <b>in its background</b> (like a deferred work): there is no user's proof
+        then, the front only <b>vouches</b> for you. The AuthCenter grants its remotes the Normal level at most: a caller
+        party alone never reaches Critical (a password change, a passkey registration, an impersonation need your live proof).
+    </p>
+    @for( p of parties(); track p ) {
+        <button nz-button class="sample-architecture-button" (click)="askLater( p )">Ask {{ p }} later</button>
+    }
+</nz-card>
+
+@if( answers().length ) {
+    <nz-card class="sample-architecture-card" nzTitle="Answers">
+        @for( a of answers(); track $index ) {
+            @if( a.identity; as i ) {
+                <nz-alert class="sample-architecture-answer" nzType="success" [nzMessage]="a.title" [nzDescription]="identity" />
+                <ng-template #identity>
+                    Executed by <b>{{ i.partyFullName }}</b> (#{{ i.partyActorId }}) for <b>{{ i.actorName }}</b>
+                    @if( i.actualActorName ) { (impersonated by {{ i.actualActorName }}) }
+                    at the <nz-tag [nzColor]="i.level === 'Critical' ? 'red' : 'blue'">{{ i.level }}</nz-tag> level.
+                    Caller party: <b>{{ partyName( i.callerPartyId ) }}</b>.
+                </ng-template>
+            } @else {
+                <nz-alert class="sample-architecture-answer" nzType="error" [nzMessage]="a.title" [nzDescription]="a.error ?? ''" />
+            }
+        }
+    </nz-card>
+}
+
+<nz-card class="sample-architecture-card" nzTitle="Topology">
+    @if( topology(); as t ) {
+        <p>
+            This front is <b>{{ t.localPartyFullName }}</b>, PartyActor #{{ t.localPartyActorId }} (given by its AuthCenter
+            when the channel connected: the front has no actors database).
+        </p>
+        @for( r of t.remotes; track r.fullName ) {
+            <p>
+                Remote <b>{{ r.fullName }}</b> (#{{ r.partyActorId }})
+                @if( r.isAuthCenter ) { <nz-tag nzColor="purple">AuthCenter</nz-tag> }
+                <nz-tag [nzColor]="r.connection === 'Connected' ? 'green' : 'orange'">{{ r.connection }}</nz-tag>
+                accepts {{ r.acceptedCommands.length }} commands from this front (its advertisement: the routes of the dispatch).
+            </p>
+            <details>
+                <summary>The commands it accepts</summary>
+                <ul class="sample-architecture-commands">
+                    @for( c of r.acceptedCommands; track c ) { <li><code>{{ c }}</code></li> }
+                </ul>
+            </details>
+        }
+    } @else if( topologyError() ) {
+        <nz-alert nzType="error" [nzMessage]="topologyError()" />
+    }
+    <button nz-button class="sample-architecture-button" (click)="refreshTopology()">Refresh</button>
+</nz-card>
+
+<nz-card class="sample-architecture-card" nzTitle="Refused and protected calls">
+    <p>Raw requests to this front (same origin: your cookies go with them). Click one, edit it if you like, and send it.</p>
+    <ul class="sample-architecture-requests">
+        @for( r of requests; track r.label ) {
+            <li><a (click)="select( r )">{{ r.label }}</a></li>
+        }
+    </ul>
+    @if( selected(); as s ) {
+        <p class="sample-architecture-expected"><i>{{ s.expected }}</i></p>
+    }
+    <input nz-input class="sample-architecture-path" [(ngModel)]="path" placeholder="/.cris" />
+    <textarea nz-input class="sample-architecture-body" rows="4" [(ngModel)]="body"></textarea>
+    <label nz-checkbox [(ngModel)]="withToken">Send my bearer token</label>
+    <button nz-button nzType="primary" class="sample-architecture-button" (click)="send()">Send</button>
+    @if( response() ) {
+        <pre class="sample-architecture-response">{{ response() }}</pre>
+    }
+</nz-card>

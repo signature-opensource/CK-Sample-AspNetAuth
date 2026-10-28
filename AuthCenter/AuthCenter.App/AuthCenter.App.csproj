@@ -7,7 +7,8 @@
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <!-- The Local side of the AuthCenter feature (this application IS the AuthCenter): sessions, tokens, the relay of the fronts. -->
+    <!-- The Local side of the AuthCenter feature (this application IS the AuthCenter): sessions, tokens, the operations of its remotes,
+         their caller party and the verification of the user's proof. -->
     <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Local" Version="3.0.0-0.cris-auth.0.ci.40" />
     <!-- The OpenID Connect scheme family ("Package First": its "AuthCenter:Oidc" section requires it). -->
     <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Oidc" Version="3.0.0-0.cris-auth.0.ci.40" />
@@ -20,5 +21,10 @@
     <PackageReference Include="CK.DB.User.UserOidc" Version="31.0.0-0.cris-auth.0.ci.16" />
     <PackageReference Include="CK.DB.User.UserPasskey" Version="0.0.0-0.cris-auth.0.ci.7" />
     <PackageReference Include="CK.DB.Actor.WeakActor" Version="3.0.0-0.cris-auth.0.ci.9" />
+    <!-- The PartyActor registrar: every party (this AuthCenter, its remotes) gets its PartyActorId (CK.tPartyActor). -->
+    <PackageReference Include="CK.DB.AppIdentity" Version="3.0.0-0.cris-auth.0.ci.40" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Sample.Shared\Sample.Shared.csproj" />
   </ItemGroup>
 </Project>

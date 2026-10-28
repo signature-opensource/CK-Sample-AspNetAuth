@@ -10,7 +10,7 @@ end
 create <ts> transformer
 begin
     ensure import { Layout, NavigationSection } from '@local/ck-gen';
-    ensure import { faHome } from '@fortawesome/free-solid-svg-icons';
+    ensure import { faHome, faSitemap } from '@fortawesome/free-solid-svg-icons';
 
     in after "@Component"
         in first {^braces}
@@ -20,7 +20,8 @@ begin
 
     inject """
            protected navigation: Array<NavigationSection> = [
-               { sectionHeadline: '', bottom: false, items: [{ label: 'Home', routerLink: '/', icon: faHome }] }
+               { sectionHeadline: '', bottom: false, items: [{ label: 'Home', routerLink: '/', icon: faHome },
+                                                             { label: 'Architecture', routerLink: '/architecture', icon: faSitemap }] }
            ];
            """ into <PostLocalVariables>;
 end
