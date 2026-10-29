@@ -9,21 +9,21 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!-- The Remote side of the AuthCenter feature (this application is a remote of the AuthCenter): the token reader, the user's proof
          and the encryption of the sensitive fields for the AuthCenter, the PartyActor identifiers. -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Remote" Version="3.0.0-0.cris-auth.0.ci.40" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Remote" Version="3.0.0-0.cris-auth.0.ci.42" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.7" />
     <PackageReference Include="CK.AspNet" Version="23.0.2-0.cris-auth.0.ci.4" />
     <!-- The HTTP side of the authentication and the Angular client (the Basic and Weak login forms and the passkey buttons, with
          their endpoint handlers: this application executes the session commands, the AuthCenter their operations). -->
-    <PackageReference Include="CK.Cris.AspNet.Authentication" Version="2.0.2-0.cris-auth.0.ci.23" />
-    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="2.0.2-0.cris-auth.0.ci.23" />
-    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Passkey" Version="2.0.2-0.cris-auth.0.ci.23" />
-    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Weak" Version="2.0.2-0.cris-auth.0.ci.23" />
+    <PackageReference Include="CK.Cris.AspNet.Authentication" Version="2.0.2-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="2.0.2-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Passkey" Version="2.0.2-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Weak" Version="2.0.2-0.cris-auth.0.ci.26" />
     <!-- The self-service commands of the login methods: handled by the AuthCenter (dispatched to it, with the user's proof). -->
-    <PackageReference Include="CK.IO.User.UserPasskey" Version="0.0.0-0.cris-auth.0.ci.7" />
-    <PackageReference Include="CK.IO.User.UserPassword" Version="31.0.0-0.cris-auth.0.ci.11" />
+    <PackageReference Include="CK.IO.User.UserPasskey" Version="0.0.0-0.cris-auth.0.ci.8" />
+    <PackageReference Include="CK.IO.User.UserPassword" Version="31.0.0-0.cris-auth.0.ci.13" />
     <!-- The application shell (side bar, top bar with the UserInfoBox) and the public page (where a weak actor lands). -->
-    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.cris-auth.0.ci.9" />
-    <PackageReference Include="CK.Ng.PublicPage" Version="2.0.2-0.cris-auth.0.ci.6" />
+    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.cris-auth.0.ci.10" />
+    <PackageReference Include="CK.Ng.PublicPage" Version="2.0.2-0.cris-auth.0.ci.8" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Sample.Shared\Sample.Shared.csproj" />
