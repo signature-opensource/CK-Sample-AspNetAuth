@@ -59,20 +59,20 @@ public class SampleTests
         _authCenter = await AuthCenterHost.BuildAsync( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["Urls"] = "http://127.0.0.1:5311",
-            ["CK-AppIdentity:ListeningAddress:0"] = AuthCenterAddress,
-            ["CK-AppIdentity:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
-            ["CK-AppIdentity:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
-            ["CK-AppIdentity:AuthCenter:Oidc:Test:ClientSecret"] = FakeIdentityProvider.ClientSecret,
-            ["CK-AppIdentity:AuthCenter:Oidc:Test:CallbackUrls:0"] = Callback,
+            ["CK-AppIdentity:Defaults:ListeningAddress:0"] = AuthCenterAddress,
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientSecret"] = FakeIdentityProvider.ClientSecret,
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:CallbackUrls:0"] = Callback,
             // An unknown identity of the "Test" scheme creates its user (SampleAccountCreation).
-            ["CK-AppIdentity:AuthCenter:Oidc:Test:AllowAccountCreation"] = "true",
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:AllowAccountCreation"] = "true",
             // Albert is bound to the "albert-sub" identity of the "Test" scheme.
             ["Demo:OidcScheme"] = "Test",
             ["Demo:OidcSub"] = "albert-sub",
             // The passkey ceremonies are served by the test front (the RP ID "localhost" is the configured one).
-            ["CK-AppIdentity:AuthCenter:Passkey:Origins:0"] = FrontUrl,
+            ["CK-AppIdentity:Local:AuthCenter:Passkey:Origins:0"] = FrontUrl,
             // A short Critical level for the Basic logins: the UI smoke test sees its end (--critical-wait).
-            ["CK-AppIdentity:AuthCenter:CriticalLifetimes:Basic"] = "00:00:15"
+            ["CK-AppIdentity:Local:AuthCenter:CriticalLifetimes:Basic"] = "00:00:15"
         } ), TestHelper.SolutionFolder.Combine( "AuthCenter/AuthCenter.Host" ) );
         await _authCenter.StartAsync();
         _front = FrontHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>

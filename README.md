@@ -17,6 +17,11 @@ Angular application of the Front) and `*.Host` (the program).
 [Shared/Sample.Shared](Shared/Sample.Shared) is referenced by both `*.App`: its `IWhoAmIQCommand` is a party command
 handled by every party (see [the Architecture page](#the-architecture-page)).
 
+The role of each host is its package (CK.AppIdentity.Cris.AuthCenter.Local or .Remote) and both allow the
+"AuthCenter" feature in their "CK-AppIdentity" configuration: the AuthCenter in its `Local` section (it is its own
+AuthCenter, its settings are `Local:AuthCenter`) and on the Front (one of its remotes); the Front in its `Local` section
+and on the `$AuthCenter` remote (its AuthCenter).
+
 The AuthCenter references CK.DB.AppIdentity, the PartyActor registrar: every party (the AuthCenter and its remotes) gets
 its PartyActorId, that identifies it as the caller of the commands it sends.
 
@@ -31,8 +36,8 @@ its PartyActorId, that identifies it as the caller of the commands it sends.
 
 The demo data is created at the start of the AuthCenter when missing (`DemoData`).
 
-The Critical level lasts 5 minutes after the authentication (`AuthCenter:CriticalLifetime`, or per scheme with
-`AuthCenter:CriticalLifetimes:<scheme>`; `00:00:00` for a scheme that must never elevate). When it ends, the passkey
+The Critical level lasts 5 minutes after the authentication (`Local:AuthCenter:CriticalLifetime` of the AuthCenter's
+"CK-AppIdentity" configuration, or per scheme with `Local:AuthCenter:CriticalLifetimes:<scheme>`; `00:00:00` for a scheme that must never elevate). When it ends, the passkey
 registration button of the private home offers to log in again: the login page (`/auth?critical`) proposes only the
 schemes of the user that can elevate it, and a remote provider must authenticate the user again (`prompt=login`).
 
@@ -88,7 +93,7 @@ pinned explicitly.
 ### OpenID Connect
 
 OpenID Connect is a package of its own: the AuthCenter references CK.AppIdentity.Cris.AuthCenter.Oidc (without it, an
-"AuthCenter:Oidc" section is a configuration error). The default configuration (`AuthCenter/AuthCenter.Host/appsettings.json`) has the scheme `Oidc.Duende`: the public demo
+"Local:AuthCenter:Oidc" section is a configuration error). The default configuration (`AuthCenter/AuthCenter.Host/appsettings.json`) has the scheme `Oidc.Duende`: the public demo
 server of Duende IdentityServer (`https://demo.duendesoftware.com`) with its public test client
 (`interactive.confidential` / `secret`, authorization code with PKCE). This secret is published by Duende for testing: it
 protects nothing. The scheme allows account creation (`AllowAccountCreation`) and reads the UserInfo endpoint
@@ -106,11 +111,11 @@ A real provider (with a real secret) goes in the user-secrets of AuthCenter.Host
 
 ```json
 {
-  "CK-AppIdentity:AuthCenter:Oidc:Google:Authority": "https://accounts.google.com",
-  "CK-AppIdentity:AuthCenter:Oidc:Google:ClientId": "...",
-  "CK-AppIdentity:AuthCenter:Oidc:Google:ClientSecret": "...",
-  "CK-AppIdentity:AuthCenter:Oidc:Google:Scopes": "openid email",
-  "CK-AppIdentity:AuthCenter:Oidc:Google:CallbackUrls:0": "http://localhost:5300/.auth/oidc/callback",
+  "CK-AppIdentity:Local:AuthCenter:Oidc:Google:Authority": "https://accounts.google.com",
+  "CK-AppIdentity:Local:AuthCenter:Oidc:Google:ClientId": "...",
+  "CK-AppIdentity:Local:AuthCenter:Oidc:Google:ClientSecret": "...",
+  "CK-AppIdentity:Local:AuthCenter:Oidc:Google:Scopes": "openid email",
+  "CK-AppIdentity:Local:AuthCenter:Oidc:Google:CallbackUrls:0": "http://localhost:5300/.auth/oidc/callback",
   "Demo:OidcScheme": "Google",
   "Demo:OidcSub": "<the sub of your Google account>"
 }
