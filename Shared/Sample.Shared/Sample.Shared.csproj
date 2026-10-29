@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- What both hosts share: a party command handled by every party (IWhoAmIQCommand). -->
-    <PackageReference Include="CK.Cris.Authentication" Version="3.0.0-0.cris-auth.0.ci.58" />
+    <PackageReference Include="CK.Cris.Authentication" Version="3.0.0-0.cris-auth.0.ci.64" />
     <PackageReference Include="CK.AppIdentity.Abstractions" Version="3.0.0-0.cris-auth.0.ci.9" />
   </ItemGroup>
 </Project>

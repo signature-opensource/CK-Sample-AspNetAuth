@@ -9,20 +9,20 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!-- The Local side of the AuthCenter feature (this application IS the AuthCenter): sessions, tokens, the operations of its remotes,
          their caller party and the verification of the user's proof. -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Local" Version="3.0.0-0.cris-auth.0.ci.53" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Local" Version="3.0.0-0.cris-auth.0.ci.58" />
     <!-- The OpenID Connect scheme family ("Package First": its "AuthCenter:Oidc" section requires it). -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Oidc" Version="3.0.0-0.cris-auth.0.ci.53" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Oidc" Version="3.0.0-0.cris-auth.0.ci.58" />
     <!-- The passkey (WebAuthn) scheme family: the ceremonies and their verification ("AuthCenter:Passkey" section). -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Passkey" Version="3.0.0-0.cris-auth.0.ci.53" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Passkey" Version="3.0.0-0.cris-auth.0.ci.58" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.9" />
     <PackageReference Include="CK.AspNet" Version="24.0.0-0.cris-auth.0.ci.6" />
     <!-- The login providers: Basic (user name and password), Oidc, Passkey, Weak (passwordless operators, Unsafe level). -->
-    <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth.0.ci.16" />
-    <PackageReference Include="CK.DB.User.UserOidc" Version="31.0.0-0.cris-auth.0.ci.20" />
-    <PackageReference Include="CK.DB.User.UserPasskey" Version="0.0.0-0.cris-auth.0.ci.11" />
-    <PackageReference Include="CK.DB.Actor.WeakActor" Version="3.0.0-0.cris-auth.0.ci.13" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth.0.ci.19" />
+    <PackageReference Include="CK.DB.User.UserOidc" Version="31.0.0-0.cris-auth.0.ci.23" />
+    <PackageReference Include="CK.DB.User.UserPasskey" Version="0.0.0-0.cris-auth.0.ci.12" />
+    <PackageReference Include="CK.DB.Actor.WeakActor" Version="3.0.0-0.cris-auth.0.ci.14" />
     <!-- The PartyActor registrar: every party (this AuthCenter, its remotes) gets its PartyActorId (CK.tPartyActor). -->
-    <PackageReference Include="CK.DB.AppIdentity" Version="3.0.0-0.cris-auth.0.ci.53" />
+    <PackageReference Include="CK.DB.AppIdentity" Version="3.0.0-0.cris-auth.0.ci.58" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Sample.Shared\Sample.Shared.csproj" />
