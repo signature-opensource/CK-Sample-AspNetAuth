@@ -24,12 +24,17 @@ its PartyActorId, that identifies it as the caller of the commands it sends.
 
 | Scheme | Provider | Demo |
 |---|---|---|
-| `Basic` | CK.DB.User.UserPassword | `Albert` / `pass` (the `Demo:AlbertPassword` setting). Critical level. |
-| `Passkey` | CK.DB.User.UserPasskey | Logged in as `Albert` (Critical level), add a passkey from the private home, then use the passkey button of the login page. Critical level. |
+| `Basic` | CK.DB.User.UserPassword | `Albert` / `pass` (the `Demo:AlbertPassword` setting). Critical level (a password is a fresh proof). |
+| `Passkey` | CK.DB.User.UserPasskey | Logged in as `Albert` (Critical level), add a passkey from the private home, then use the passkey button of the login page. Critical level (the user is verified by the authenticator). |
 | `Weak` | CK.DB.Actor.WeakActor | `Operator`: passwordless, at the Unsafe level (the application's commands that require Normal refuse it). |
-| `Oidc.<Suffix>` | CK.DB.User.UserOidc | `Oidc.Duende` out of the box: "Continue with Duende", then `bob` / `bob` at the Duende demo server (its first login creates the user `Bob-Smith`). Other schemes: see below. An unknown identity creates its user only for a scheme with `AllowAccountCreation` (`SampleAccountCreation`): otherwise, only an identity bound to a user can log in. |
+| `Oidc.<Suffix>` | CK.DB.User.UserOidc | `Oidc.Duende` out of the box: "Continue with Duende", then `bob` / `bob` at the Duende demo server (its first login creates the user `Bob-Smith`). Other schemes: see below. An unknown identity creates its user only for a scheme with `AllowAccountCreation` (`SampleAccountCreation`): otherwise, only an identity bound to a user can log in. Critical level only when the provider authenticated the user recently (the `auth_time` of its identity token): a login on an older provider session is Normal. |
 
 The demo data is created at the start of the AuthCenter when missing (`DemoData`).
+
+The Critical level lasts 5 minutes after the authentication (`AuthCenter:CriticalLifetime`, or per scheme with
+`AuthCenter:CriticalLifetimes:<scheme>`; `00:00:00` for a scheme that must never elevate). When it ends, the passkey
+registration button of the private home offers to log in again: the login page (`/auth?critical`) proposes only the
+schemes of the user that can elevate it, and a remote provider must authenticate the user again (`prompt=login`).
 
 ## The Angular application
 
@@ -129,9 +134,10 @@ AuthCenter's builder.
 [Front/Front.Host/Clients/App/ui-smoke/ui-smoke.mjs](Front/Front.Host/Clients/App/ui-smoke/ui-smoke.mjs) drives the
 built Angular application in a headless Edge or Chrome (DevTools protocol, no dependency): the public page, the login
 page, a wrong password, the Weak login (its hello is refused), the Basic login (the private page in the back-office
-layout), the passkey registration, the user info box, a reload, the Architecture page (a command dispatched to the
-AuthCenter, a refused call of its console), the sign out and the passkey login. It takes a screenshot at each step (and
-on failure).
+layout), the passkey registration, the Architecture page (a command dispatched to the AuthCenter, a refused call of its
+console), the user info box, a reload, the end of the Critical level (with `--critical-wait <seconds>`: a new login from
+the passkey registration button), the sign out and the passkey login. It takes a screenshot at each step (and on
+failure).
 
 - `yarn smoke` (in `Front/Front.Host/Clients/App`) runs it against the running hosts (`--url`, default
   `http://localhost:5300`; `--oidc <Suffix>` also checks the button of an OpenID Connect scheme; the browser is found at

@@ -3,10 +3,12 @@
 // actor Operator). The passkeys use a virtual authenticator of the DevTools protocol (WebAuthn domain): Albert adds a
 // passkey after his Basic login, then logs in with it (each run adds a passkey to Albert).
 //
-//   node ui-smoke/ui-smoke.mjs [--url http://localhost:5300] [--out <folder>] [--oidc <SchemeSuffix>] [--browser <exe>]
+//   node ui-smoke/ui-smoke.mjs [--url http://localhost:5300] [--out <folder>] [--oidc <SchemeSuffix>] [--critical-wait <seconds>] [--browser <exe>]
 //
 // --oidc checks that the login page has the button of this OpenID Connect scheme (the flow itself is covered by the
-// HTTP tests). The browser is --browser, else the CK_BROWSER environment variable, else Edge or Chrome at their usual
+// HTTP tests). --critical-wait tests the end of the Critical level of the Basic login: the hosts must have a short
+// "AuthCenter:CriticalLifetimes:Basic", the smoke waits this number of seconds at most, then Albert logs in again from
+// the passkey registration button. The browser is --browser, else the CK_BROWSER environment variable, else Edge or Chrome at their usual
 // places. Exit code: 0 on success, 1 on failure, 2 when no browser is found. A screenshot is taken at each step (and on
 // failure) in --out (default: ui-smoke/screenshots).
 import { spawn } from 'node:child_process';
@@ -174,18 +176,7 @@ try {
     check( await passkeyCount() === 1, 'The authenticator holds the new passkey.' );
   } );
 
-  await run( '8-user-info-box', async () => {
-    await click( 'ck-user-info-box nz-avatar' );
-    await waitFor( '.ck-user-info-box-username' );
-    check( await text( '.ck-user-info-box-username' ) === 'Albert', 'The user info box shows Albert.' );
-  } );
-
-  await run( '9-reload', async () => {
-    await navigate( '/' );
-    await waitFor( 'ck-backoffice-layout sample-home' );
-  } );
-
-  await run( '10-architecture', async () => {
+  await run( '8-architecture', async () => {
     await navigate( '/architecture' );
     // The buttons of the first card: one per party (the front, then its AuthCenter), once the topology is read.
     const atAuthCenter = 'sample-architecture nz-card:first-of-type button:nth-of-type(2)';
@@ -204,6 +195,35 @@ try {
     check( response.includes( 'not accepted from HTTP' ), `The [Internal] operation is refused (${response}).` );
   } );
 
+  await run( '9-user-info-box', async () => {
+    await click( 'ck-user-info-box nz-avatar' );
+    await waitFor( '.ck-user-info-box-username' );
+    check( await text( '.ck-user-info-box-username' ) === 'Albert', 'The user info box shows Albert.' );
+  } );
+
+  await run( '10-reload', async () => {
+    await navigate( '/' );
+    await waitFor( 'ck-backoffice-layout sample-home' );
+  } );
+
+  if( args['critical-wait'] ) {
+    await run( '11-critical-login-again', async () => {
+      // The Critical level of the Basic login ends: the passkey registration offers to log in again.
+      await navigate( '/' );
+      await waitFor( '.ck-passkey-registration-login', Number( args['critical-wait'] ) * 1000 );
+      await click( '.ck-passkey-registration-login' );
+      await waitFor( 'ck-basic-login-form input[formcontrolname=password]' );
+      check( await path() === '/auth', 'The login page is /auth.' );
+      check( ( await text( '.ck-login-welcome' ) ).includes( "Confirm it's you" ), 'The login page asks for a new login.' );
+      check( !await exists( 'ck-weak-login-form' ), 'Only the schemes of Albert that can elevate him are proposed.' );
+      await fill( 'ck-basic-login-form input[formcontrolname=userName]', 'Albert' );
+      await fill( 'ck-basic-login-form input[formcontrolname=password]', 'pass' );
+      await click( 'ck-basic-login-form button.login-form-button' );
+      await waitFor( 'ck-passkey-registration-button button:not([disabled])' );
+      check( await path() === '/', 'Albert is back to the page that asked for the new login.' );
+    } );
+  }
+
   const signOut = async () => {
     await click( 'ck-user-info-box nz-avatar' );
     await click( '.ck-user-info-box-menu-item.logout' );
@@ -212,9 +232,9 @@ try {
     await waitFor( 'sample-public-home nz-result' );
   };
 
-  await run( '11-sign-out', signOut );
+  await run( '12-sign-out', signOut );
 
-  await run( '12-passkey-login', async () => {
+  await run( '13-passkey-login', async () => {
     await navigate( '/auth' );
     await click( 'ck-passkey-login-button button' );
     await waitFor( 'ck-backoffice-layout sample-home' );
@@ -223,7 +243,7 @@ try {
     check( card.includes( 'Albert' ) && card.includes( 'Critical' ), `Albert is logged in with his passkey at the Critical level (${card}).` );
   } );
 
-  await run( '13-passkey-sign-out', signOut );
+  await run( '14-passkey-sign-out', signOut );
   console.log( 'UI smoke test passed.' );
 }
 catch( e ) {

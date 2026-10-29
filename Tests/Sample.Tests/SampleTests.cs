@@ -70,7 +70,9 @@ public class SampleTests
             ["Demo:OidcScheme"] = "Test",
             ["Demo:OidcSub"] = "albert-sub",
             // The passkey ceremonies are served by the test front (the RP ID "localhost" is the configured one).
-            ["CK-AppIdentity:AuthCenter:Passkey:Origins:0"] = FrontUrl
+            ["CK-AppIdentity:AuthCenter:Passkey:Origins:0"] = FrontUrl,
+            // A short Critical level for the Basic logins: the UI smoke test sees its end (--critical-wait).
+            ["CK-AppIdentity:AuthCenter:CriticalLifetimes:Basic"] = "00:00:15"
         } ), TestHelper.SolutionFolder.Combine( "AuthCenter/AuthCenter.Host" ) );
         await _authCenter.StartAsync();
         _front = FrontHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
@@ -337,8 +339,8 @@ public class SampleTests
     /// The UI smoke test (Front.Host/Clients/App/ui-smoke/ui-smoke.mjs) on the built Angular application, in a headless
     /// browser: the public page, the login page (with the "Test" OpenID Connect button), a wrong password, the Weak login
     /// (its hello is refused), the Basic login (the private page in the back-office layout), the user info box, a reload,
-    /// the Architecture page (a command dispatched to the AuthCenter, a refused call of its console), the sign out and
-    /// the passkey login. Ignored when the application is not built (<c>yarn build</c>), or without Node or a browser.
+    /// the Architecture page (a command dispatched to the AuthCenter, a refused call of its console), the end of the
+    /// Critical level (a new login from the passkey registration button), the sign out and the passkey login. Ignored when the application is not built (<c>yarn build</c>), or without Node or a browser.
     /// </summary>
     [Test]
     [CancelAfter( 180_000 )]
@@ -356,7 +358,7 @@ public class SampleTests
             RedirectStandardOutput = true,
             RedirectStandardError = true
         };
-        foreach( var a in new[] { "ui-smoke/ui-smoke.mjs", "--url", FrontUrl, "--oidc", "Test", "--out", screenshots.Path } )
+        foreach( var a in new[] { "ui-smoke/ui-smoke.mjs", "--url", FrontUrl, "--oidc", "Test", "--critical-wait", "30", "--out", screenshots.Path } )
         {
             start.ArgumentList.Add( a );
         }
