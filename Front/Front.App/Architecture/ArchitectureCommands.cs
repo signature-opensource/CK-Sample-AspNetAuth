@@ -96,24 +96,17 @@ public sealed class ArchitectureHandlers : ISingletonAutoService
     /// </summary>
     /// <param name="monitor">The monitor to use.</param>
     /// <param name="command">The command.</param>
-    /// <param name="info">The authentication of the request.</param>
     /// <param name="hub">The ambient services of the request (the deferred work runs with them).</param>
     /// <param name="background">The background executor.</param>
-    /// <param name="pocos">The poco directory.</param>
     /// <returns>The execution identity seen by the target party.</returns>
     [CommandHandler]
     public async Task<IExecutionIdentity> HandleAsync( IActivityMonitor monitor,
                                                        IAskLaterQCommand command,
-                                                       AuthenticationInfo info,
                                                        AmbientServiceHub hub,
-                                                       CrisBackgroundExecutorService background,
-                                                       PocoDirectory pocos )
+                                                       CrisBackgroundExecutorService background )
     {
-        var whoAmI = pocos.Create<IWhoAmIQCommand>( c =>
-        {
-            c.TargetPartyFullName = command.TargetPartyFullName;
-            c.ActorId = info.Actor.ActorId;
-        } );
+        // The validated actor (the ICommandAuthNormal part they share) is copied, the target party is not in a shared part.
+        var whoAmI = command.Create<IWhoAmIQCommand>( c => c.TargetPartyFullName = command.TargetPartyFullName );
         var executed = await background.Submit( monitor, whoAmI, hub.CleanClone() ).ExecutedCommand.ConfigureAwait( false );
         if( executed.Result is ICrisResultError error )
         {
