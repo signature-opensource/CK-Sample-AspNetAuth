@@ -8,7 +8,7 @@
 // --oidc checks that the login page has the button of this OpenID Connect scheme (the flow itself is covered by the
 // HTTP tests). --critical-wait tests the end of the Critical level of the Basic login: the hosts must have a short
 // "AuthCenter:CriticalLifetimes:Basic", the smoke waits this number of seconds at most, then Albert logs in again from
-// the passkey registration button of his profile. The browser is --browser, else the CK_BROWSER environment variable, else Edge or Chrome at their usual
+// the passkey registration button of his profile, in a popup. The browser is --browser, else the CK_BROWSER environment variable, else Edge or Chrome at their usual
 // places. Exit code: 0 on success, 1 on failure, 2 when no browser is found. A screenshot is taken at each step (and on
 // failure) in --out (default: ui-smoke/screenshots).
 import { spawn } from 'node:child_process';
@@ -55,41 +55,54 @@ if( !version ) {
   process.exit( 1 );
 }
 
-// The DevTools protocol on a new page.
-const target = await ( await fetch( `http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' } ) ).json();
-const ws = new WebSocket( target.webSocketDebuggerUrl );
-await new Promise( r => ws.addEventListener( 'open', r ) );
-let id = 0;
-const pending = new Map();
-ws.addEventListener( 'message', e => {
-  const m = JSON.parse( e.data );
-  if( m.id && pending.has( m.id ) ) { pending.get( m.id )( m ); pending.delete( m.id ); }
-} );
-const send = ( method, params = {} ) => new Promise( r => { const i = ++id; pending.set( i, r ); ws.send( JSON.stringify( { id: i, method, params } ) ); } );
-const evaluate = async expr => ( await send( 'Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true } ) ).result?.result?.value;
+// The DevTools protocol on a page of the browser (a popup has its own page).
+const connect = async webSocketDebuggerUrl => {
+  const ws = new WebSocket( webSocketDebuggerUrl );
+  await new Promise( r => ws.addEventListener( 'open', r ) );
+  let id = 0;
+  const pending = new Map();
+  ws.addEventListener( 'message', e => {
+    const m = JSON.parse( e.data );
+    if( m.id && pending.has( m.id ) ) { pending.get( m.id )( m ); pending.delete( m.id ); }
+  } );
+  const send = ( method, params = {} ) => new Promise( r => { const i = ++id; pending.set( i, r ); ws.send( JSON.stringify( { id: i, method, params } ) ); } );
+  // A user gesture: a click can open a popup.
+  const evaluate = async expr => ( await send( 'Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true, userGesture: true } ) ).result?.result?.value;
+  return { send, evaluate, close: () => ws.close() };
+};
 
 class SmokeFailure extends Error { }
+const check = ( condition, message ) => { if( !condition ) throw new SmokeFailure( message ); };
+// The helpers on a page.
+const helpers = evaluate => {
+  const path = () => evaluate( 'location.pathname' );
+  const exists = selector => evaluate( `!!document.querySelector(${JSON.stringify( selector )})` );
+  const text = async selector => ( await evaluate( `document.querySelector(${JSON.stringify( selector )})?.innerText` ) ?? '' ).replace( /\s+/g, ' ' ).trim();
+  const waitFor = async ( selector, ms = 15000 ) => {
+    for( let t = 0; t < ms; t += 100 ) {
+      if( await exists( selector ) ) return;
+      await sleep( 100 );
+    }
+    throw new SmokeFailure( `'${selector}' did not appear (at ${await path()}).` );
+  };
+  // The Angular reactive forms listen to the input event.
+  const fill = ( selector, value ) => evaluate( `(() => { const e = document.querySelector(${JSON.stringify( selector )}); e.value = ${JSON.stringify( value )}; e.dispatchEvent( new Event( 'input', { bubbles: true } ) ); })()` );
+  const click = async selector => {
+    await waitFor( selector );
+    await evaluate( `document.querySelector(${JSON.stringify( selector )}).click()` );
+  };
+  return { path, exists, text, waitFor, fill, click };
+};
+// The pages of the browser whose URL contains a text (a popup).
+const pagesWith = async urlPart => ( await ( await fetch( `http://127.0.0.1:${port}/json/list` ) ).json() ).filter( t => t.type === 'page' && t.url.includes( urlPart ) );
+
+const target = await ( await fetch( `http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' } ) ).json();
+const { send, evaluate } = await connect( target.webSocketDebuggerUrl );
+const { path, exists, text, waitFor, fill, click } = helpers( evaluate );
 let step = 'start';
 const shot = async name => {
   const r = await send( 'Page.captureScreenshot', { format: 'png' } );
   if( r.result ) writeFileSync( join( out, `${name}.png` ), Buffer.from( r.result.data, 'base64' ) );
-};
-const path = () => evaluate( 'location.pathname' );
-const exists = selector => evaluate( `!!document.querySelector(${JSON.stringify( selector )})` );
-const text = async selector => ( await evaluate( `document.querySelector(${JSON.stringify( selector )})?.innerText` ) ?? '' ).replace( /\s+/g, ' ' ).trim();
-const waitFor = async ( selector, ms = 15000 ) => {
-  for( let t = 0; t < ms; t += 100 ) {
-    if( await exists( selector ) ) return;
-    await sleep( 100 );
-  }
-  throw new SmokeFailure( `'${selector}' did not appear (at ${await path()}).` );
-};
-const check = ( condition, message ) => { if( !condition ) throw new SmokeFailure( message ); };
-// The Angular reactive forms listen to the input event.
-const fill = ( selector, value ) => evaluate( `(() => { const e = document.querySelector(${JSON.stringify( selector )}); e.value = ${JSON.stringify( value )}; e.dispatchEvent( new Event( 'input', { bubbles: true } ) ); })()` );
-const click = async selector => {
-  await waitFor( selector );
-  await evaluate( `document.querySelector(${JSON.stringify( selector )}).click()` );
 };
 const navigate = async url => { await send( 'Page.navigate', { url: base + url } ); await sleep( 300 ); };
 const run = async ( name, action ) => {
@@ -250,22 +263,35 @@ try {
 
   if( args['critical-wait'] ) {
     await run( '11-critical-login-again', async () => {
-      // The Critical level of the Basic login ends: the passkey registration offers to log in again.
+      // The Critical level of the Basic login ends: the passkey registration offers to log in again, in a popup.
       await signInMethods();
       await waitFor( '.ck-passkey-registration-login', Number( args['critical-wait'] ) * 1000 );
       await click( '.ck-passkey-registration-login' );
-      await waitFor( 'ck-basic-login-form input[formcontrolname=password]' );
-      check( await path() === '/auth', 'The login page is /auth.' );
-      check( ( await text( '.ck-login-welcome' ) ).includes( "Confirm it's you" ), 'The login page asks for a new login.' );
-      check( !await exists( 'ck-weak-login-form' ), 'Only the schemes of Albert that can elevate him are proposed.' );
-      await fill( 'ck-basic-login-form input[formcontrolname=userName]', 'Albert' );
-      await fill( 'ck-basic-login-form input[formcontrolname=password]', 'pass' );
-      await click( 'ck-basic-login-form button.login-form-button' );
-      await waitFor( 'ck-user-profile-page' );
-      check( await path() === '/profile', 'Albert is back to the page that asked for the new login.' );
-      // (The profile opens on its first tab.)
-      await signInMethods();
+      let found = [];
+      for( let t = 0; t < 15000 && found.length === 0; t += 100 ) {
+        found = await pagesWith( '/auth?critical' );
+        if( found.length === 0 ) await sleep( 100 );
+      }
+      check( found.length === 1, 'The login page is in a popup.' );
+      const popup = await connect( found[0].webSocketDebuggerUrl );
+      try {
+        const p = helpers( popup.evaluate );
+        await p.waitFor( 'ck-basic-login-form input[formcontrolname=password]' );
+        check( ( await p.text( '.ck-login-welcome' ) ).includes( "Confirm it's you" ), 'The login page asks for a new login.' );
+        check( !await p.exists( 'ck-weak-login-form' ), 'Only the schemes of Albert that can elevate him are proposed.' );
+        await p.fill( 'ck-basic-login-form input[formcontrolname=userName]', 'Albert' );
+        await p.fill( 'ck-basic-login-form input[formcontrolname=password]', 'pass' );
+        await p.click( 'ck-basic-login-form button.login-form-button' );
+      }
+      finally {
+        popup.close();
+      }
+      // The profile sees the Critical level (the session is shared) and closes the popup: it has stayed on its tab.
       await waitFor( 'ck-passkey-registration-button button:not([disabled])' );
+      check( await path() === '/profile', 'Albert has stayed on his profile.' );
+      check( ( await text( 'ck-user-profile-page .ant-tabs-tab-active' ) ).includes( 'Sign-in methods' ), 'The profile is still on its "Sign-in methods" tab.' );
+      for( let t = 0; t < 5000 && ( await pagesWith( '/auth?critical' ) ).length > 0; t += 100 ) await sleep( 100 );
+      check( ( await pagesWith( '/auth?critical' ) ).length === 0, 'The popup is closed.' );
     } );
   }
 

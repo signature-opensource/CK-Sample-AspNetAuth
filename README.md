@@ -46,8 +46,9 @@ weak actor Operator, and the workspace "Demo" that Albert administers (the Admin
 
 The Critical level lasts 5 minutes after the authentication (`Local:AuthCenter:CriticalLifetime` of the Backend's
 "CK-AppIdentity" configuration, or per scheme with `Local:AuthCenter:CriticalLifetimes:<scheme>`; `00:00:00` for a scheme that must never elevate). When it ends, the passkey
-registration button of the profile offers to log in again: the login page (`/auth?critical`) proposes only the
-schemes of the user that can elevate it, and a remote provider must authenticate the user again (`prompt=login`).
+registration button of the profile (and every section of the "Sign-in methods" tab) offers to log in again: the login
+page (`/auth?critical`), in a popup (the profile stays on its tab), proposes only the schemes of the user that can elevate
+it, and a remote provider must authenticate the user again (`prompt=login`).
 
 ## The Angular application
 
@@ -167,7 +168,7 @@ page, a wrong password, the Weak login (its hello is refused), the Basic login (
 layout), the "Sign-in methods" tab of the profile (the password, the linked account, the registration of a named passkey
 and its renaming), the Architecture page (a command dispatched to the Backend, a refused call of its console), the
 user info box, a reload, the end of the Critical level (with `--critical-wait <seconds>`: a new login from the passkey
-registration button), the sign out, the passkey login and the deletion of the passkey. It takes a screenshot at each step (and on
+registration button, in a popup), the sign out, the passkey login and the deletion of the passkey. It takes a screenshot at each step (and on
 failure).
 
 - `yarn smoke` (in `Front/Front.Host/Clients/App`) runs it against the running hosts (`--url`, default
