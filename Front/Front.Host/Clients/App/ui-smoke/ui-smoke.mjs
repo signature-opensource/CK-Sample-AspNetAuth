@@ -291,6 +291,8 @@ try {
   await run( '14-passkey-delete', async () => {
     // At the Critical level of the passkey login: the passkey is deleted (Albert keeps his password).
     await signInMethods();
+    // The list is read when the tab opens.
+    await waitForText( 'ck-passkey-list', renamedPasskey );
     check( await clickInItem( 'ck-passkey-list', renamedPasskey, '.ck-passkey-delete' ), 'The renamed passkey is listed.' );
     await click( '.ant-popover button.ant-btn-primary' );
     await waitForText( 'ck-passkey-list', renamedPasskey, false );
