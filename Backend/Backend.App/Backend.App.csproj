@@ -8,38 +8,38 @@
   <ItemGroup>
     <!-- The Local side of the AuthCenter feature (this application IS the Backend): sessions, tokens, the operations of its remotes,
          their caller party and the verification of the user's proof. -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Local" Version="3.0.0-0.cris-auth.0.ci.67" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Local" Version="3.0.0-0.cris-auth.0.ci.69" />
     <!-- The OpenID Connect scheme family ("Package First": its "AuthCenter:Oidc" section requires it). -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Oidc" Version="3.0.0-0.cris-auth.0.ci.67" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Oidc" Version="3.0.0-0.cris-auth.0.ci.69" />
     <!-- The passkey (WebAuthn) scheme family: the ceremonies and their verification ("AuthCenter:Passkey" section). -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Passkey" Version="3.0.0-0.cris-auth.0.ci.67" />
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Passkey" Version="3.0.0-0.cris-auth.0.ci.69" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.12" />
     <!-- The login providers: Basic (user name and password), Oidc, Passkey, Weak (passwordless operators, Unsafe level). -->
-    <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth" />
-    <PackageReference Include="CK.DB.User.UserOidc" Version="31.0.0-0.cris-auth" />
-    <PackageReference Include="CK.DB.User.UserPasskey" Version="0.0.0-0.cris-auth" />
-    <PackageReference Include="CK.DB.Actor.WeakActor" Version="3.0.0-0.cris-auth" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.DB.User.UserOidc" Version="31.0.0-0.cris-auth.0.ci.30" />
+    <PackageReference Include="CK.DB.User.UserPasskey" Version="0.0.0-0.cris-auth.0.ci.19" />
+    <PackageReference Include="CK.DB.Actor.WeakActor" Version="3.0.0-0.cris-auth.0.ci.20" />
     <!-- The PartyActor registrar: every party (this Backend, its remotes) gets its PartyActorId (CK.tPartyActor). -->
-    <PackageReference Include="CK.DB.AppIdentity" Version="3.0.0-0.cris-auth.0.ci.67" />
+    <PackageReference Include="CK.DB.AppIdentity" Version="3.0.0-0.cris-auth.0.ci.69" />
     <!-- The server side of the fronts' features: the commands of the Front's profile page and of the Admin's user
          management are handled here, where the database is (dispatched by the fronts, with the user's proof). -->
-    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.0.ci.34" />
-    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.34" />
-    <PackageReference Include="CK.UserManagement" Version="3.0.0-0.cris-auth" />
-    <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.cris-auth" />
-    <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth" />
-    <PackageReference Include="CK.Cris.Workspace" Version="18.0.0-0.cris-auth" />
+    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.0.ci.35" />
+    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.35" />
+    <PackageReference Include="CK.UserManagement" Version="3.0.0-0.cris-auth.0.ci.15" />
+    <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.0.ci.15" />
+    <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.0.ci.15" />
+    <PackageReference Include="CK.Cris.Workspace" Version="18.0.0-0.cris-auth.0.ci.14" />
     <!-- Their database: the workspaces (and their zones, ACLs), the names, the preferred culture, the e-mails, the
          banishments, the invitations and the temporary passwords. -->
-    <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.cris-auth" />
-    <PackageReference Include="CK.DB.User.NamedUser" Version="31.0.0-0.cris-auth" />
-    <PackageReference Include="CK.DB.User.PreferredCulture" Version="3.0.0-0.cris-auth" />
-    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="31.0.0-0.cris-auth" />
-    <PackageReference Include="CK.DB.User.UserBanned" Version="4.0.0-0.cris-auth" />
-    <PackageReference Include="CK.DB.UserInvitation" Version="3.0.0-0.cris-auth" />
-    <PackageReference Include="CK.DB.User.UserPassword.Reset" Version="31.0.0-0.cris-auth" />
+    <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.cris-auth.0.ci.14" />
+    <PackageReference Include="CK.DB.User.NamedUser" Version="31.0.0-0.cris-auth.0.ci.20" />
+    <PackageReference Include="CK.DB.User.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.20" />
+    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="31.0.0-0.cris-auth.0.ci.20" />
+    <PackageReference Include="CK.DB.User.UserBanned" Version="4.0.0-0.cris-auth.0.ci.16" />
+    <PackageReference Include="CK.DB.UserInvitation" Version="3.0.0-0.cris-auth.0.ci.14" />
+    <PackageReference Include="CK.DB.User.UserPassword.Reset" Version="31.0.0-0.cris-auth.0.ci.26" />
     <!-- The application's queries (User/UserQueries, WorkspaceUsers/WorkspaceUsersQueries) and the batch's transaction. -->
-    <PackageReference Include="CK.SqlServer.Dapper" Version="18.0.0-0.cris-auth" />
+    <PackageReference Include="CK.SqlServer.Dapper" Version="18.0.0-0.cris-auth.0.ci.11" />
     <PackageReference Include="CK.SqlServer.Transaction" Version="15.0.0-0.cris-auth" />
   </ItemGroup>
   <ItemGroup>
