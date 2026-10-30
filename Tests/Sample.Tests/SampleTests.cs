@@ -514,8 +514,11 @@ public class SampleTests
             c.UserId = albertId;
             c.Password = "deferred";
         } );
+        // In "#Dev", the front validates the command again before executing it (its background has no user: the actor
+        // mismatches). This is a development check: it is skipped, the refusal under test is the Backend's.
         var executed = await _front.Services.GetRequiredService<CrisBackgroundExecutorService>()
-                                            .Submit( TestHelper.Monitor, command, null ).ExecutedCommand.WaitAsync( TimeSpan.FromSeconds( 30 ) );
+                                            .Submit( TestHelper.Monitor, command, null, incomingValidationCheck: false )
+                                            .ExecutedCommand.WaitAsync( TimeSpan.FromSeconds( 30 ) );
         executed.Result.ShouldBeAssignableTo<ICrisResultError>()!.Errors.Select( e => e.ResName ).ShouldContain( "Authentication.CallerPartyRefused" );
         // The password is unchanged.
         using var again = new Browser();
