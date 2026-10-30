@@ -4,12 +4,12 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { AuthLevel, CrisError, HttpCrisEndpoint } from '@local/ck-gen';
 import { NgAuthService } from '@local/ck-gen/CK/Ng/Cris/AspNet/Authentication/NgAuthService';
-import { PasskeyRegistrationButton } from '@local/ck-gen/CK/Ng/Cris/AspNet/Authentication/Passkey/passkey-registration-button/passkey-registration-button';
+import { RouterLink } from '@angular/router';
 import { HelloCommand } from '@local/ck-gen/CK/Sample/Front/HelloCommand';
 
 @Component( {
   selector: 'sample-home',
-  imports: [NzAlertModule, NzButtonModule, NzCardModule, PasskeyRegistrationButton],
+  imports: [NzAlertModule, NzButtonModule, NzCardModule, RouterLink],
   templateUrl: './home.html'
 } )
 export class Home {

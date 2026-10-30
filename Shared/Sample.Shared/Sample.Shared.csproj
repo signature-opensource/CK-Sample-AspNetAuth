@@ -5,8 +5,17 @@
     <RootNamespace>CK.Sample</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <!-- What both hosts share: a party command handled by every party (IWhoAmIQCommand). -->
-    <PackageReference Include="CK.Cris.Authentication" Version="3.0.0-0.cris-auth.0.ci.64" />
+    <!-- What the hosts share: a party command handled by every party (IWhoAmIQCommand). -->
+    <PackageReference Include="CK.Cris.Authentication" Version="3.0.0-0.cris-auth.0.ci.68" />
     <PackageReference Include="CK.AppIdentity.Abstractions" Version="3.0.0-0.cris-auth.0.ci.9" />
+    <!-- The application's Poco leaves (IUserProfile, ICombinedWorkspaceUser): the AuthCenter materializes them, the
+         fronts read them. Every party knows the same Poco, with the same properties. -->
+    <PackageReference Include="CK.IO.UserProfile" Version="3.0.0-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.IO.UserProfile.Workspace" Version="18.0.0-0.cris-auth.0.ci.9" />
+    <PackageReference Include="CK.IO.User.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.15" />
+    <PackageReference Include="CK.IO.User.UserPassword.Reset" Version="31.0.0-0.cris-auth.0.ci.21" />
+    <PackageReference Include="CK.IO.User.UserBanned" Version="4.0.0-0.cris-auth.0.ci.11" />
+    <PackageReference Include="CK.IO.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.0.ci.10" />
+    <PackageReference Include="CK.IO.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.0.ci.10" />
   </ItemGroup>
 </Project>

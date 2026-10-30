@@ -12,8 +12,11 @@
     }
 </nz-card>
 @if( !isUnsafe() ) {
-    <nz-card class="sample-home-passkeys" nzTitle="Passkeys">
-        <p>Add a passkey to this account, then log in with it from the login page (no password).</p>
-        <ck-passkey-registration-button />
+    <nz-card class="sample-home-passkeys" nzTitle="Sign-in methods">
+        <p>
+            Your password, your passkeys and your linked accounts are managed in your
+            <a class="sample-home-profile" routerLink="/profile">profile</a> ("Sign-in methods" tab): add a passkey, then
+            log in with it from the login page (no password).
+        </p>
     </nz-card>
 }

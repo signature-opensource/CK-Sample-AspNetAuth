@@ -1,6 +1,8 @@
 using CK.Core;
 using CK.DB.Actor;
 using CK.DB.Actor.WeakActor;
+using CK.DB.Acl;
+using CK.DB.Workspace;
 using CK.DB.User.UserOidc;
 using CK.DB.User.UserPassword;
 using CK.SqlServer;
@@ -15,7 +17,8 @@ namespace CK.Sample.AuthCenter;
 /// <summary>
 /// The demo data of the sample, created when missing (configuration section "Demo"):
 /// <list type="bullet">
-///   <item>the user "Albert" with the password "Demo:AlbertPassword" (Basic login);</item>
+///   <item>the user "Albert" with the password "Demo:AlbertPassword" (Basic login), administrator of the workspace
+///   "Demo" (the Admin front's user management);</item>
 ///   <item>the enabled weak actor "Operator" (Weak login, Unsafe level);</item>
 ///   <item>when "Demo:OidcScheme" (the scheme suffix, like "Google") and "Demo:OidcSub" are set, Albert is bound to this
 ///   OpenID Connect identity (there is no automatic account creation or binding).</item>
@@ -27,6 +30,11 @@ public static class DemoData
     /// The name of the demo user.
     /// </summary>
     public const string UserName = "Albert";
+
+    /// <summary>
+    /// The name of the demo workspace, administered by <see cref="UserName"/>.
+    /// </summary>
+    public const string WorkspaceName = "Demo";
 
     /// <summary>
     /// The name of the demo weak actor.
@@ -57,6 +65,8 @@ public static class DemoData
             await services.GetRequiredService<UserPasswordTable>().CreateOrUpdatePasswordUserAsync( ctx, 1, userId, password );
         }
 
+        await EnsureWorkspaceAsync( monitor, ctx, services, users, userId );
+
         var weakActors = services.GetRequiredService<WeakActorTable>();
         using( var cmd = new SqlCommand( "select WeakActorId from CK.tWeakActor where WeakActorName=@Name" ) )
         {
@@ -80,5 +90,32 @@ public static class DemoData
             await oidc.CreateOrUpdateOidcUserAsync( ctx, 1, userId, info );
             monitor.Info( $"Demo user '{UserName}' bound to 'Oidc.{scheme}'." );
         }
+    }
+
+    // The demo workspace: Albert administers it (the Admin front's user management), it is his preferred workspace and
+    // he is a member of its zone (the profile's groups tell the fronts which workspace he administers).
+    static async Task EnsureWorkspaceAsync( IActivityMonitor monitor, SqlStandardCallContext ctx, IServiceProvider services, UserTable users, int userId )
+    {
+        int workspaceId;
+        using( var cmd = new SqlCommand( "select PreferredWorkspaceId from CK.tUser where UserId=@UserId" ) )
+        {
+            cmd.Parameters.AddWithValue( "@UserId", userId );
+            workspaceId = await ctx[users.Database].ExecuteScalarAsync( cmd ) is int id ? id : 0;
+        }
+        if( workspaceId <= 0 )
+        {
+            workspaceId = (await services.GetRequiredService<WorkspaceTable>().CreateWorkspaceAsync( ctx, 1, WorkspaceName )).WorkspaceId;
+            int aclId;
+            using( var cmd = new SqlCommand( "select AclId from CK.tWorkspace where WorkspaceId=@WorkspaceId" ) )
+            {
+                cmd.Parameters.AddWithValue( "@WorkspaceId", workspaceId );
+                aclId = (int)(await ctx[users.Database].ExecuteScalarAsync( cmd ))!;
+            }
+            // 127: the administrator level of the workspace.
+            await services.GetRequiredService<AclTable>().AclGrantSetAsync( ctx, 1, aclId, userId, "DemoWorkspaceAdmin", 127 );
+            await services.GetRequiredService<CK.DB.Workspace.Package>().SetUserPreferredWorkspaceAsync( ctx, 1, userId, workspaceId );
+            monitor.Info( $"Demo workspace '{WorkspaceName}' created (#{workspaceId}), administered by '{UserName}'." );
+        }
+        await services.GetRequiredService<CK.DB.Zone.GroupTable>().AddMemberAsync( ctx, 1, workspaceId, userId, autoAddMemberInZone: true );
     }
 }

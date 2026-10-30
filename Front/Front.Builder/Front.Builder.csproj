@@ -6,9 +6,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.AppBuilder" Version="36.0.0-0.cris-auth.0.ci.10" />
-    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.cris-auth.0.ci.64" />
-    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.cris-auth.0.ci.64" />
-    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.cris-auth.0.ci.42" />
+    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.cris-auth.0.ci.68" />
+    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.cris-auth.0.ci.68" />
+    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.cris-auth.0.ci.44" />
     <PackageReference Include="CK.Poco.Exchange.Engine" Version="36.0.0-0.cris-auth.0.ci.10" />
     <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="36.0.0-0.cris-auth.0.ci.10" />
     <PackageReference Include="CK.TypeScript.Engine" Version="3.0.0-0.cris-auth.0.ci.10" />

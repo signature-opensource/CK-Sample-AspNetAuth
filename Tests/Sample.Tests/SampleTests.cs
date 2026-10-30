@@ -199,6 +199,29 @@ public class SampleTests
         Value( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":{{albertId}}}]""" ) ).ValueKind.ShouldNotBe( JsonValueKind.Array, "Refused: not a list." );
     }
 
+    [Test]
+    public async Task the_profile_page_reads_the_profile_and_the_sign_in_methods_at_the_AuthCenter_Async()
+    {
+        using var b = new Browser();
+        await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+        var albertId = b.ActorId;
+
+        // The profile (the application's leaf, read by the AuthCenter): Albert administers the demo workspace.
+        var profile = Value( await b.SendAsync( "/.cris", $$"""["CK.IO.Actor.IGetUserProfileQCommand",{"actorId":{{albertId}},"userId":{{albertId}}}]""" ) );
+        profile.GetProperty( "userName" ).GetString().ShouldBe( "Albert", profile.ToString() );
+        profile.GetProperty( "preferredWorkspaceId" ).GetInt32().ShouldBeGreaterThan( 0 );
+        Value( profile.GetProperty( "groups" ) ).EnumerateArray().Select( Value )
+            .ShouldContain( g => g.GetProperty( "grantLevel" ).GetInt32() >= 112, "Albert administers the demo workspace." );
+
+        // The linked accounts: Albert is bound to the "albert-sub" identity of the "Test" scheme.
+        var identities = Value( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserOidc.IGetOidcIdentitiesQCommand",{"actorId":{{albertId}}}]""" ) );
+        identities.EnumerateArray().Select( Value ).ShouldContain( i => i.GetProperty( "schemeSuffix" ).GetString() == "Test", identities.ToString() );
+
+        // Albert has a password: adding one is refused (the profile proposes to change it).
+        var add = Value( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPassword.IAddPasswordCommand",{"actorId":{{albertId}},"actualActorId":{{albertId}},"password":"another"}]""" ) );
+        add.GetProperty( "success" ).GetBoolean().ShouldBeFalse( add.ToString() );
+    }
+
     // A string result is typed: ["string","..."] (an error is a CrisResultError object).
     static bool IsString( JsonElement result ) => (result.ValueKind == JsonValueKind.Array ? result[1] : result).ValueKind == JsonValueKind.String;
 
