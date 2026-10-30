@@ -14,7 +14,7 @@ namespace CK.Sample.Admin;
 /// The TypeScript package of the back-office: the login page (the Basic form), the private page in the back-office
 /// layout whose side bar proposes the user management to an administrator (Res/private-page.t), the user management
 /// (the users of the current workspace, their banishment and their invitation) and the profile page. Every command is
-/// handled by the AuthCenter, where the database is.
+/// handled by the Backend, where the database is.
 /// </summary>
 [TypeScriptPackage]
 [Requires<NgCrisAuthenticationBasicPackage, NgCrisAuthenticationPackage>]

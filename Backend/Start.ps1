@@ -1,14 +1,14 @@
 <#
 .SYNOPSIS
-    Builds and starts the CK-Sample-AspNetAuth demo: the AuthCenter, the Front, the Admin, and the browser on the Front.
+    Builds and starts the CK-Sample-AspNetAuth demo: the Backend, the Front, the Admin, and the browser on the Front.
 
 .DESCRIPTION
-    1. Builds AuthCenter.Host, Front.Host and Admin.Host. Their builders generate the code of the hosts, the Angular code
-       (ck-gen) and the AuthCenter's database (CKSampleAuthCenter on the local SQL Server).
+    1. Builds Backend.Host, Front.Host and Admin.Host. Their builders generate the code of the hosts, the Angular code
+       (ck-gen) and the Backend's database (CKSampleBackend on the local SQL Server).
        The packages of the CK stack are restored from the local CKli feed (<stack root>\.PublicStack\$Local\NuGet) when
        it exists, then from the feeds of nuget.config.
     2. Builds the Angular applications of the Front and of the Admin (yarn install, yarn build).
-    3. Starts AuthCenter.Host, waits for its AppIdentity listener, starts Front.Host and Admin.Host and waits until they
+    3. Starts Backend.Host, waits for its AppIdentity listener, starts Front.Host and Admin.Host and waits until they
        answer and reach their AuthCenter.
     4. Opens the browser on http://localhost:5300 (the Admin is on http://localhost:5302), then waits: press Enter to stop
        the hosts.
@@ -32,14 +32,14 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 $root = Split-Path -Parent $PSScriptRoot
-$authCenterHost = Join-Path $root 'AuthCenter\AuthCenter.Host'
+$backendHost = Join-Path $root 'Backend\Backend.Host'
 $frontHost = Join-Path $root 'Front\Front.Host'
 $app = Join-Path $frontHost 'Clients\App'
 $frontUrl = 'http://localhost:5300'
 $adminHost = Join-Path $root 'Admin\Admin.Host'
 $adminApp = Join-Path $adminHost 'Clients\App'
 $adminUrl = 'http://localhost:5302'
-$authCenterPort = 37300
+$backendPort = 37300
 
 function Write-Step( [string] $text ) { Write-Host "`n==> $text" -ForegroundColor Cyan }
 
@@ -53,7 +53,7 @@ function Invoke-Native( [string] $what, [scriptblock] $command ) {
     if( $LASTEXITCODE -ne 0 ) { throw "$what failed (exit code $LASTEXITCODE)." }
 }
 
-# The schemes of the AuthCenter, asked through a front (the Front or the Admin): proves that it answers and reaches its
+# The schemes of the Backend, asked through a front (the Front or the Admin): proves that it answers and reaches its
 # AuthCenter.
 function Get-LoginSchemes( [string] $url ) {
     try {
@@ -65,8 +65,8 @@ function Get-LoginSchemes( [string] $url ) {
     return $null
 }
 
-if( (Test-Port $authCenterPort) -or (Test-Port 5300) -or (Test-Port 5302) ) {
-    throw "The ports $authCenterPort, 5300 or 5302 are in use: the demo may already be running."
+if( (Test-Port $backendPort) -or (Test-Port 5300) -or (Test-Port 5302) ) {
+    throw "The ports $backendPort, 5300 or 5302 are in use: the demo may already be running."
 }
 foreach( $tool in @( 'dotnet' ) + $(if( $SkipBuild ) { @() } else { @( 'node', 'yarn' ) }) ) {
     if( -not (Get-Command $tool -ErrorAction SilentlyContinue) ) { throw "'$tool' is not available (see the README)." }
@@ -97,9 +97,9 @@ if( -not $SkipBuild ) {
     }
     $xml.Save( $config )
     try {
-        foreach( $project in @( $authCenterHost, $frontHost, $adminHost ) ) {
+        foreach( $project in @( $backendHost, $frontHost, $adminHost ) ) {
             Invoke-Native "The restore of $(Split-Path -Leaf $project)" { dotnet restore $project --configfile $config -v q }
-            Invoke-Native "The build of $(Split-Path -Leaf $project) (SQL Server is required by the AuthCenter's builder)" { dotnet build $project --no-restore -v q -nologo }
+            Invoke-Native "The build of $(Split-Path -Leaf $project) (SQL Server is required by the Backend's builder)" { dotnet build $project --no-restore -v q -nologo }
         }
     }
     finally {
@@ -119,7 +119,7 @@ if( -not $SkipBuild ) {
     }
 }
 
-foreach( $exe in @( "$authCenterHost\bin\Debug\net10.0\AuthCenter.Host.exe", "$frontHost\bin\Debug\net10.0\Front.Host.exe", "$app\dist\App\browser\index.html",
+foreach( $exe in @( "$backendHost\bin\Debug\net10.0\Backend.Host.exe", "$frontHost\bin\Debug\net10.0\Front.Host.exe", "$app\dist\App\browser\index.html",
                    "$adminHost\bin\Debug\net10.0\Admin.Host.exe", "$adminApp\dist\App\browser\index.html" ) ) {
     if( -not (Test-Path $exe) ) { throw "'$exe' is missing: run this script without -SkipBuild." }
 }
@@ -127,12 +127,12 @@ foreach( $exe in @( "$authCenterHost\bin\Debug\net10.0\AuthCenter.Host.exe", "$f
 $started = @()
 try {
     # Each host runs in its own console window (its logs), from its project folder (its appsettings.json).
-    Write-Step 'Starting the AuthCenter'
-    $started += Start-Process -FilePath "$authCenterHost\bin\Debug\net10.0\AuthCenter.Host.exe" -WorkingDirectory $authCenterHost -PassThru
+    Write-Step 'Starting the Backend'
+    $started += Start-Process -FilePath "$backendHost\bin\Debug\net10.0\Backend.Host.exe" -WorkingDirectory $backendHost -PassThru
     $deadline = (Get-Date).AddSeconds( 60 )
-    while( -not (Test-Port $authCenterPort) ) {
-        if( $started[0].HasExited ) { throw 'The AuthCenter stopped (see its window or AuthCenter.Host\Logs). Is SQL Server running?' }
-        if( (Get-Date) -gt $deadline ) { throw "The AuthCenter does not listen on port $authCenterPort." }
+    while( -not (Test-Port $backendPort) ) {
+        if( $started[0].HasExited ) { throw 'The Backend stopped (see its window or Backend.Host\Logs). Is SQL Server running?' }
+        if( (Get-Date) -gt $deadline ) { throw "The Backend does not listen on port $backendPort." }
         Start-Sleep -Milliseconds 500
     }
 

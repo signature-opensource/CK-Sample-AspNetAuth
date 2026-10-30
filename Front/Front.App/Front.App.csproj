@@ -7,19 +7,19 @@
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <!-- The Remote side of the AuthCenter feature (this application is a remote of the AuthCenter): the token reader, the user's proof
-         and the encryption of the sensitive fields for the AuthCenter, the PartyActor identifiers. -->
+    <!-- The Remote side of the AuthCenter feature (this application is a remote of the Backend): the token reader, the user's proof
+         and the encryption of the sensitive fields for the Backend, the PartyActor identifiers. -->
     <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Remote" Version="3.0.0-0.cris-auth.0.ci.64" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.9" />
     <PackageReference Include="CK.AspNet" Version="24.0.0-0.cris-auth.0.ci.6" />
     <!-- The HTTP side of the authentication and the Angular client (the Basic and Weak login forms and the passkey buttons, with
-         their endpoint handlers: this application executes the session commands, the AuthCenter their operations). -->
+         their endpoint handlers: this application executes the session commands, the Backend their operations). -->
     <PackageReference Include="CK.Cris.AspNet.Authentication" Version="3.0.0-0.cris-auth.0.ci.46" />
     <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.cris-auth.0.ci.46" />
     <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Passkey" Version="3.0.0-0.cris-auth.0.ci.46" />
     <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Weak" Version="3.0.0-0.cris-auth.0.ci.46" />
     <!-- The profile page and its "Sign-in methods" tab: the password, the passkeys and the linked accounts. Their commands are
-         handled by the AuthCenter (dispatched to it, with the user's proof). -->
+         handled by the Backend (dispatched to it, with the user's proof). -->
     <PackageReference Include="CK.Ng.UserProfile" Version="3.0.0-0.cris-auth.0.ci.30" />
     <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="3.0.0-0.cris-auth.0.ci.30" />
     <PackageReference Include="CK.Ng.UserProfile.UserPasskey" Version="3.0.0-0.cris-auth.0.ci.30" />

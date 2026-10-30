@@ -13,7 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <!-- The three hosts of the sample, run in this process. -->
-    <ProjectReference Include="..\..\AuthCenter\AuthCenter.Host\AuthCenter.Host.csproj" />
+    <ProjectReference Include="..\..\Backend\Backend.Host\Backend.Host.csproj" />
     <ProjectReference Include="..\..\Front\Front.Host\Front.Host.csproj" />
     <ProjectReference Include="..\..\Admin\Admin.Host\Admin.Host.csproj" />
   </ItemGroup>

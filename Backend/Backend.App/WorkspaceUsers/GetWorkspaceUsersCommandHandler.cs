@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CK.Sample.AuthCenter.WorkspaceUsers;
+namespace CK.Sample.Backend.WorkspaceUsers;
 
 /// <summary>
 /// App-level handler for <see cref="IGetWorkspaceUsersQCommand"/>. Both the UserBanned

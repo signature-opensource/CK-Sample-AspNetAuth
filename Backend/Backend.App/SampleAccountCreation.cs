@@ -7,10 +7,10 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace CK.Sample.AuthCenter;
+namespace CK.Sample.Backend;
 
 /// <summary>
-/// Sample automatic account creation for the OpenID Connect schemes. The AuthCenter calls it only for a scheme that
+/// Sample automatic account creation for the OpenID Connect schemes. The Backend calls it only for a scheme that
 /// allows it (<c>"AllowAccountCreation": true</c>), when the identity is not registered and nobody is logged in:
 /// <list type="bullet">
 ///   <item>the user name is the longest of the <c>preferred_username</c> and <c>name</c> claims, normalized (the

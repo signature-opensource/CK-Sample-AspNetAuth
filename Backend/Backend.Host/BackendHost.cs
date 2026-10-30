@@ -6,13 +6,13 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading.Tasks;
 
-namespace CK.Sample.AuthCenter;
+namespace CK.Sample.Backend;
 
 /// <summary>
 /// The Authentication Center of the sample: it holds the database, the login providers and the sessions. It has no HTTP
 /// endpoint: the fronts reach it over the AppIdentity channel ("CK-AppIdentity" configuration section).
 /// </summary>
-public static class AuthCenterHost
+public static class BackendHost
 {
     /// <summary>
     /// Builds the application and ensures the demo data.
@@ -30,8 +30,8 @@ public static class AuthCenterHost
         // The identity keys of the application are protected at rest.
         builder.Services.AddDataProtection();
         var monitor = builder.GetBuilderMonitor();
-        var map = StObjContextRoot.Load( typeof( AuthCenterHost ).Assembly, monitor )
-                  ?? throw new InvalidOperationException( "Unable to load the generated code: build the AuthCenter.Builder." );
+        var map = StObjContextRoot.Load( typeof( BackendHost ).Assembly, monitor )
+                  ?? throw new InvalidOperationException( "Unable to load the generated code: build the Backend.Builder." );
         var app = builder.CKBuild( map );
         await DemoData.EnsureAsync( monitor, app.Services, app.Configuration );
         return app;

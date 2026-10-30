@@ -45,7 +45,7 @@ public interface IExecutionIdentity : IPoco
 
 /// <summary>
 /// "Who am I, there?": a party command (<see cref="ICommandTargetParty"/>) handled by every party of the sample. It
-/// executes where its <see cref="ICommandTargetParty.TargetPartyFullName"/> is: the front itself, or the AuthCenter (the
+/// executes where its <see cref="ICommandTargetParty.TargetPartyFullName"/> is: the front itself, or the Backend (the
 /// front dispatches it to its remote). The code that sends it doesn't change.
 /// </summary>
 public interface IWhoAmIQCommand : ICommand<IExecutionIdentity>, ICommandAuthNormal, ICommandTargetParty

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CK.Sample.AuthCenter.User;
+namespace CK.Sample.Backend.User;
 
 /// <summary>
 /// Overrides <c>CK.DB.Actor.UserTable.ReadUserProfileAsync</c> (the default handler for

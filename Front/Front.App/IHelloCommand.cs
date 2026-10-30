@@ -14,7 +14,7 @@ public interface IHelloCommand : ICommand<string>, ICommandAuthNormal
 
 /// <summary>
 /// Handles the <see cref="IHelloCommand"/> on the front: the authentication of the request comes from its bearer token
-/// (verified with the AuthCenter's keys, bound to the browser by the binding cookie).
+/// (verified with the Backend's keys, bound to the browser by the binding cookie).
 /// </summary>
 public sealed class HelloService : ISingletonAutoService
 {

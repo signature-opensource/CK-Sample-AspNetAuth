@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
-namespace CK.Sample.AuthCenter;
+namespace CK.Sample.Backend;
 
 /// <summary>
 /// The demo data of the sample, created when missing (configuration section "Demo"):

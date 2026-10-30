@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "AuthCenter.Host": {
+    "Backend.Host": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

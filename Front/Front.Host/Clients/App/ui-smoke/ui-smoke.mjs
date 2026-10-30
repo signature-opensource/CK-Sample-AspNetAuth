@@ -1,5 +1,5 @@
 // UI smoke test of the sample: drives the built Angular application in a headless Chromium browser (Edge or Chrome,
-// through the DevTools protocol) against running hosts, with the demo data of the AuthCenter (Albert / pass, the weak
+// through the DevTools protocol) against running hosts, with the demo data of the Backend (Albert / pass, the weak
 // actor Operator). The passkeys use a virtual authenticator of the DevTools protocol (WebAuthn domain): Albert adds a
 // passkey in the "Sign-in methods" tab of his profile after his Basic login, renames it, logs in with it, then deletes it.
 //
@@ -132,7 +132,7 @@ let passkeyCount;
 try {
   await send( 'Page.enable' );
   await send( 'Emulation.setDeviceMetricsOverride', { width: 1400, height: 900, deviceScaleFactor: 1, mobile: false } );
-  // A platform authenticator that stores discoverable credentials and verifies the user (the AuthCenter requires both).
+  // A platform authenticator that stores discoverable credentials and verifies the user (the Backend requires both).
   await send( 'WebAuthn.enable', { enableUI: false } );
   const authenticatorId = ( await send( 'WebAuthn.addVirtualAuthenticator', {
     options: { protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true }
@@ -220,15 +220,15 @@ try {
 
   await run( '8-architecture', async () => {
     await navigate( '/architecture' );
-    // The buttons of the first card: one per party (the front, then its AuthCenter), once the topology is read.
-    const atAuthCenter = 'sample-architecture nz-card:first-of-type button:nth-of-type(2)';
-    await waitFor( atAuthCenter );
-    check( ( await text( 'sample-architecture' ) ).includes( 'Connected' ), 'The topology shows the connected AuthCenter.' );
-    await click( atAuthCenter );
+    // The buttons of the first card: one per party (the front, then its AuthCenter: the Backend), once the topology is read.
+    const atBackend = 'sample-architecture nz-card:first-of-type button:nth-of-type(2)';
+    await waitFor( atBackend );
+    check( ( await text( 'sample-architecture' ) ).includes( 'Connected' ), 'The topology shows the connected Backend.' );
+    await click( atBackend );
     await waitFor( 'sample-architecture nz-alert' );
     const answer = await text( 'sample-architecture nz-alert' );
-    check( answer.includes( 'AuthCenter' ) && answer.includes( 'Albert' ) && answer.includes( 'Critical' ),
-           `Albert's proof is verified by the AuthCenter: Critical there (${answer}).` );
+    check( answer.includes( 'Backend' ) && answer.includes( 'Albert' ) && answer.includes( 'Critical' ),
+           `Albert's proof is verified by the Backend (the AuthCenter): Critical there (${answer}).` );
     // The console: the first predefined request is refused.
     await click( '.sample-architecture-requests a' );
     await click( 'sample-architecture button.ant-btn-primary' );

@@ -28,7 +28,7 @@ namespace CK.Sample.Front;
 [Requires<NgCrisAuthenticationBasicPackage, NgCrisAuthenticationWeakPackage>]
 [Requires<LayoutComponent, PublicPageComponent>]
 // The profile page (the user info box's "Profile" item) and its "Sign-in methods" tab: the password, the passkeys and the
-// linked accounts. Their commands are handled by the AuthCenter (posted to "/.cris" and dispatched).
+// linked accounts. Their commands are handled by the Backend (posted to "/.cris" and dispatched).
 [Requires<UserProfilePasswordPackage, UserProfilePasskeyPackage, UserProfileOidcPackage>]
 [RegisterTypeScriptType( typeof( IHelloCommand ) )]
 // The architecture page: a party command (handled by every party), the deferred question, the topology.

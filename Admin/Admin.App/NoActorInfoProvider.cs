@@ -5,7 +5,7 @@ namespace CK.Sample.Admin;
 
 /// <summary>
 /// The back-office has no database (like the front): it knows no actor. The commands it receives are authenticated by
-/// their bearer token (the AuthCenter's); what needs to read an actor here (the restoration of a command executed later,
+/// their bearer token (the Backend's); what needs to read an actor here (the restoration of a command executed later,
 /// in the background) fails closed: the command is refused.
 /// </summary>
 public sealed class NoActorInfoProvider : IActorInfoProvider

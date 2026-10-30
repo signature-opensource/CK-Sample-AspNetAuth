@@ -11,7 +11,7 @@ namespace CK.Sample.Admin;
 
 /// <summary>
 /// The back-office of the sample: it serves the Angular application of the user management and its "/.cris" endpoints on
-/// the same origin. Like the front, it has no database and no login provider: its AuthCenter is the remote "$AuthCenter"
+/// the same origin. Like the front, it has no database and no login provider: its AuthCenter is the remote "$Backend"
 /// party ("CK-AppIdentity" configuration section), to which it relays the session commands and dispatches the
 /// administration commands.
 /// </summary>

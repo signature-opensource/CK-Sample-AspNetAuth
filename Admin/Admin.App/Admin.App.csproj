@@ -7,7 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <!-- The Remote side of the AuthCenter feature: this back-office is the second remote of the AuthCenter. -->
+    <!-- The Remote side of the AuthCenter feature: this back-office is the second remote of the Backend. -->
     <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Remote" Version="3.0.0-0.cris-auth.0.ci.64" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.9" />
     <PackageReference Include="CK.AspNet" Version="24.0.0-0.cris-auth.0.ci.6" />

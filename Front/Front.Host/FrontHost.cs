@@ -11,7 +11,7 @@ namespace CK.Sample.Front;
 
 /// <summary>
 /// The front of the sample: it serves the Angular application and its "/.cris" endpoints on the same origin. It has no
-/// database and no login provider: its AuthCenter is the remote "$AuthCenter" party ("CK-AppIdentity" configuration
+/// database and no login provider: its AuthCenter is the remote "$Backend" party ("CK-AppIdentity" configuration
 /// section), to which it relays the session commands.
 /// </summary>
 public static class FrontHost

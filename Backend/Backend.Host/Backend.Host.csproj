@@ -2,12 +2,12 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
-    <RootNamespace>CK.Sample.AuthCenter</RootNamespace>
-    <UserSecretsId>CK-Sample-AuthCenter</UserSecretsId>
+    <RootNamespace>CK.Sample.Backend</RootNamespace>
+    <UserSecretsId>CK-Sample-Backend</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AuthCenter.App\AuthCenter.App.csproj" />
-    <ProjectReference Include="..\AuthCenter.Builder\AuthCenter.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="..\Backend.App\Backend.App.csproj" />
+    <ProjectReference Include="..\Backend.Builder\Backend.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />
   </ItemGroup>
   <!-- The builder runs during the build and writes the generated code: the default glob of the source files has already
        been evaluated (on a clean build, it misses it). The generated files are included just before the compilation. -->
