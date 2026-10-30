@@ -1,14 +1,14 @@
 // UI smoke test of the sample: drives the built Angular application in a headless Chromium browser (Edge or Chrome,
 // through the DevTools protocol) against running hosts, with the demo data of the AuthCenter (Albert / pass, the weak
 // actor Operator). The passkeys use a virtual authenticator of the DevTools protocol (WebAuthn domain): Albert adds a
-// passkey after his Basic login, then logs in with it (each run adds a passkey to Albert).
+// passkey in the "Sign-in methods" tab of his profile after his Basic login, renames it, logs in with it, then deletes it.
 //
 //   node ui-smoke/ui-smoke.mjs [--url http://localhost:5300] [--out <folder>] [--oidc <SchemeSuffix>] [--critical-wait <seconds>] [--browser <exe>]
 //
 // --oidc checks that the login page has the button of this OpenID Connect scheme (the flow itself is covered by the
 // HTTP tests). --critical-wait tests the end of the Critical level of the Basic login: the hosts must have a short
 // "AuthCenter:CriticalLifetimes:Basic", the smoke waits this number of seconds at most, then Albert logs in again from
-// the passkey registration button. The browser is --browser, else the CK_BROWSER environment variable, else Edge or Chrome at their usual
+// the passkey registration button of his profile. The browser is --browser, else the CK_BROWSER environment variable, else Edge or Chrome at their usual
 // places. Exit code: 0 on success, 1 on failure, 2 when no browser is found. A screenshot is taken at each step (and on
 // failure) in --out (default: ui-smoke/screenshots).
 import { spawn } from 'node:child_process';
@@ -99,6 +99,28 @@ const run = async ( name, action ) => {
   await shot( name );
   console.log( `ok   ${name}` );
 };
+// The "Sign-in methods" tab of the profile page.
+const signInMethods = async () => {
+  await navigate( '/profile' );
+  await waitFor( 'ck-user-profile-page .ant-tabs-tab' );
+  await evaluate( `[...document.querySelectorAll( 'ck-user-profile-page .ant-tabs-tab' )].find( t => t.innerText.includes( 'Sign-in methods' ) )?.querySelector( '.ant-tabs-tab-btn' )?.click()` );
+  await waitFor( 'ck-sign-in-methods ck-passkey-list' );
+};
+// Clicks the element of a list item (nz-list-item) that contains a text: false when there is no such item.
+const clickInItem = ( list, itemText, selector ) => evaluate( `(() => {
+  const i = [...document.querySelectorAll( ${JSON.stringify( list + ' nz-list-item' )} )].find( e => e.innerText.includes( ${JSON.stringify( itemText )} ) );
+  i?.querySelector( ${JSON.stringify( selector )} )?.click();
+  return !!i;
+})()` );
+const waitForText = async ( selector, expected, present = true, ms = 15000 ) => {
+  for( let t = 0; t < ms; t += 100 ) {
+    if( ( await text( selector ) ).includes( expected ) === present ) return;
+    await sleep( 100 );
+  }
+  throw new SmokeFailure( `'${selector}' ${present ? 'does not contain' : 'still contains'} '${expected}'.` );
+};
+const passkeyName = `Smoke key ${Date.now()}`;
+const renamedPasskey = `${passkeyName} (renamed)`;
 const helloResult = async () => {
   await click( 'sample-home button' );
   await waitFor( 'sample-home nz-alert' );
@@ -169,11 +191,31 @@ try {
     check( hello.includes( 'Hello Albert' ), `Albert's hello succeeds (${hello}).` );
   } );
 
+  await run( '7-sign-in-methods', async () => {
+    await signInMethods();
+    const methods = await text( 'ck-sign-in-methods' );
+    check( methods.includes( 'Password' ), `The sign-in methods list the password (${methods}).` );
+    check( await exists( 'ck-password-section ck-change-password-form' ), 'Albert has a password: the section proposes to change it.' );
+    if( args.oidc ) {
+      await waitForText( 'ck-oidc-identities', args.oidc );
+    }
+  } );
+
   await run( '7-passkey-registration', async () => {
-    // Enabled at the Critical level only: right after a login.
-    await click( 'ck-passkey-registration-button button:not([disabled])' );
+    // Enabled at the Critical level only: right after a login. The passkey is named at its creation.
+    await fill( '.ck-passkey-new-name', passkeyName );
+    await click( 'ck-passkey-list ck-passkey-registration-button button:not([disabled])' );
     for( let t = 0; t < 15000 && await passkeyCount() === 0; t += 100 ) await sleep( 100 );
     check( await passkeyCount() === 1, 'The authenticator holds the new passkey.' );
+    await waitForText( 'ck-passkey-list', passkeyName );
+  } );
+
+  await run( '7-passkey-rename', async () => {
+    check( await clickInItem( 'ck-passkey-list', passkeyName, '.ck-passkey-rename' ), 'The new passkey is listed.' );
+    await waitFor( '.ck-passkey-name-input' );
+    await fill( '.ck-passkey-name-input', renamedPasskey );
+    await click( 'ck-passkey-list nz-list-item button.ant-btn-primary' );
+    await waitForText( 'ck-passkey-list', renamedPasskey );
   } );
 
   await run( '8-architecture', async () => {
@@ -209,7 +251,7 @@ try {
   if( args['critical-wait'] ) {
     await run( '11-critical-login-again', async () => {
       // The Critical level of the Basic login ends: the passkey registration offers to log in again.
-      await navigate( '/' );
+      await signInMethods();
       await waitFor( '.ck-passkey-registration-login', Number( args['critical-wait'] ) * 1000 );
       await click( '.ck-passkey-registration-login' );
       await waitFor( 'ck-basic-login-form input[formcontrolname=password]' );
@@ -219,8 +261,11 @@ try {
       await fill( 'ck-basic-login-form input[formcontrolname=userName]', 'Albert' );
       await fill( 'ck-basic-login-form input[formcontrolname=password]', 'pass' );
       await click( 'ck-basic-login-form button.login-form-button' );
+      await waitFor( 'ck-user-profile-page' );
+      check( await path() === '/profile', 'Albert is back to the page that asked for the new login.' );
+      // (The profile opens on its first tab.)
+      await signInMethods();
       await waitFor( 'ck-passkey-registration-button button:not([disabled])' );
-      check( await path() === '/', 'Albert is back to the page that asked for the new login.' );
     } );
   }
 
@@ -243,7 +288,15 @@ try {
     check( card.includes( 'Albert' ) && card.includes( 'Critical' ), `Albert is logged in with his passkey at the Critical level (${card}).` );
   } );
 
-  await run( '14-passkey-sign-out', signOut );
+  await run( '14-passkey-delete', async () => {
+    // At the Critical level of the passkey login: the passkey is deleted (Albert keeps his password).
+    await signInMethods();
+    check( await clickInItem( 'ck-passkey-list', renamedPasskey, '.ck-passkey-delete' ), 'The renamed passkey is listed.' );
+    await click( '.ant-popover button.ant-btn-primary' );
+    await waitForText( 'ck-passkey-list', renamedPasskey, false );
+  } );
+
+  await run( '15-passkey-sign-out', signOut );
   console.log( 'UI smoke test passed.' );
 }
 catch( e ) {

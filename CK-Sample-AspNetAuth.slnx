@@ -7,6 +7,11 @@
     <File Path="NuGet.config" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/Admin/">
+    <Project Path="Admin/Admin.App/Admin.App.csproj" />
+    <Project Path="Admin/Admin.Builder/Admin.Builder.csproj" />
+    <Project Path="Admin/Admin.Host/Admin.Host.csproj" />
+  </Folder>
   <Folder Name="/AuthCenter/">
     <Project Path="AuthCenter/AuthCenter.App/AuthCenter.App.csproj" />
     <Project Path="AuthCenter/AuthCenter.Builder/AuthCenter.Builder.csproj" />

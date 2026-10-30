@@ -1,0 +1,71 @@
+{
+  "name": "app",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "jest",
+    "ck-watch": "dotnet \"$PROJECT_CWD/../../../Admin.Builder/bin/Debug/net10.0/CK.TypeScript.LiveEngine.dll\""
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^20",
+    "@angular/cdk": "^20",
+    "@angular/common": "^20.3",
+    "@angular/compiler": "^20.3",
+    "@angular/core": "^20.3",
+    "@angular/forms": "^20.3",
+    "@angular/platform-browser": "^20.3",
+    "@angular/platform-browser-dynamic": "^20.3",
+    "@angular/router": "^20.3",
+    "@fortawesome/angular-fontawesome": "^3",
+    "@fortawesome/fontawesome-svg-core": "^7",
+    "@fortawesome/free-brands-svg-icons": "^7",
+    "@fortawesome/free-regular-svg-icons": "^7",
+    "@fortawesome/free-solid-svg-icons": "^7",
+    "@ngx-translate/core": "^17",
+    "luxon": "^3.5",
+    "ng-zorro-antd": "^20",
+    "rxjs": "~7.8",
+    "tslib": "^2.3"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.3.42",
+    "@angular/cli": "^20.3.42",
+    "@angular/compiler-cli": "^20.3",
+    "@types/jest": "^30",
+    "@types/luxon": "^3.6.2",
+    "@types/node": "^26.6.6",
+    "@yarnpkg/sdks": "^3.3.1",
+    "axios": "^1.7.7",
+    "jest": "^30.5.2",
+    "jest-environment-jsdom": "^30.5.2",
+    "jest-preset-angular": "^15",
+    "jest-util": "^30.5.1",
+    "less": "^4.4.1",
+    "ts-jest": "^29.4.15",
+    "typescript": "~5.9.2"
+  },
+  "ckVersion": 1,
+  "resolutions": {
+    "@yarnpkg/core": "4.9.1"
+  },
+  "peerDependencies": {
+    "axios": "^1.7.7"
+  },
+  "packageManager": "yarn@4.8.1"
+}

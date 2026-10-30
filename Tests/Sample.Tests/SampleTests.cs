@@ -1,6 +1,7 @@
 using CK.AppIdentity;
 using CK.Core;
 using CK.Cris;
+using CK.Sample.Admin;
 using CK.Sample.AuthCenter;
 using CK.Sample.Front;
 using Microsoft.AspNetCore.Builder;
@@ -26,9 +27,9 @@ using static CK.Testing.MonitorTestHelper;
 namespace CK.Sample.Tests;
 
 /// <summary>
-/// The sample, end to end: its two hosts run in this process (with their own ports and an OpenID Connect scheme on the
-/// <see cref="FakeIdentityProvider"/>), and a "browser" (an HttpClient that keeps the cookies) talks to the front. The
-/// front relays the session commands to the AuthCenter over the AppIdentity channel.
+/// The sample, end to end: its three hosts run in this process (with their own ports and an OpenID Connect scheme on the
+/// <see cref="FakeIdentityProvider"/>), and a "browser" (an HttpClient that keeps the cookies) talks to the front (or to
+/// the Admin). The fronts relay the session commands to the AuthCenter over the AppIdentity channel.
 /// <para>
 /// This crosses CK-AppIdentity-Transport (the AuthCenter, the relay) and CK-Cris-TypeScript (the HTTP front) on a real
 /// database: their own tests use fakes on the other side.
@@ -42,10 +43,12 @@ public class SampleTests
     const string FrontUrl = "http://localhost:5310";
     const string AuthCenterAddress = "tcp:127.0.0.1:37310";
     const string Callback = FrontUrl + "/.auth/oidc/callback";
+    const string AdminUrl = "http://localhost:5312";
 
     FakeIdentityProvider _idp = null!;
     WebApplication _authCenter = null!;
     WebApplication _front = null!;
+    WebApplication _admin = null!;
 
     [OneTimeSetUp]
     public async Task StartTheHostsAsync()
@@ -81,28 +84,36 @@ public class SampleTests
             ["CK-AppIdentity:Parties:0:Address"] = AuthCenterAddress
         } ), TestHelper.SolutionFolder.Combine( "Front/Front.Host" ) );
         await _front.StartAsync();
+        _admin = AdminHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
+        {
+            ["Urls"] = AdminUrl,
+            ["CK-AppIdentity:Parties:0:Address"] = AuthCenterAddress
+        } ), TestHelper.SolutionFolder.Combine( "Admin/Admin.Host" ) );
+        await _admin.StartAsync();
     }
 
     [OneTimeTearDown]
     public async Task StopTheHostsAsync()
     {
+        if( _admin != null ) await _admin.DisposeAsync();
         if( _front != null ) await _front.DisposeAsync();
         if( _authCenter != null ) await _authCenter.DisposeAsync();
         _idp?.Dispose();
     }
 
     /// <summary>
-    /// A browser of the front's origin: it keeps the cookies, sends the Origin header and the bearer token.
+    /// A browser of the front's origin (or of the Admin's one): it keeps the cookies, sends the Origin header and the
+    /// bearer token.
     /// </summary>
     sealed class Browser : IDisposable
     {
         readonly HttpClient _http;
 
-        public Browser()
+        public Browser( string origin = FrontUrl )
         {
             Cookies = new CookieContainer();
-            _http = new HttpClient( new HttpClientHandler { CookieContainer = Cookies, AllowAutoRedirect = false } ) { BaseAddress = new Uri( FrontUrl ) };
-            _http.DefaultRequestHeaders.Add( "Origin", FrontUrl );
+            _http = new HttpClient( new HttpClientHandler { CookieContainer = Cookies, AllowAutoRedirect = false } ) { BaseAddress = new Uri( origin ) };
+            _http.DefaultRequestHeaders.Add( "Origin", origin );
         }
 
         public CookieContainer Cookies { get; }
@@ -220,6 +231,29 @@ public class SampleTests
         // Albert has a password: adding one is refused (the profile proposes to change it).
         var add = Value( await b.SendAsync( "/.cris", $$"""["CK.IO.User.UserPassword.IAddPasswordCommand",{"actorId":{{albertId}},"actualActorId":{{albertId}},"password":"another"}]""" ) );
         add.GetProperty( "success" ).GetBoolean().ShouldBeFalse( add.ToString() );
+    }
+
+    [Test]
+    public async Task the_Admin_front_administers_the_users_at_the_AuthCenter_Async()
+    {
+        // The second remote of the AuthCenter: its sessions are its own (its origin, its cookies).
+        using var admin = new Browser( AdminUrl );
+        await admin.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+        admin.Token.ShouldNotBeNull();
+        var albertId = admin.ActorId;
+        var profile = Value( await admin.SendAsync( "/.cris", $$"""["CK.IO.Actor.IGetUserProfileQCommand",{"actorId":{{albertId}},"userId":{{albertId}}}]""" ) );
+        var workspaceId = profile.GetProperty( "preferredWorkspaceId" ).GetInt32();
+
+        // Albert administers the demo workspace: the AuthCenter lists its users (the application's query, with the
+        // banishments and the e-mails).
+        var users = Value( await admin.SendAsync( "/.cris", $$"""["CK.IO.UserManagement.IGetWorkspaceUsersQCommand",{"actorId":{{albertId}},"currentWorkspaceId":{{workspaceId}},"currentCultureName":"en"}]""" ) );
+        users.ValueKind.ShouldBe( JsonValueKind.Array, users.ToString() );
+        users.EnumerateArray().Select( Value ).ShouldContain( u => u.GetProperty( "userName" ).GetString() == "Albert", users.ToString() );
+
+        // An anonymous caller is refused.
+        using var anonymous = new Browser( AdminUrl );
+        Value( await anonymous.SendAsync( "/.cris", $$"""["CK.IO.UserManagement.IGetWorkspaceUsersQCommand",{"actorId":{{albertId}},"currentWorkspaceId":{{workspaceId}},"currentCultureName":"en"}]""" ) )
+            .ValueKind.ShouldNotBe( JsonValueKind.Array, "Refused: anonymous." );
     }
 
     // A string result is typed: ["string","..."] (an error is a CrisResultError object).
@@ -361,9 +395,11 @@ public class SampleTests
     /// <summary>
     /// The UI smoke test (Front.Host/Clients/App/ui-smoke/ui-smoke.mjs) on the built Angular application, in a headless
     /// browser: the public page, the login page (with the "Test" OpenID Connect button), a wrong password, the Weak login
-    /// (its hello is refused), the Basic login (the private page in the back-office layout), the user info box, a reload,
-    /// the Architecture page (a command dispatched to the AuthCenter, a refused call of its console), the end of the
-    /// Critical level (a new login from the passkey registration button), the sign out and the passkey login. Ignored when the application is not built (<c>yarn build</c>), or without Node or a browser.
+    /// (its hello is refused), the Basic login (the private page in the back-office layout), the "Sign-in methods" tab of
+    /// the profile (a named passkey registered and renamed), the Architecture page (a command dispatched to the
+    /// AuthCenter, a refused call of its console), the user info box, a reload, the end of the Critical level (a new login
+    /// from the passkey registration button), the sign out, the passkey login and the deletion of the passkey. Ignored when
+    /// the application is not built (<c>yarn build</c>), or without Node or a browser.
     /// </summary>
     [Test]
     [CancelAfter( 180_000 )]
