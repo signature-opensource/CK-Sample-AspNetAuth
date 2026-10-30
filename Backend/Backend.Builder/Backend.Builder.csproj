@@ -5,12 +5,12 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.AppBuilder" Version="36.0.0-0.cris-auth.0.ci.14" />
-    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.cris-auth.0.ci.74" />
-    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.cris-auth.0.ci.74" />
+    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.cris-auth.0.ci.75" />
+    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.cris-auth.0.ci.75" />
     <PackageReference Include="CK.Poco.Exchange.Engine" Version="36.0.0-0.cris-auth.0.ci.14" />
     <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="36.0.0-0.cris-auth.0.ci.14" />
-    <PackageReference Include="CK.Setupable.Engine" Version="36.0.0-0.cris-auth.0.ci.26" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="36.0.0-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.Setupable.Engine" Version="36.0.0-0.cris-auth.0.ci.27" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="36.0.0-0.cris-auth.0.ci.27" />
     <!-- The mail templates (CK.UserProfile.UserPassword.Lost, CK.UserManagement.UserInvitation) and the translations of the
          server messages. -->
     <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.cris-auth.0.ci.8" />
