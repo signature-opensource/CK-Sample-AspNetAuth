@@ -63,12 +63,11 @@ public sealed class WhoAmIHandler : ISingletonAutoService
     /// <param name="command">The command.</param>
     /// <param name="info">The authentication of the execution.</param>
     /// <param name="party">The party that executes the command.</param>
-    /// <param name="pocos">The poco directory.</param>
     /// <returns>The execution identity.</returns>
     [CommandHandler]
-    public IExecutionIdentity Handle( IWhoAmIQCommand command, AuthenticationInfo info, CurrentLocalParty party, PocoDirectory pocos )
+    public IExecutionIdentity Handle( IWhoAmIQCommand command, AuthenticationInfo info, CurrentLocalParty party )
     {
-        return pocos.Create<IExecutionIdentity>( r =>
+        return command.CreateResult( r =>
         {
             r.PartyFullName = party.LocalParty.FullName;
             r.PartyActorId = party.LocalParty.PartyActorId;

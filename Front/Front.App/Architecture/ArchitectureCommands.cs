@@ -120,20 +120,19 @@ public sealed class ArchitectureHandlers : ISingletonAutoService
     /// </summary>
     /// <param name="command">The command.</param>
     /// <param name="party">The current local party (the front).</param>
-    /// <param name="pocos">The poco directory.</param>
     /// <returns>The topology.</returns>
     [CommandHandler]
-    public ITopology Handle( IGetTopologyQCommand command, CurrentLocalParty party, PocoDirectory pocos )
+    public ITopology Handle( IGetTopologyQCommand command, CurrentLocalParty party )
     {
         var local = party.LocalParty;
         var authCenter = local.GetFeature<CK.AppIdentity.Cris.AuthCenter.RemoteAuthCenter>()?.Center.AuthCenter;
-        return pocos.Create<ITopology>( t =>
+        return command.CreateResult( t =>
         {
             t.LocalPartyFullName = local.FullName;
             t.LocalPartyActorId = local.PartyActorId;
             foreach( var remote in local.Remotes )
             {
-                t.Remotes.Add( pocos.Create<IRemotePartyInfo>( r =>
+                t.Remotes.Add( t.Create<IRemotePartyInfo>( r =>
                 {
                     r.FullName = remote.FullName;
                     r.PartyActorId = remote.PartyActorId;
