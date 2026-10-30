@@ -9,8 +9,8 @@
     <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.cris-auth.0.ci.68" />
     <PackageReference Include="CK.Poco.Exchange.Engine" Version="36.0.0-0.cris-auth.0.ci.10" />
     <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="36.0.0-0.cris-auth.0.ci.10" />
-    <PackageReference Include="CK.Setupable.Engine" Version="36.0.0-0.cris-auth.0.ci.20" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="36.0.0-0.cris-auth.0.ci.20" />
+    <PackageReference Include="CK.Setupable.Engine" Version="36.0.0-0.cris-auth.0.ci.21" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="36.0.0-0.cris-auth.0.ci.21" />
     <!-- The mail templates (CK.UserProfile.UserPassword.Lost, CK.UserManagement.UserInvitation) and the translations of the
          server messages. -->
     <PackageReference Include="CK.Template.Fluid.Engine" Version="2.0.2-0.cris-auth.0.ci.4" />

@@ -20,13 +20,13 @@
     <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth.0.ci.21" />
     <PackageReference Include="CK.DB.User.UserOidc" Version="31.0.0-0.cris-auth.0.ci.25" />
     <PackageReference Include="CK.DB.User.UserPasskey" Version="0.0.0-0.cris-auth.0.ci.13" />
-    <PackageReference Include="CK.DB.Actor.WeakActor" Version="3.0.0-0.cris-auth.0.ci.14" />
+    <PackageReference Include="CK.DB.Actor.WeakActor" Version="3.0.0-0.cris-auth.0.ci.15" />
     <!-- The PartyActor registrar: every party (this AuthCenter, its remotes) gets its PartyActorId (CK.tPartyActor). -->
     <PackageReference Include="CK.DB.AppIdentity" Version="3.0.0-0.cris-auth.0.ci.62" />
     <!-- The server side of the fronts' features: the commands of the Front's profile page and of the Admin's user
          management are handled here, where the database is (dispatched by the fronts, with the user's proof). -->
-    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.0.ci.26" />
-    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.0.ci.28" />
+    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.28" />
     <PackageReference Include="CK.UserManagement" Version="3.0.0-0.cris-auth.0.ci.10" />
     <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.0.ci.10" />
     <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.0.ci.10" />

@@ -10,7 +10,7 @@
     <PackageReference Include="CK.AppIdentity.Abstractions" Version="3.0.0-0.cris-auth.0.ci.9" />
     <!-- The application's Poco leaves (IUserProfile, ICombinedWorkspaceUser): the AuthCenter materializes them, the
          fronts read them. Every party knows the same Poco, with the same properties. -->
-    <PackageReference Include="CK.IO.UserProfile" Version="3.0.0-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.IO.UserProfile" Version="3.0.0-0.cris-auth.0.ci.28" />
     <PackageReference Include="CK.IO.UserProfile.Workspace" Version="18.0.0-0.cris-auth.0.ci.9" />
     <PackageReference Include="CK.IO.User.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.15" />
     <PackageReference Include="CK.IO.User.UserPassword.Reset" Version="31.0.0-0.cris-auth.0.ci.21" />

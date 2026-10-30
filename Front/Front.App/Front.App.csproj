@@ -20,10 +20,10 @@
     <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Weak" Version="3.0.0-0.cris-auth.0.ci.44" />
     <!-- The profile page and its "Sign-in methods" tab: the password, the passkeys and the linked accounts. Their commands are
          handled by the AuthCenter (dispatched to it, with the user's proof). -->
-    <PackageReference Include="CK.Ng.UserProfile" Version="3.0.0-0.cris-auth.0.ci.26" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="3.0.0-0.cris-auth.0.ci.26" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPasskey" Version="3.0.0-0.cris-auth.0.ci.26" />
-    <PackageReference Include="CK.Ng.UserProfile.UserOidc" Version="3.0.0-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.Ng.UserProfile" Version="3.0.0-0.cris-auth.0.ci.28" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="3.0.0-0.cris-auth.0.ci.28" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPasskey" Version="3.0.0-0.cris-auth.0.ci.28" />
+    <PackageReference Include="CK.Ng.UserProfile.UserOidc" Version="3.0.0-0.cris-auth.0.ci.28" />
     <!-- The application shell (side bar, top bar with the UserInfoBox) and the public page (where a weak actor lands). -->
     <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.cris-auth.0.ci.19" />
     <PackageReference Include="CK.Ng.PublicPage" Version="3.0.0-0.cris-auth.0.ci.10" />

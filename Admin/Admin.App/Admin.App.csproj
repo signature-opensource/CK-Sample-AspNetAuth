@@ -16,11 +16,11 @@
     <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.cris-auth.0.ci.44" />
     <!-- The user management: the users of a workspace, their banishment, their invitation. Its commands are handled by the
          AuthCenter (dispatched to it, with the user's proof). -->
-    <PackageReference Include="CK.Ng.Admin.UserManagement" Version="3.0.0-0.cris-auth.0.ci.20" />
-    <PackageReference Include="CK.Ng.Admin.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.0.ci.20" />
-    <PackageReference Include="CK.Ng.Admin.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.0.ci.20" />
-    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.26" />
-    <PackageReference Include="CK.Ng.UserProfile.UserBanned" Version="3.0.0-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.Ng.Admin.UserManagement" Version="3.0.0-0.cris-auth.0.ci.21" />
+    <PackageReference Include="CK.Ng.Admin.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.0.ci.21" />
+    <PackageReference Include="CK.Ng.Admin.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.0.ci.21" />
+    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.28" />
+    <PackageReference Include="CK.Ng.UserProfile.UserBanned" Version="3.0.0-0.cris-auth.0.ci.28" />
     <!-- The application shell (side bar, top bar with the UserInfoBox). -->
     <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.cris-auth.0.ci.19" />
   </ItemGroup>
