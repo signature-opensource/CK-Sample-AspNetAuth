@@ -406,10 +406,13 @@ public class SampleTests
     public async Task the_Angular_application_passes_the_UI_smoke_test_Async( CancellationToken cancellation )
     {
         var app = TestHelper.SolutionFolder.Combine( "Front/Front.Host/Clients/App" );
-        if( !File.Exists( app.Combine( "dist/App/browser/index.html" ) ) )
+        var index = app.Combine( "dist/App/browser/index.html" );
+        if( !File.Exists( index ) )
         {
             Assert.Ignore( "The Angular application is not built (yarn build in Front/Front.Host/Clients/App)." );
         }
+        // The test serves the dist as it is: it may be older than the ck-gen (rewritten at each run, its dates can't tell).
+        var built = $"The Angular application was built at {File.GetLastWriteTime( index ):yyyy-MM-dd HH:mm:ss}: an older build than the last front change fails here (yarn build in Front/Front.Host/Clients/App).";
         var screenshots = TestHelper.TestProjectFolder.AppendPart( "UISmoke" );
         var start = new ProcessStartInfo( "node" )
         {
@@ -436,7 +439,7 @@ public class SampleTests
             var output = node.StandardOutput.ReadToEndAsync( cancellation );
             var error = node.StandardError.ReadToEndAsync( cancellation );
             await node.WaitForExitAsync( cancellation );
-            var text = await output + await error;
+            var text = built + Environment.NewLine + await output + await error;
             TestHelper.Monitor.Info( $"UI smoke test (screenshots in '{screenshots}'):{Environment.NewLine}{text}" );
             if( node.ExitCode == 2 ) Assert.Ignore( "No browser for the UI smoke test (set CK_BROWSER)." );
             node.ExitCode.ShouldBe( 0, text );

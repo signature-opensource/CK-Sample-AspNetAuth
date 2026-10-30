@@ -97,7 +97,7 @@ const helpers = evaluate => {
 const pagesWith = async urlPart => ( await ( await fetch( `http://127.0.0.1:${port}/json/list` ) ).json() ).filter( t => t.type === 'page' && t.url.includes( urlPart ) );
 
 const target = await ( await fetch( `http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' } ) ).json();
-const { send, evaluate } = await connect( target.webSocketDebuggerUrl );
+const { send, evaluate, close } = await connect( target.webSocketDebuggerUrl );
 const { path, exists, text, waitFor, fill, click } = helpers( evaluate );
 let step = 'start';
 const shot = async name => {
@@ -333,7 +333,7 @@ catch( e ) {
   await shot( `failure-${step}` ).catch( () => { } );
 }
 finally {
-  ws.close();
+  close();
   // Closes the browser (and its child processes) cleanly, then its profile.
   try {
     const b = new WebSocket( version.webSocketDebuggerUrl );
