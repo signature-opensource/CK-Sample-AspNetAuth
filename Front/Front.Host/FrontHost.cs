@@ -1,5 +1,6 @@
 using CK.Core;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -32,15 +33,23 @@ public static class FrontHost
         // The identity keys of the application are protected at rest.
         builder.Services.AddDataProtection();
         builder.Services.AddCrisAuthentication();
+        builder.Services.AddHttpForwarder();
         var monitor = builder.GetBuilderMonitor();
         var map = StObjContextRoot.Load( typeof( FrontHost ).Assembly, monitor )
                   ?? throw new InvalidOperationException( "Unable to load the generated code: build the Front.Builder." );
         var app = builder.CKBuild( map );
         app.UseCrisAuthentication();
         app.UseCris();
-        // The Angular application, when it has been built (see the README).
+        // Development: the Angular dev server ("yarn start") serves the application through this host, on its origin
+        // (feasibility check: the authentication requires the same origin as in production).
+        var devServer = app.Environment.IsDevelopment() ? app.Configuration["Spa:DevServer"] : null;
         var spa = Path.Combine( app.Environment.ContentRootPath, app.Configuration["Spa:Path"] ?? "Clients/App/dist/App/browser" );
-        if( Directory.Exists( spa ) )
+        if( !string.IsNullOrEmpty( devServer ) )
+        {
+            monitor.Info( $"The Angular application is served by its dev server '{devServer}'." );
+            app.MapForwarder( "/{**catch-all}", devServer ).Add( b => ((RouteEndpointBuilder)b).Order = int.MaxValue );
+        }
+        else if( Directory.Exists( spa ) )
         {
             var files = new PhysicalFileProvider( spa );
             app.UseDefaultFiles( new DefaultFilesOptions { FileProvider = files } );
