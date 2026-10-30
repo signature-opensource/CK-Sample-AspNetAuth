@@ -14,7 +14,7 @@
        been evaluated (on a clean build, it misses it). The generated files are included just before the compilation. -->
   <Target Name="IncludeGeneratedCode" BeforeTargets="CoreCompile">
     <ItemGroup>
-      <Compile Remove="$(MSBuildProjectDirectory)/$StObjGen/**/*.cs" />
+      <Compile Remove="$StObjGen/**/*.cs" />
       <Compile Include="$(MSBuildProjectDirectory)/$StObjGen/**/*.cs" />
     </ItemGroup>
   </Target>
