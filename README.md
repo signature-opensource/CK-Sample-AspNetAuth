@@ -7,7 +7,7 @@ client. It replaces the WebFrontAuth samples.
 
 | Host | What | Reached by |
 |---|---|---|
-| [Backend](Backend) | The backend, the Authentication Center of the fronts (its local party allows the "AuthCenter" feature): the database (SQL Server), the login providers (Basic, Oidc, Passkey, Weak), the sessions and the signing keys of the tokens, and the handlers of the fronts' features (the profile, the user management). A console application (the .NET generic host): no ASP.NET Core, no HTTP endpoint. | The AppIdentity channel (`tcp:127.0.0.1:37300`). |
+| [Backend](Backend) | The backend, the Authentication Center of the fronts (its local party allows "AuthCenter"): the database (SQL Server), the login providers (Basic, Oidc, Passkey, Weak), the sessions and the signing keys of the tokens, and the handlers of the fronts' features (the profile, the user management). A console application (the .NET generic host): no ASP.NET Core, no HTTP endpoint. | The AppIdentity channel (`tcp:127.0.0.1:37300`). |
 | [Front](Front) | The HTTP front: the Angular application and its `/.cris` endpoints on the same origin (`http://localhost:5300`). No database, no login provider: it is a remote of its AuthCenter. Its endpoints execute the session commands (logins, refresh, logout...) whose operations are dispatched to the Backend, and it verifies the tokens with the Backend's keys. | The browser. |
 | [Admin](Admin) | The back-office, the second remote of the Backend (`http://localhost:5302`): the user management of CK-Ng-Admin (the users of a workspace, their banishment, their invitation). Like the Front, no database: its commands are dispatched to the Backend. | The browser. |
 
@@ -24,10 +24,11 @@ them and the fronts read them, so every party knows the same Poco.
 A party is named after what it is in the application (the Backend, the Front, the Admin), not after a feature it
 implements: the Backend is the AuthCenter of the fronts, and it is also where the database is.
 
-The role of each host is its package (CK.AppIdentity.Cris.AuthCenter.Local or .Remote) and they allow the
-"AuthCenter" feature in their "CK-AppIdentity" configuration: the Backend in its `Local` section (it is its own
-AuthCenter, its settings are `Local:AuthCenter`) and on the `$Front` and `$Admin` parties (its remotes); the Front and
-the Admin in their `Local` section and on the `$Backend` remote (their AuthCenter).
+The role of each host is its package (CK.AppIdentity.Cris.AuthCenter.Local or .Remote), and its "CK-AppIdentity"
+configuration names what each party is: `"AllowFeatures": "AuthCenter"` on the party that is the AuthCenter,
+`"AuthCenterRemote"` on its remotes. The Backend allows `"AuthCenter"` in its `Local` section (it is the AuthCenter,
+its settings are `Local:AuthCenter`) and `"AuthCenterRemote"` on the `$Front` and `$Admin` parties; the Front and the
+Admin allow `"AuthCenterRemote"` in their `Local` section and `"AuthCenter"` on the `$Backend` party.
 
 The Backend references CK.DB.AppIdentity, the PartyActor registrar: every party (the Backend and its remotes) gets
 its PartyActorId, that identifies it as the caller of the commands it sends.
