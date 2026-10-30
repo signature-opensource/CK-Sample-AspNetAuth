@@ -7,7 +7,7 @@ client. It replaces the WebFrontAuth samples.
 
 | Host | What | Reached by |
 |---|---|---|
-| [Backend](Backend) | The backend, the Authentication Center of the fronts (its local party allows the "AuthCenter" feature): the database (SQL Server), the login providers (Basic, Oidc, Passkey, Weak), the sessions and the signing keys of the tokens, and the handlers of the fronts' features (the profile, the user management). No HTTP endpoint. | The AppIdentity channel (`tcp:127.0.0.1:37300`). |
+| [Backend](Backend) | The backend, the Authentication Center of the fronts (its local party allows the "AuthCenter" feature): the database (SQL Server), the login providers (Basic, Oidc, Passkey, Weak), the sessions and the signing keys of the tokens, and the handlers of the fronts' features (the profile, the user management). A console application (the .NET generic host): no ASP.NET Core, no HTTP endpoint. | The AppIdentity channel (`tcp:127.0.0.1:37300`). |
 | [Front](Front) | The HTTP front: the Angular application and its `/.cris` endpoints on the same origin (`http://localhost:5300`). No database, no login provider: it is a remote of its AuthCenter. Its endpoints execute the session commands (logins, refresh, logout...) whose operations are dispatched to the Backend, and it verifies the tokens with the Backend's keys. | The browser. |
 | [Admin](Admin) | The back-office, the second remote of the Backend (`http://localhost:5302`): the user management of CK-Ng-Admin (the users of a workspace, their banishment, their invitation). Like the Front, no database: its commands are dispatched to the Backend. | The browser. |
 

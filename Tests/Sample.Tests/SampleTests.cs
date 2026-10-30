@@ -7,6 +7,7 @@ using CK.Sample.Front;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Shouldly;
 using System;
@@ -46,7 +47,7 @@ public class SampleTests
     const string AdminUrl = "http://localhost:5312";
 
     FakeIdentityProvider _idp = null!;
-    WebApplication _backend = null!;
+    IHost _backend = null!;
     WebApplication _front = null!;
     WebApplication _admin = null!;
 
@@ -61,7 +62,6 @@ public class SampleTests
         _idp = new FakeIdentityProvider();
         _backend = await BackendHost.BuildAsync( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
         {
-            ["Urls"] = "http://127.0.0.1:5311",
             ["CK-AppIdentity:Defaults:ListeningAddress:0"] = BackendAddress,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
@@ -97,7 +97,7 @@ public class SampleTests
     {
         if( _admin != null ) await _admin.DisposeAsync();
         if( _front != null ) await _front.DisposeAsync();
-        if( _backend != null ) await _backend.DisposeAsync();
+        _backend?.Dispose();
         _idp?.Dispose();
     }
 
