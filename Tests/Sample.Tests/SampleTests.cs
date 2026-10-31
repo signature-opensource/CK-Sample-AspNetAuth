@@ -54,14 +54,15 @@ public class SampleTests
     [OneTimeSetUp]
     public async Task StartTheHostsAsync()
     {
-        // A fresh AppIdentity store for each run (the identity keys, the pinned remotes, the sessions): the default one
-        // is in the user's profile, shared with the manual runs of the sample.
+        // A fresh AppIdentity store for each run (the identity keys, the pinned remotes, the sessions), not the one of the
+        // manual runs of the sample ("#Dev/CK-AppIdentity"): the hosts' StoreRootPath is cleared, they use the default store.
         var store = TestHelper.TestProjectFolder.AppendPart( "TestStore" );
         if( Directory.Exists( store ) ) Directory.Delete( store, recursive: true );
         ApplicationIdentityServiceConfiguration.DefaultStoreRootPath = store;
         _idp = new FakeIdentityProvider();
         _backend = await BackendHost.BuildAsync( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
         {
+            ["CK-AppIdentity:StoreRootPath"] = "",
             ["CK-AppIdentity:Defaults:ListeningAddress:0"] = BackendAddress,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
@@ -81,6 +82,7 @@ public class SampleTests
         _front = FrontHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["Urls"] = FrontUrl,
+            ["CK-AppIdentity:StoreRootPath"] = "",
             ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
             // The UI smoke test runs on the built client applications (never their dev server).
             ["Clients:UseDist"] = "true"
@@ -89,6 +91,7 @@ public class SampleTests
         _admin = AdminHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["Urls"] = AdminUrl,
+            ["CK-AppIdentity:StoreRootPath"] = "",
             ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
             ["Clients:UseDist"] = "true"
         } ), TestHelper.SolutionFolder.Combine( "Admin/Admin.Host" ) );

@@ -133,6 +133,11 @@ client applications) or `Clients:{Name}:UseDist` (one of them) set to `true` ser
 The hosts pin each other's identity at their first connection (`AutoTrustKey: Once`): in production, the keys are
 pinned explicitly.
 
+The AppIdentity store of the hosts (their identity keys, the pinned remotes, the sessions) is in the `#Dev` folder of the
+solution (`#Dev/CK-AppIdentity`): their `StoreRootPath` is `"../../#Dev/CK-AppIdentity"`, relative to their project
+folder (a private store). `#Dev` holds the development data of the solution: its content is ignored by git. Deleting
+`#Dev/CK-AppIdentity` resets the identities of the hosts.
+
 ### OpenID Connect
 
 OpenID Connect is a package of its own: the Backend references CK.AppIdentity.Cris.AuthCenter.Oidc (without it, an
