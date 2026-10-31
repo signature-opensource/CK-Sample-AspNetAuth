@@ -79,7 +79,7 @@ export class Architecture implements OnInit {
     {
       label: 'Who am I at the AuthCenter, for another actor',
       path: '/.cris',
-      body: '["CK.Sample.IWhoAmIQCommand",{"actorId":1,"targetPartyFullName":"Sample/$Backend/#Dev"}]',
+      body: '["CK.Sample.IWhoAmIQCommand",{"actorId":1,"targetPartyFullName":"Sample/Auth3/$Backend/#Dev"}]',
       withToken: true,
       expected: 'Refused by the front: the actor of the command must be the authenticated one (its incoming validation).'
     },
