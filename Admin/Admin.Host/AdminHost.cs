@@ -30,8 +30,6 @@ public static class AdminHost
         configure?.Invoke( builder.Configuration );
         builder.UseCKMonitoring();
         builder.AddApplicationIdentityServiceConfiguration();
-        // The identity keys of the application are protected at rest.
-        builder.Services.AddDataProtection();
         builder.Services.AddCrisAuthentication();
         var monitor = builder.GetBuilderMonitor();
         var map = StObjContextRoot.Load( typeof( AdminHost ).Assembly, monitor )

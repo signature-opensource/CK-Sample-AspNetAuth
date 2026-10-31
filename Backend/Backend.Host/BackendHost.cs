@@ -26,8 +26,6 @@ public static class BackendHost
         configure?.Invoke( builder.Configuration );
         builder.UseCKMonitoring();
         builder.AddApplicationIdentityServiceConfiguration();
-        // The identity keys of the application are protected at rest.
-        builder.Services.AddDataProtection();
         // The generic host registers no monitor (the web hosts have the one of their ScopedHttpContext).
         builder.Services.AddScoped<IActivityMonitor, ActivityMonitor>();
         builder.Services.AddScoped( sp => sp.GetRequiredService<IActivityMonitor>().ParallelLogger );

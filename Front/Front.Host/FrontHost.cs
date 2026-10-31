@@ -30,8 +30,6 @@ public static class FrontHost
         configure?.Invoke( builder.Configuration );
         builder.UseCKMonitoring();
         builder.AddApplicationIdentityServiceConfiguration();
-        // The identity keys of the application are protected at rest.
-        builder.Services.AddDataProtection();
         builder.Services.AddCrisAuthentication();
         builder.Services.AddHttpForwarder();
         var monitor = builder.GetBuilderMonitor();
