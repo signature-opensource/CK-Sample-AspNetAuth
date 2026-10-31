@@ -134,9 +134,9 @@ The hosts pin each other's identity at their first connection (`AutoTrustKey: On
 pinned explicitly.
 
 The AppIdentity store of the hosts (their identity keys, the pinned remotes, the sessions) is in the `#Dev` folder of the
-solution (`#Dev/CK-AppIdentity`): their `StoreRootPath` is `"../../#Dev/CK-AppIdentity"`, relative to their project
+solution (`#Dev/Store`): their `StoreRootPath` is `"../../#Dev/Store"`, relative to their project
 folder (a private store). `#Dev` holds the development data of the solution: its content is ignored by git. Deleting
-`#Dev/CK-AppIdentity` resets the identities of the hosts.
+`#Dev/Store` resets the identities of the hosts.
 
 ### OpenID Connect
 

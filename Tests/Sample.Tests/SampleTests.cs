@@ -55,7 +55,7 @@ public class SampleTests
     public async Task StartTheHostsAsync()
     {
         // A fresh AppIdentity store for each run (the identity keys, the pinned remotes, the sessions), not the one of the
-        // manual runs of the sample ("#Dev/CK-AppIdentity"): the hosts' StoreRootPath is cleared, they use the default store.
+        // manual runs of the sample ("#Dev/Store"): the hosts' StoreRootPath is cleared, they use the default store.
         var store = TestHelper.TestProjectFolder.AppendPart( "TestStore" );
         if( Directory.Exists( store ) ) Directory.Delete( store, recursive: true );
         ApplicationIdentityServiceConfiguration.DefaultStoreRootPath = store;
