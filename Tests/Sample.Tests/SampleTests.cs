@@ -81,13 +81,16 @@ public class SampleTests
         _front = FrontHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["Urls"] = FrontUrl,
-            ["CK-AppIdentity:Parties:0:Address"] = BackendAddress
+            ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
+            // The UI smoke test runs on the built client applications (never their dev server).
+            ["Clients:UseDist"] = "true"
         } ), TestHelper.SolutionFolder.Combine( "Front/Front.Host" ) );
         await _front.StartAsync();
         _admin = AdminHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["Urls"] = AdminUrl,
-            ["CK-AppIdentity:Parties:0:Address"] = BackendAddress
+            ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
+            ["Clients:UseDist"] = "true"
         } ), TestHelper.SolutionFolder.Combine( "Admin/Admin.Host" ) );
         await _admin.StartAsync();
     }
@@ -122,10 +125,10 @@ public class SampleTests
 
         public int ActorId { get; set; }
 
-        // Posts a command (["Type",{...}] in the TypeScript set) and returns the "result" of the answer.
+        // Posts a command (["Type",{...}] in the type set of the "App" client applications) and returns the "result" of the answer.
         public async Task<JsonElement> SendAsync( string path, string command )
         {
-            using var m = new HttpRequestMessage( HttpMethod.Post, path ) { Content = new StringContent( command, Encoding.UTF8, "application/json" ) };
+            using var m = new HttpRequestMessage( HttpMethod.Post, path + "?TypeFilterName=TypeScriptApp" ) { Content = new StringContent( command, Encoding.UTF8, "application/json" ) };
             if( Token != null ) m.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue( "Bearer", Token );
             using var r = await _http.SendAsync( m );
             r.StatusCode.ShouldBe( HttpStatusCode.OK );

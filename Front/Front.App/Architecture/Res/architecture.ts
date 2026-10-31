@@ -50,14 +50,14 @@ export class Architecture implements OnInit {
     },
     {
       label: 'The same operation on /.cris',
-      path: '/.cris',
+      path: '/.cris?TypeFilterName=TypeScriptApp',
       body: '["CK.IO.Authentication.IOpenSessionOperationCommand",{"scheme":"Basic"}]',
       withToken: false,
-      expected: 'Not even readable: an internal command is never a TypeScript type (the "TypeScript" type set).'
+      expected: 'Not even readable: an internal command is never a TypeScript type (the "TypeScriptApp" type set of this application).'
     },
     {
       label: 'A login on /.cris',
-      path: '/.cris',
+      path: '/.cris?TypeFilterName=TypeScriptApp',
       body: '["CK.IO.Authentication.Weak.IWeakLoginCommand",{"weakActorName":"Operator"}]',
       withToken: false,
       expected: 'A session command must be sent to /.cris/auth (the route of the session cookies).'
@@ -71,28 +71,28 @@ export class Architecture implements OnInit {
     },
     {
       label: 'Hello without the token',
-      path: '/.cris',
+      path: '/.cris?TypeFilterName=TypeScriptApp',
       body: '["CK.Sample.Front.IHelloCommand",{"actorId":0}]',
       withToken: false,
       expected: 'The anonymous: the Normal level is required.'
     },
     {
       label: 'Who am I at the AuthCenter, for another actor',
-      path: '/.cris',
+      path: '/.cris?TypeFilterName=TypeScriptApp',
       body: '["CK.Sample.IWhoAmIQCommand",{"actorId":1,"targetPartyFullName":"Sample/Auth3/$Backend/#Dev"}]',
       withToken: true,
       expected: 'Refused by the front: the actor of the command must be the authenticated one (its incoming validation).'
     },
     {
       label: 'A party command for an unknown party',
-      path: '/.cris',
+      path: '/.cris?TypeFilterName=TypeScriptApp',
       body: '["CK.Sample.IWhoAmIQCommand",{"actorId":0,"targetPartyFullName":"Nowhere/$Nobody/#Dev"}]',
       withToken: true,
       expected: 'No route (set the actorId to yours): the front knows no such party.'
     },
     {
       label: 'A plain text POST',
-      path: '/.cris',
+      path: '/.cris?TypeFilterName=TypeScriptApp',
       body: 'hello',
       withToken: false,
       contentType: 'text/plain',

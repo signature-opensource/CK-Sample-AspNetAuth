@@ -22,9 +22,4 @@
     <Content Remove="Clients/**" />
     <None Remove="Clients/**" />
   </ItemGroup>
-  <ItemGroup>
-    <!-- Development: the requests that the host does not handle are forwarded to the Angular dev server (hot reload on the
-         same origin as in production). -->
-    <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
-  </ItemGroup>
 </Project>

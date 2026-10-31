@@ -27,6 +27,8 @@
     <!-- The application shell (side bar, top bar with the UserInfoBox) and the public page (where a weak actor lands). -->
     <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.cris-auth.0.ci.31" />
     <PackageReference Include="CK.Ng.PublicPage" Version="3.0.0-0.cris-auth.0.ci.20" />
+    <!-- Serves the client applications (app.MapClients()): their dev server in Development, their "dist" otherwise. -->
+    <PackageReference Include="CK.TS.AspNet.Clients" Version="3.0.0-0.cris-auth.0.ci.29" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Sample.Shared\Sample.Shared.csproj" />

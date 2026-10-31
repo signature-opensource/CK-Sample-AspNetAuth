@@ -113,6 +113,23 @@ already built, `-NoBrowser` does not open the browser). By hand:
    (Basic), as `Operator` (Weak), or with "Continue with Duende" then `bob` / `bob` (OpenID Connect, logs in as `Bob-Smith`,
    created at the first login). The Admin is `http://localhost:5302`.
 
+### The client applications
+
+The Angular applications are the client applications of their host (`<TypeScript Name="..." Kind="...">` in
+`Front/Front.Builder/CKSetup.xml` and in `Admin/Admin.Builder/Program.cs`), served by `app.MapClients()` (CK.TS.AspNet.Clients):
+
+| Host | Client application | Request path | Dev server port |
+|---|---|---|---|
+| Front | `Clients/App` | `/` | 4200 |
+| Front | `Clients/MiniApp` (no authentication, sends the `IFrontInfoQCommand`) | `/mini-app/` | 4201 |
+| Admin | `Clients/App` | `/` | 4300 |
+
+Out of Development (`Start.ps1` runs the host programs), a host serves the built files (`dist`): build them first. In
+Development (the launch profiles of the hosts), a host starts the dev server of its client applications (`ng serve` on
+their port, stopped with the host; one already running is reused) and forwards to it: the application reloads on a
+change, on the origin of the host (the authentication requires it). The host configuration `Clients:UseDist` (all the
+client applications) or `Clients:{Name}:UseDist` (one of them) set to `true` serves their built files in Development too.
+
 The hosts pin each other's identity at their first connection (`AutoTrustKey: Once`): in production, the keys are
 pinned explicitly.
 
