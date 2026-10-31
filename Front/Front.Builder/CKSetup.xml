@@ -9,9 +9,11 @@
           <!-- The application (the authentication, the profile, the home page). -->
           <TypeScript TargetProjectPath="{ProjectPath}/Clients/App" />
           <!-- A front without authentication: it sends the IFrontInfoQCommand. Its TypeFilterName identifies the set of types
-               it exchanges with this host. -->
+               it exchanges with this host. It lists its packages: it gets the Cris client package (and what it requires),
+               not the App's pages, authentication and styles. -->
           <TypeScript TargetProjectPath="{ProjectPath}/Clients/MiniApp" TypeFilterName="TypeScriptMiniApp">
             <Types>
+              <Type Name="CK.Ng.Cris.AspNet.CrisAspNetPackage, CK.Ng.Cris.AspNet" />
               <Type Name="CK.Sample.Front.IFrontInfoQCommand, Front.App" />
             </Types>
           </TypeScript>
