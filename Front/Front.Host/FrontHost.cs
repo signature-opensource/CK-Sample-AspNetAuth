@@ -38,26 +38,38 @@ public static class FrontHost
         var app = builder.CKBuild( map );
         app.UseCrisAuthentication();
         app.UseCris();
-        // Development: the Angular dev server ("yarn start") serves the application through this host, on its origin
-        // (feasibility check: the authentication requires the same origin as in production).
-        var devServer = app.Environment.IsDevelopment() ? app.Configuration["Spa:DevServer"] : null;
-        var spa = Path.Combine( app.Environment.ContentRootPath, app.Configuration["Spa:Path"] ?? "Clients/App/dist/App/browser" );
+        // The two Angular applications (Front.Builder/CKSetup.xml) share this origin: the MiniApp under "/mini/" (its
+        // base href), the App everywhere else.
+        MapFront( app, monitor, "MiniApp", "/mini" );
+        MapFront( app, monitor, "App", "" );
+        return app;
+    }
+
+    // Feasibility check: serves the Angular application "Clients/{name}" under the requestPath ("" for the root).
+    // In Development, when "Spa:{name}:DevServer" is configured, its dev server ("yarn start") serves it through this
+    // host, on its origin (the authentication requires the same origin as in production).
+    static void MapFront( WebApplication app, IActivityMonitor monitor, string name, string requestPath )
+    {
+        var devServer = app.Environment.IsDevelopment() ? app.Configuration[$"Spa:{name}:DevServer"] : null;
+        var spa = Path.Combine( app.Environment.ContentRootPath, $"Clients/{name}/dist/{name}/browser" );
         if( !string.IsNullOrEmpty( devServer ) )
         {
-            monitor.Info( $"The Angular application is served by its dev server '{devServer}'." );
-            app.MapForwarder( "/{**catch-all}", devServer ).Add( b => ((RouteEndpointBuilder)b).Order = int.MaxValue );
+            monitor.Info( $"The Angular application '{name}' is served by its dev server '{devServer}'." );
+            app.MapForwarder( $"{requestPath}/{{**catch-all}}", devServer ).Add( b => ((RouteEndpointBuilder)b).Order = int.MaxValue );
         }
         else if( Directory.Exists( spa ) )
         {
             var files = new PhysicalFileProvider( spa );
-            app.UseDefaultFiles( new DefaultFilesOptions { FileProvider = files } );
-            app.UseStaticFiles( new StaticFileOptions { FileProvider = files } );
-            app.MapFallbackToFile( "index.html", new StaticFileOptions { FileProvider = files } );
+            app.UseDefaultFiles( new DefaultFilesOptions { FileProvider = files, RequestPath = requestPath } );
+            app.UseStaticFiles( new StaticFileOptions { FileProvider = files, RequestPath = requestPath } );
+            // The fallback rewrites the request path to the file path: it must be under the RequestPath.
+            app.MapFallbackToFile( $"{requestPath}/{{*path:nonfile}}",
+                                   $"{requestPath.TrimStart( '/' )}/index.html".TrimStart( '/' ),
+                                   new StaticFileOptions { FileProvider = files, RequestPath = requestPath } );
         }
         else
         {
-            monitor.Warn( $"The Angular application is not built ('{spa}' not found): only the '/.cris' endpoints are served." );
+            monitor.Warn( $"The Angular application '{name}' is not built ('{spa}' not found)." );
         }
-        return app;
     }
 }

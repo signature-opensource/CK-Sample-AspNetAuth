@@ -1,0 +1,6 @@
+<main>
+  <h1>MiniApp</h1>
+  <p>A second front of the Front host, without authentication.</p>
+  <button type="button" (click)="update()" [disabled]="busy()">Update</button>
+  <pre id="front-info">{{ info() }}</pre>
+</main>

@@ -1,0 +1,22 @@
+<Setup>
+  <!-- The BinPath's Path (Front.App's output) and ProjectPath (the Front.Host folder) are set by the CKomposableAppBuilder. -->
+  <Aspect Type="CK.Setup.TypeScriptAspectConfiguration, CK.TypeScript" />
+  <BinPaths>
+    <BinPath>
+      <!-- The two Angular applications of the Front host. -->
+      <TypeScript>
+        <Multiple>
+          <!-- The application (the authentication, the profile, the home page). -->
+          <TypeScript TargetProjectPath="{ProjectPath}/Clients/App" />
+          <!-- A front without authentication: it sends the IFrontInfoQCommand. Its TypeFilterName identifies the set of types
+               it exchanges with this host. -->
+          <TypeScript TargetProjectPath="{ProjectPath}/Clients/MiniApp" TypeFilterName="TypeScriptMiniApp">
+            <Types>
+              <Type Name="CK.Sample.Front.IFrontInfoQCommand, Front.App" />
+            </Types>
+          </TypeScript>
+        </Multiple>
+      </TypeScript>
+    </BinPath>
+  </BinPaths>
+</Setup>
