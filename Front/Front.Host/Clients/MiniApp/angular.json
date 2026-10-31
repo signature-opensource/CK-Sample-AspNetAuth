@@ -36,7 +36,7 @@
             "styles": [
               "src/styles.less"
             ],
-            "baseHref": "/mini/"
+            "baseHref": "/mini-app/"
           },
           "configurations": {
             "production": {

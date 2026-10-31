@@ -24,14 +24,19 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "less",
             "assets": [
-              { "glob": "**/*", "input": "ck-gen/ts-assets" }, {
+              {
+                "glob": "**/*",
+                "input": "ck-gen/ts-assets"
+              },
+              {
                 "glob": "**/*",
                 "input": "public"
               }
             ],
             "styles": [
               "src/styles.less"
-            ]
+            ],
+            "baseHref": "/"
           },
           "configurations": {
             "production": {
@@ -67,7 +72,10 @@
               "buildTarget": "App:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "port": 4300
+          }
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"
