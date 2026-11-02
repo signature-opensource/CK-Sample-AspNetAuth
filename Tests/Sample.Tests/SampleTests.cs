@@ -55,14 +55,13 @@ public class SampleTests
     public async Task StartTheHostsAsync()
     {
         // A fresh AppIdentity store for each run (the identity keys, the pinned remotes, the sessions), not the one of the
-        // manual runs of the sample ("#Dev/Store"): the hosts' StoreRootPath is cleared, they use the default store.
+        // manual runs of the sample ("#Dev/Store"): setting the DefaultStoreRootPath disables the dev store.
         var store = TestHelper.TestProjectFolder.AppendPart( "TestStore" );
         if( Directory.Exists( store ) ) Directory.Delete( store, recursive: true );
         ApplicationIdentityServiceConfiguration.DefaultStoreRootPath = store;
         _idp = new FakeIdentityProvider();
         _backend = await BackendHost.BuildAsync( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
         {
-            ["CK-AppIdentity:StoreRootPath"] = "",
             ["CK-AppIdentity:Defaults:ListeningAddress:0"] = BackendAddress,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
@@ -83,7 +82,6 @@ public class SampleTests
         {
             // The web application of the "Main" endpoint of the front's party ("HttpEndpoint" feature).
             ["CK-AppIdentity:Local:HttpEndpoint:Main:Urls"] = FrontUrl,
-            ["CK-AppIdentity:StoreRootPath"] = "",
             ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
             // The UI smoke test runs on the built client applications (never their dev server).
             ["Clients:UseDist"] = "true"
@@ -92,7 +90,6 @@ public class SampleTests
         _admin = AdminHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["CK-AppIdentity:Local:HttpEndpoint:Main:Urls"] = AdminUrl,
-            ["CK-AppIdentity:StoreRootPath"] = "",
             ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
             ["Clients:UseDist"] = "true"
         } ), TestHelper.SolutionFolder.Combine( "Admin/Admin.Host" ) );
