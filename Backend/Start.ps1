@@ -1,24 +1,27 @@
 <#
 .SYNOPSIS
-    Builds and starts the CK-Sample-AspNetAuth demo: the Backend, the Front, the Admin, and the browser on the Front.
+    Builds and starts the CK-Sample-AspNetAuth demo in Development: the Backend, the Front, the Admin, and the browser on the Front.
 
 .DESCRIPTION
     1. Builds Backend.Host, Front.Host and Admin.Host. Their builders generate the code of the hosts, the Angular code
        (ck-gen) and the Backend's database (CKSampleBackend on the local SQL Server).
        The packages of the CK stack are restored from the local CKli feed (<stack root>\.PublicStack\$Local\NuGet) when
        it exists, then from the feeds of nuget.config.
-    2. Builds the Angular applications of the Front and of the Admin (yarn install, yarn build).
-    3. Starts Backend.Host, waits for its AppIdentity listener, starts Front.Host and Admin.Host and waits until they
-       answer and reach their AuthCenter.
+    2. Installs the packages of the Angular applications of the Front and of the Admin (yarn install).
+    3. Starts the hosts in the Development environment (DOTNET_ENVIRONMENT): the Backend, then the Front and the Admin,
+       and waits until they answer and reach their AuthCenter. In Development, the Front and the Admin start the dev
+       servers of their client applications ("ng serve" on 4200 and 4201 for the Front, 4300 for the Admin): the script
+       waits until the client applications answer (the dev servers compile first).
     4. Opens the browser on http://localhost:5300 (the Admin is on http://localhost:5302), then waits: press Enter to stop
-       the hosts.
+       the hosts. They are stopped gracefully (their window is closed, like Ctrl+C in it): each host stops the dev
+       servers it started.
 
     The demo logins: Albert / pass (Basic), Operator (Weak), "Continue with Duende" then bob / bob (OpenID Connect).
 
     Requires the .NET SDK, Node (with Yarn: "corepack enable") and a local SQL Server (integrated security).
 
 .PARAMETER SkipBuild
-    Starts the hosts already built (no .NET nor Angular build).
+    Starts the hosts already built (no .NET build nor yarn install).
 
 .PARAMETER NoBrowser
     Does not open the browser.
@@ -34,12 +37,13 @@ Set-StrictMode -Version Latest
 $root = Split-Path -Parent $PSScriptRoot
 $backendHost = Join-Path $root 'Backend\Backend.Host'
 $frontHost = Join-Path $root 'Front\Front.Host'
-$app = Join-Path $frontHost 'Clients\App'
 $frontUrl = 'http://localhost:5300'
 $adminHost = Join-Path $root 'Admin\Admin.Host'
-$adminApp = Join-Path $adminHost 'Clients\App'
 $adminUrl = 'http://localhost:5302'
 $backendPort = 37300
+# The Angular applications (their dev servers: Front/Front.Builder/CKSetup.xml, Admin/Admin.Builder/Program.cs).
+$clientApps = @( (Join-Path $frontHost 'Clients\App'), (Join-Path $frontHost 'Clients\MiniApp'), (Join-Path $adminHost 'Clients\App') )
+$devServerPorts = @( 4200, 4201, 4300 )
 
 function Write-Step( [string] $text ) { Write-Host "`n==> $text" -ForegroundColor Cyan }
 
@@ -66,10 +70,49 @@ function Get-LoginSchemes( [string] $url ) {
     return $null
 }
 
-if( (Test-Port $backendPort) -or (Test-Port 5300) -or (Test-Port 5302) ) {
-    throw "The ports $backendPort, 5300 or 5302 are in use: the demo may already be running."
+# Whether a client application answers (through its dev server).
+function Test-Page( [string] $url ) {
+    try { return (Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 30).StatusCode -eq 200 } catch { return $false }
 }
-foreach( $tool in @( 'dotnet' ) + $(if( $SkipBuild ) { @() } else { @( 'node', 'yarn' ) }) ) {
+
+# Sends Ctrl+C to the console of a process. It runs in a hidden helper process: the helper attaches to the host's console,
+# ignores the signal itself and generates it for the console (a console window can't be closed from another process:
+# "taskkill" without "/F" fails on a console application).
+$sendCtrlC = @'
+param( [int] $ProcessId )
+Add-Type -Namespace Win32 -Name Console -MemberDefinition @"
+[System.Runtime.InteropServices.DllImport( "kernel32.dll" )] public static extern bool FreeConsole();
+[System.Runtime.InteropServices.DllImport( "kernel32.dll" )] public static extern bool AttachConsole( uint dwProcessId );
+[System.Runtime.InteropServices.DllImport( "kernel32.dll" )] public static extern bool SetConsoleCtrlHandler( System.IntPtr handler, bool add );
+[System.Runtime.InteropServices.DllImport( "kernel32.dll" )] public static extern bool GenerateConsoleCtrlEvent( uint dwCtrlEvent, uint dwProcessGroupId );
+"@
+[Win32.Console]::FreeConsole() | Out-Null
+if( -not [Win32.Console]::AttachConsole( $ProcessId ) ) { exit 1 }
+[Win32.Console]::SetConsoleCtrlHandler( [IntPtr]::Zero, $true ) | Out-Null
+$ok = [Win32.Console]::GenerateConsoleCtrlEvent( 0, 0 )
+Start-Sleep -Milliseconds 500
+[Win32.Console]::FreeConsole() | Out-Null
+if( $ok ) { exit 0 } else { exit 2 }
+'@
+
+# Stops a host gracefully, like Ctrl+C in its window: it stops its web applications and the dev servers it started.
+# Its process tree is killed if it doesn't exit in time.
+function Stop-Host( [System.Diagnostics.Process] $p ) {
+    if( $p.HasExited ) { return }
+    $command = "& { $sendCtrlC } -ProcessId $($p.Id)"
+    $encoded = [Convert]::ToBase64String( [Text.Encoding]::Unicode.GetBytes( $command ) )
+    Start-Process powershell -ArgumentList '-NoProfile', '-EncodedCommand', $encoded -WindowStyle Hidden -Wait
+    if( -not $p.WaitForExit( 15000 ) ) {
+        Write-Host "The process $($p.Id) didn't stop: its process tree is killed." -ForegroundColor Yellow
+        cmd /c "taskkill /PID $($p.Id) /T /F >nul 2>&1"
+    }
+}
+
+$busy = @( $backendPort, 5300, 5302 ) + $devServerPorts | Where-Object { Test-Port $_ }
+if( $busy ) {
+    throw "The ports $($busy -join ', ') are in use: the demo (or a dev server) may already be running."
+}
+foreach( $tool in @( 'dotnet', 'node' ) + $(if( $SkipBuild ) { @() } else { @( 'yarn' ) }) ) {
     if( -not (Get-Command $tool -ErrorAction SilentlyContinue) ) { throw "'$tool' is not available (see the README)." }
 }
 
@@ -107,12 +150,12 @@ if( -not $SkipBuild ) {
         Remove-Item $config -ErrorAction SilentlyContinue
     }
 
-    foreach( $a in @( $app, $adminApp ) ) {
-        Write-Step "Building the Angular application of $(Split-Path -Leaf (Split-Path -Parent (Split-Path -Parent $a)))"
+    # The dev servers compile the Angular applications: only their packages are installed.
+    foreach( $a in $clientApps ) {
+        Write-Step "Installing the packages of $a"
         Push-Location $a
         try {
             Invoke-Native 'yarn install' { yarn install }
-            Invoke-Native 'yarn build' { yarn build }
         }
         finally {
             Pop-Location
@@ -120,12 +163,16 @@ if( -not $SkipBuild ) {
     }
 }
 
-foreach( $exe in @( "$backendHost\bin\Debug\net10.0\Backend.Host.exe", "$frontHost\bin\Debug\net10.0\Front.Host.exe", "$app\dist\App\browser\index.html",
-                   "$adminHost\bin\Debug\net10.0\Admin.Host.exe", "$adminApp\dist\App\browser\index.html" ) ) {
-    if( -not (Test-Path $exe) ) { throw "'$exe' is missing: run this script without -SkipBuild." }
+foreach( $required in @( "$backendHost\bin\Debug\net10.0\Backend.Host.exe", "$frontHost\bin\Debug\net10.0\Front.Host.exe",
+                         "$adminHost\bin\Debug\net10.0\Admin.Host.exe" ) + ($clientApps | ForEach-Object { Join-Path $_ '.pnp.cjs' }) ) {
+    # The client applications use Yarn Plug'n'Play: "yarn install" writes their ".pnp.cjs".
+    if( -not (Test-Path $required) ) { throw "'$required' is missing: run this script without -SkipBuild." }
 }
 
 $started = @()
+$previousEnvironment = $env:DOTNET_ENVIRONMENT
+# The hosts inherit it: the Development environment ("#Dev" is their AppIdentity environment).
+$env:DOTNET_ENVIRONMENT = 'Development'
 try {
     # Each host runs in its own console window (its logs), from its project folder (its appsettings.json).
     Write-Step 'Starting the Backend'
@@ -156,6 +203,16 @@ try {
         Start-Sleep -Milliseconds 500
     }
 
+    Write-Step 'Waiting for the client applications (their dev servers compile them)'
+    $deadline = (Get-Date).AddSeconds( 180 )
+    foreach( $page in @( "$frontUrl/", "$frontUrl/mini-app/", "$adminUrl/" ) ) {
+        while( -not (Test-Page $page) ) {
+            if( (Get-Date) -gt $deadline ) { throw "The client application $page does not answer (see the windows of the hosts)." }
+            Start-Sleep -Seconds 2
+        }
+        Write-Host "$page answers."
+    }
+
     Write-Step "The demo runs on $frontUrl (the Admin on $adminUrl)"
     Write-Host 'Albert / pass (Basic), Operator (Weak), "Continue with Duende" then bob / bob (OpenID Connect).'
     Write-Host 'On the Admin, Albert / pass administers the users of the "Demo" workspace.'
@@ -164,8 +221,13 @@ try {
     [Console]::ReadLine() | Out-Null
 }
 finally {
-    foreach( $p in $started ) {
-        if( -not $p.HasExited ) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
+    $env:DOTNET_ENVIRONMENT = $previousEnvironment
+    # The fronts first (they stop their dev servers), the Backend last.
+    [array]::Reverse( $started )
+    foreach( $p in $started ) { Stop-Host $p }
+    if( $started.Count -gt 0 ) {
+        $left = $devServerPorts | Where-Object { Test-Port $_ }
+        if( $left ) { Write-Host "Something still listens on $($left -join ', ')." -ForegroundColor Yellow }
+        Write-Host 'The demo is stopped.'
     }
-    if( $started.Count -gt 0 ) { Write-Host 'The demo is stopped.' }
 }

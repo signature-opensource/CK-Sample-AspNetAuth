@@ -13,7 +13,7 @@
     <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Oidc" Version="3.0.0-0.cris-auth.0.ci.79" />
     <!-- The passkey (WebAuthn) scheme family: the ceremonies and their verification ("AuthCenter:Passkey" section). -->
     <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Passkey" Version="3.0.0-0.cris-auth.0.ci.79" />
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.18" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.19" />
     <!-- The login providers: Basic (user name and password), Oidc, Passkey, Weak (passwordless operators, Unsafe level). -->
     <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth.0.ci.31" />
     <PackageReference Include="CK.DB.User.UserOidc" Version="31.0.0-0.cris-auth.0.ci.35" />
