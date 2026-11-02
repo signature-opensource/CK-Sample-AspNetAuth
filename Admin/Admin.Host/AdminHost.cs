@@ -13,6 +13,10 @@ namespace CK.Sample.Admin;
 /// the same origin. Like the front, it has no database and no login provider: its AuthCenter is the remote "$Backend"
 /// party ("CK-AppIdentity" configuration section), to which it relays the session commands and dispatches the
 /// administration commands.
+/// <para>
+/// The host is a Generic Host: its web server is the "HttpEndpoint" feature of its party (CK.AppIdentity.HttpEndpoint),
+/// the "Main" endpoint of the "CK-AppIdentity:Local:HttpEndpoint" section.
+/// </para>
 /// </summary>
 public static class AdminHost
 {
@@ -23,21 +27,33 @@ public static class AdminHost
     /// <param name="configure">Optional configuration overrides (the tests use them).</param>
     /// <param name="contentRoot">Optional content root (where the appsettings.json and the Clients are). Defaults to the current directory.</param>
     /// <returns>The application, not started.</returns>
-    public static WebApplication Build( string[] args, Action<IConfigurationBuilder>? configure = null, string? contentRoot = null )
+    public static IHost Build( string[] args, Action<IConfigurationBuilder>? configure = null, string? contentRoot = null )
     {
-        var builder = WebApplication.CreateSlimBuilder( new WebApplicationOptions { Args = args, ContentRootPath = contentRoot } );
+        var builder = Host.CreateApplicationBuilder( new HostApplicationBuilderSettings { Args = args, ContentRootPath = contentRoot } );
         configure?.Invoke( builder.Configuration );
         builder.UseCKMonitoring();
         builder.AddApplicationIdentityServiceConfiguration();
-        builder.Services.AddCrisAuthentication();
+        // The monitor of the work outside the requests (the requests have the one of their ScopedHttpContext).
+        builder.Services.AddScoped<IActivityMonitor, ActivityMonitor>();
+        builder.Services.AddScoped( sp => sp.GetRequiredService<IActivityMonitor>().ParallelLogger );
+        // The web application of the "Main" endpoint: the authentication of the "/.cris" requests, the Cris endpoints and
+        // the client application (Admin.Builder). In Development, MapClients starts its dev server ("ng serve") and forwards
+        // to it.
+        builder.AddHttpEndpoint( "Main", web =>
+        {
+            web.Services.AddCrisAuthentication();
+            web.AppendApplicationBuilder( app =>
+            {
+                app.UseCrisAuthentication();
+                app.UseCris();
+                // CKBuild gives the WebApplication.
+                ((WebApplication)app).MapClients();
+            } );
+        } );
         var monitor = builder.GetBuilderMonitor();
         var map = StObjContextRoot.Load( typeof( AdminHost ).Assembly, monitor )
                   ?? throw new InvalidOperationException( "Unable to load the generated code: build the Admin.Builder." );
-        var app = builder.CKBuild( map );
-        app.UseCrisAuthentication();
-        app.UseCris();
-        // The client application (Admin.Builder): in Development, the host starts its dev server ("ng serve") and forwards to it.
-        app.MapClients();
-        return app;
+        builder.Services.AddStObjMap( monitor, map );
+        return builder.CKBuild();
     }
 }

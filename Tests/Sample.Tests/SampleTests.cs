@@ -49,7 +49,7 @@ public class SampleTests
     FakeIdentityProvider _idp = null!;
     IHost _backend = null!;
     IHost _front = null!;
-    WebApplication _admin = null!;
+    IHost _admin = null!;
 
     [OneTimeSetUp]
     public async Task StartTheHostsAsync()
@@ -81,8 +81,8 @@ public class SampleTests
         await _backend.StartAsync();
         _front = FrontHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
         {
-            // The web application is created by the "HttpEndpoint" feature of the front's party.
-            ["CK-AppIdentity:Local:HttpEndpoint:Urls"] = FrontUrl,
+            // The web application of the "Main" endpoint of the front's party ("HttpEndpoint" feature).
+            ["CK-AppIdentity:Local:HttpEndpoint:Main:Urls"] = FrontUrl,
             ["CK-AppIdentity:StoreRootPath"] = "",
             ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
             // The UI smoke test runs on the built client applications (never their dev server).
@@ -91,7 +91,7 @@ public class SampleTests
         await _front.StartAsync();
         _admin = AdminHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
         {
-            ["Urls"] = AdminUrl,
+            ["CK-AppIdentity:Local:HttpEndpoint:Main:Urls"] = AdminUrl,
             ["CK-AppIdentity:StoreRootPath"] = "",
             ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
             ["Clients:UseDist"] = "true"
@@ -102,7 +102,11 @@ public class SampleTests
     [OneTimeTearDown]
     public async Task StopTheHostsAsync()
     {
-        if( _admin != null ) await _admin.DisposeAsync();
+        if( _admin != null )
+        {
+            await _admin.StopAsync();
+            _admin.Dispose();
+        }
         if( _front != null )
         {
             await _front.StopAsync();

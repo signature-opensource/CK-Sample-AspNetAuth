@@ -10,8 +10,10 @@
     <!-- The Remote side of the AuthCenter feature (this application is a remote of the Backend): the token reader, the user's proof
          and the encryption of the sensitive fields for the Backend, the PartyActor identifiers. -->
     <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Remote" Version="3.0.0-0.cris-auth.0.ci.79" />
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.17" />
-    <PackageReference Include="CK.AspNet" Version="24.0.0-0.cris-auth.0.ci.14" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.18" />
+    <PackageReference Include="CK.AspNet" Version="24.0.0-0.cris-auth.0.ci.17" />
+    <!-- The "HttpEndpoint" feature: the web server of this party (Local:HttpEndpoint). -->
+    <PackageReference Include="CK.AppIdentity.HttpEndpoint" Version="24.0.0-0.cris-auth.0.ci.17" />
     <!-- The HTTP side of the authentication and the Angular client (the Basic and Weak login forms and the passkey buttons, with
          their endpoint handlers: this application executes the session commands, the Backend their operations). -->
     <PackageReference Include="CK.Cris.AspNet.Authentication" Version="3.0.0-0.cris-auth.0.ci.62" />
