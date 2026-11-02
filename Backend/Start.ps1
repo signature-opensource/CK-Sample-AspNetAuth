@@ -57,9 +57,10 @@ function Invoke-Native( [string] $what, [scriptblock] $command ) {
 # AuthCenter.
 function Get-LoginSchemes( [string] $url ) {
     try {
-        $r = Invoke-RestMethod -Method Post -Uri "$url/.cris" -ContentType 'application/json' `
+        # "/.cris" reads the commands of the request's type set (the client applications named "App").
+        $r = Invoke-RestMethod -Method Post -Uri "$url/.cris?TypeFilterName=TypeScriptApp" -ContentType 'application/json' `
                                -Headers @{ Origin = $url } -Body '["CK.IO.Authentication.IGetLoginSchemesQCommand",{}]' -TimeoutSec 5
-        # The result is typed: ["L(string?)", [ "Basic", ... ]].
+        # The result is typed: ["L(CK.IO.Authentication.ILoginSchemeInfo?)", [ { "name": "Basic", ... }, ... ]].
         if( $r.result -is [array] -and $r.result.Count -eq 2 -and $r.result[1] -is [array] -and $r.result[1].Count -gt 0 ) { return $r.result[1] }
     } catch { }
     return $null
@@ -144,7 +145,7 @@ try {
         if( (Get-Date) -gt $deadline ) { throw 'The Front does not reach its AuthCenter.' }
         Start-Sleep -Milliseconds 500
     }
-    Write-Host "Login schemes: $($schemes -join ', ')"
+    Write-Host "Login schemes: $(($schemes | ForEach-Object { $_.name }) -join ', ')"
 
     Write-Step 'Starting the Admin'
     $started += Start-Process -FilePath "$adminHost\bin\Debug\net10.0\Admin.Host.exe" -WorkingDirectory $adminHost -PassThru
