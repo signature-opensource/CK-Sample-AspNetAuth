@@ -48,7 +48,7 @@ public class SampleTests
 
     FakeIdentityProvider _idp = null!;
     IHost _backend = null!;
-    WebApplication _front = null!;
+    IHost _front = null!;
     WebApplication _admin = null!;
 
     [OneTimeSetUp]
@@ -81,7 +81,8 @@ public class SampleTests
         await _backend.StartAsync();
         _front = FrontHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
         {
-            ["Urls"] = FrontUrl,
+            // The web application is created by the "HttpEndpoint" feature of the front's party.
+            ["CK-AppIdentity:Local:HttpEndpoint:Urls"] = FrontUrl,
             ["CK-AppIdentity:StoreRootPath"] = "",
             ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
             // The UI smoke test runs on the built client applications (never their dev server).
@@ -102,7 +103,11 @@ public class SampleTests
     public async Task StopTheHostsAsync()
     {
         if( _admin != null ) await _admin.DisposeAsync();
-        if( _front != null ) await _front.DisposeAsync();
+        if( _front != null )
+        {
+            await _front.StopAsync();
+            _front.Dispose();
+        }
         _backend?.Dispose();
         _idp?.Dispose();
     }
