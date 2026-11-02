@@ -101,20 +101,22 @@ and their links open the Admin (`Local:FrontUrl`): it has the registration and t
 
 Requires SQL Server (the Backend's database is `CKSampleBackend` on `.`), Node and Yarn.
 
-**`Backend/Start.ps1`** does it all, in Development:
-- it builds the hosts (restoring the CK packages from the local CKli feed when it exists) and installs the packages of
-  the Angular applications (`yarn install`);
-- it starts the Backend, then the Front and the Admin, each in its own window, with `DOTNET_ENVIRONMENT=Development`;
-- it waits until they reach their AuthCenter and their client applications answer (their dev servers compile them);
-- it opens the browser on the Front;
+Build the solution once (`dotnet build`): the builders generate the code of the hosts, the Angular code (and install
+the packages of the Angular applications) and the database. The build of the hosts also fills the `#Dev` folder (see
+[CK.AppIdentity.Hosting](https://github.com/signature-opensource/CK-AppIdentity/tree/stable/CK.AppIdentity.Hosting#the-dev-folder-of-a-development-solution)):
+their manifests (`#Dev/Parties`) and the launcher **`#Dev/Start.ps1`**. It runs the demo in Development:
+- it builds the hosts;
+- it starts the Backend, the Front and the Admin, each in its own window, with `DOTNET_ENVIRONMENT=Development`;
+- it waits until they are ready (their outgoing remotes are connected) and their client applications are served (their
+  dev servers compile them): each host writes its running status in `#Dev/Store`;
+- it prints their URLs and opens the browser on the Front;
 - when Enter is pressed, it stops the hosts like Ctrl+C in their window: each one stops the dev servers it started.
 
 `-SkipBuild` starts what is already built, `-NoBrowser` does not open the browser. By hand:
 
-1. Build the solution: the builders generate the code of the hosts (and the database).
-2. Build the Angular applications: in `Front/Front.Host/Clients/App`, `Front/Front.Host/Clients/MiniApp` and
-   `Admin/Admin.Host/Clients/App`, `yarn install` then `yarn build` (in Development, `yarn install` is enough: the dev
-   servers compile them).
+1. Build the solution.
+2. Out of Development, build the Angular applications: `yarn build` in `Front/Front.Host/Clients/App`,
+   `Front/Front.Host/Clients/MiniApp` and `Admin/Admin.Host/Clients/App` (in Development, the dev servers compile them).
 3. Start `Backend.Host`, then `Front.Host` and `Admin.Host`, and open `http://localhost:5300`: log in as `Albert` / `pass`
    (Basic), as `Operator` (Weak), or with "Continue with Duende" then `bob` / `bob` (OpenID Connect, logs in as `Bob-Smith`,
    created at the first login). The Admin is `http://localhost:5302`.
@@ -132,7 +134,7 @@ The Angular applications are the client applications of their host (`<TypeScript
 | Admin | `Clients/App` | `/` | 4300 |
 
 Out of Development, a host serves the built files (`dist`): build them first (`yarn build`). In Development
-(`Start.ps1`, the launch profiles of the hosts), a host starts the dev server of its client applications (`ng serve` on
+(`#Dev/Start.ps1`, the launch profiles of the hosts), a host starts the dev server of its client applications (`ng serve` on
 their port, stopped with the host; one already running is reused) and forwards to it: the application reloads on a
 change, on the origin of the host (the authentication requires it). The host configuration `Clients:UseDist` (all the
 client applications) or `Clients:{Name}:UseDist` (one of them) set to `true` serves their built files in Development too.
