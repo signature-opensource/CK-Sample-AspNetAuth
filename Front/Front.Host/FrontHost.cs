@@ -1,6 +1,4 @@
 using CK.Core;
-using CK.TypeScript;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,20 +33,10 @@ public static class FrontHost
         // The monitor of the work outside the requests (the requests have the one of their ScopedHttpContext).
         builder.Services.AddScoped<IActivityMonitor, ActivityMonitor>();
         builder.Services.AddScoped( sp => sp.GetRequiredService<IActivityMonitor>().ParallelLogger );
-        // The web application of the "Main" endpoint: the authentication of the "/.cris" requests, the Cris endpoints and
-        // the two client applications (Front.Builder/CKSetup.xml) on the same origin: the MiniApp under "/mini-app/", the
-        // App everywhere else. In Development, MapClients starts their dev server ("ng serve") and forwards to it.
-        builder.AddHttpEndpoint( "Main", web =>
-        {
-            web.Services.AddCrisAuthentication();
-            web.AppendApplicationBuilder( app =>
-            {
-                app.UseCrisAuthentication();
-                app.UseCris();
-                // CKBuild gives the WebApplication.
-                ((WebApplication)app).MapClients();
-            } );
-        } );
+        // The web application of each endpoint ("Local:HttpEndpoint") is configured by the packages: the authentication of
+        // the "/.cris" requests, the Cris endpoints and the two client applications (Front.Builder/CKSetup.xml) on the same
+        // origin: the MiniApp under "/mini-app/", the App everywhere else. In Development, the client applications are
+        // served by their dev server ("ng serve").
         var monitor = builder.GetBuilderMonitor();
         var map = StObjContextRoot.Load( typeof( FrontHost ).Assembly, monitor )
                   ?? throw new InvalidOperationException( "Unable to load the generated code: build the Front.Builder." );
