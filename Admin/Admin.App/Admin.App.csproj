@@ -8,7 +8,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!-- The Remote side of the AuthCenter feature: this back-office is the second remote of the Backend. -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Remote" Version="3.0.0-0.cris-auth.0.ci.86" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Remote" Version="3.0.0-0.cris-auth.0.ci.87" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.21" />
     <PackageReference Include="CK.AspNet" Version="24.0.0-0.cris-auth.0.ci.24" />
     <!-- The "HttpEndpoint" feature: the web server of this party (Local:HttpEndpoint). -->
@@ -18,13 +18,13 @@
     <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.cris-auth.0.ci.68" />
     <!-- The user management: the users of a workspace, their banishment, their invitation. Its commands are handled by the
          AuthCenter (dispatched to it, with the user's proof). -->
-    <PackageReference Include="CK.Ng.Admin.UserManagement" Version="3.0.0-0.cris-auth.0.ci.40" />
-    <PackageReference Include="CK.Ng.Admin.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.0.ci.40" />
-    <PackageReference Include="CK.Ng.Admin.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.0.ci.40" />
-    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.48" />
-    <PackageReference Include="CK.Ng.UserProfile.UserBanned" Version="3.0.0-0.cris-auth.0.ci.48" />
+    <PackageReference Include="CK.Ng.Admin.UserManagement" Version="3.0.0-0.cris-auth.0.ci.41" />
+    <PackageReference Include="CK.Ng.Admin.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.0.ci.41" />
+    <PackageReference Include="CK.Ng.Admin.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.0.ci.41" />
+    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.49" />
+    <PackageReference Include="CK.Ng.UserProfile.UserBanned" Version="3.0.0-0.cris-auth.0.ci.49" />
     <!-- The application shell (side bar, top bar with the UserInfoBox). -->
-    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.cris-auth.0.ci.38" />
+    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.cris-auth.0.ci.39" />
     <!-- Serves the client application (app.MapClients()): its dev server in Development, its "dist" otherwise. -->
     <PackageReference Include="CK.TS.AspNet.Clients" Version="3.0.0-0.cris-auth.0.ci.41" />
   </ItemGroup>
