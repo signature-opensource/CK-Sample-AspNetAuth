@@ -67,14 +67,13 @@ public class SampleTests
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientSecret"] = FakeIdentityProvider.ClientSecret,
-            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:CallbackUrls:0"] = Callback,
             // An unknown identity of the "Test" scheme creates its user (SampleAccountCreation).
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:AllowAccountCreation"] = "true",
             // Albert is bound to the "albert-sub" identity of the "Test" scheme.
             ["Demo:OidcScheme"] = "Test",
             ["Demo:OidcSub"] = "albert-sub",
-            // The passkey ceremonies are served by the test front (the RP ID "localhost" is the configured one).
-            ["CK-AppIdentity:Local:AuthCenter:Passkey:Origins:0"] = FrontUrl,
+            // The passkey origins and the OIDC callbacks are the ones of the Front and the Admin: the public URL they announce
+            // (the one of their endpoint). The RP ID "localhost" is the configured one.
             // A short Critical level for the Basic logins: the UI smoke test sees its end (--critical-wait).
             ["CK-AppIdentity:Local:AuthCenter:CriticalLifetimes:Basic"] = "00:00:15"
         } ), TestHelper.SolutionFolder.Combine( "Backend/Backend.Host" ), Assembly.Load( "Backend.Host" ) );
@@ -95,6 +94,12 @@ public class SampleTests
             ["Clients:UseDist"] = "true"
         } ), TestHelper.SolutionFolder.Combine( "Admin/Admin.Host" ), Assembly.Load( "Admin.Host" ) );
         await _admin.StartAsync();
+
+        // The Front and the Admin announce their public URL once their endpoint is started: the Backend derives the
+        // passkey origins, the OIDC callbacks and the links of the mails from them.
+        var backend = _backend.Services.GetRequiredService<ApplicationIdentityService>();
+        for( int i = 0; i < 100 && backend.Remotes.Any( r => r.Description.PublicUrl == null ); ++i ) await Task.Delay( 100 );
+        backend.Remotes.Select( r => r.Description.GetClientApplicationUrl() ).ShouldBe( [FrontUrl, AdminUrl], ignoreOrder: true );
     }
 
     [OneTimeTearDown]

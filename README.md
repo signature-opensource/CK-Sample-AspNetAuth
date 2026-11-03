@@ -89,7 +89,9 @@ bar proposes the user management to an administrator of the current workspace, a
 `Backend.App/WorkspaceUsers`). Log in as `Albert` / `pass`: he administers the "Demo" workspace.
 
 The mails (an invitation, a lost password) are written in the Backend's pickup directory (`Mails`, nothing is sent)
-and their links open the Admin (`Local:FrontUrl`): it has the registration and the password recovery pages.
+and their links open the client application of the party through which the request was made: the Admin, where the
+registration and the password recovery pages are. The Backend knows the URL of each party: the Front and the Admin
+announce their public URL (the one of their endpoint) and their client applications when they connect.
 
 ## The Architecture page
 
@@ -177,13 +179,13 @@ A real provider (with a real secret) goes in the user-secrets of Backend.Host (`
   "CK-AppIdentity:Local:AuthCenter:Oidc:Google:ClientId": "...",
   "CK-AppIdentity:Local:AuthCenter:Oidc:Google:ClientSecret": "...",
   "CK-AppIdentity:Local:AuthCenter:Oidc:Google:Scopes": "openid email",
-  "CK-AppIdentity:Local:AuthCenter:Oidc:Google:CallbackUrls:0": "http://localhost:5300/.auth/oidc/callback",
   "Demo:OidcScheme": "Google",
   "Demo:OidcSub": "<the sub of your Google account>"
 }
 ```
 
-The callback URL is the Front's (`/.auth/oidc/callback`): register it at the provider. Only the Backend knows the
+The callback URL is the Front's (`/.auth/oidc/callback`): register it at the provider. The Backend configures no
+callback URL: it accepts the ones on the public URL that the Front announces. Only the Backend knows the
 client secret (it redeems the code); the Front forwards the start of the login and the callback to it.
 
 ## The tests
