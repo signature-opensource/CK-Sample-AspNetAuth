@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -60,7 +61,7 @@ public class SampleTests
         if( Directory.Exists( store ) ) Directory.Delete( store, recursive: true );
         ApplicationIdentityServiceConfiguration.DefaultStoreRootPath = store;
         _idp = new FakeIdentityProvider();
-        _backend = await BackendHost.BuildAsync( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
+        _backend = CKomposableAppHost.Build( [], b => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["CK-AppIdentity:Defaults:ListeningAddress:0"] = BackendAddress,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
@@ -76,23 +77,23 @@ public class SampleTests
             ["CK-AppIdentity:Local:AuthCenter:Passkey:Origins:0"] = FrontUrl,
             // A short Critical level for the Basic logins: the UI smoke test sees its end (--critical-wait).
             ["CK-AppIdentity:Local:AuthCenter:CriticalLifetimes:Basic"] = "00:00:15"
-        } ), TestHelper.SolutionFolder.Combine( "Backend/Backend.Host" ) );
+        } ), TestHelper.SolutionFolder.Combine( "Backend/Backend.Host" ), Assembly.Load( "Backend.Host" ) );
         await _backend.StartAsync();
-        _front = FrontHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
+        _front = CKomposableAppHost.Build( [], b => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             // The web application of the "Main" endpoint of the front's party ("HttpEndpoint" feature).
             ["CK-AppIdentity:Local:HttpEndpoint:Main:Urls"] = FrontUrl,
             ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
             // The UI smoke test runs on the built client applications (never their dev server).
             ["Clients:UseDist"] = "true"
-        } ), TestHelper.SolutionFolder.Combine( "Front/Front.Host" ) );
+        } ), TestHelper.SolutionFolder.Combine( "Front/Front.Host" ), Assembly.Load( "Front.Host" ) );
         await _front.StartAsync();
-        _admin = AdminHost.Build( [], c => c.AddInMemoryCollection( new Dictionary<string, string?>
+        _admin = CKomposableAppHost.Build( [], b => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["CK-AppIdentity:Local:HttpEndpoint:Main:Urls"] = AdminUrl,
             ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
             ["Clients:UseDist"] = "true"
-        } ), TestHelper.SolutionFolder.Combine( "Admin/Admin.Host" ) );
+        } ), TestHelper.SolutionFolder.Combine( "Admin/Admin.Host" ), Assembly.Load( "Admin.Host" ) );
         await _admin.StartAsync();
     }
 

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace CK.Sample.Backend;
 
 /// <summary>
-/// The demo data of the sample, created when missing (configuration section "Demo"):
+/// The demo data of the sample, created when missing when the host starts (configuration section "Demo"):
 /// <list type="bullet">
 ///   <item>the user "Albert" with the password "Demo:AlbertPassword" (Basic login), administrator of the workspace
 ///   "Demo" (the Admin front's user management);</item>
@@ -24,7 +24,7 @@ namespace CK.Sample.Backend;
 ///   OpenID Connect identity (there is no automatic account creation or binding).</item>
 /// </list>
 /// </summary>
-public static class DemoData
+public sealed class DemoData : IRealObject
 {
     /// <summary>
     /// The name of the demo user.
@@ -40,6 +40,9 @@ public static class DemoData
     /// The name of the demo weak actor.
     /// </summary>
     public const string WeakActorName = "Operator";
+
+    // Called when the host starts.
+    Task OnHostStartAsync( IActivityMonitor monitor, IServiceProvider services, IConfiguration configuration ) => EnsureAsync( monitor, services, configuration );
 
     /// <summary>
     /// Ensures that the demo data exists.

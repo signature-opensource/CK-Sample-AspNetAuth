@@ -7,15 +7,9 @@
     <UserSecretsId>CK-Sample-Backend</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <!-- The bootstrap of the host (Program.cs) and the conventions of the host project. -->
+    <PackageReference Include="CK.AppHost" Version="24.0.0-0.cris-auth.0.ci.27" />
     <ProjectReference Include="..\Backend.App\Backend.App.csproj" />
     <ProjectReference Include="..\Backend.Builder\Backend.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />
   </ItemGroup>
-  <!-- The builder runs during the build and writes the generated code: the default glob of the source files has already
-       been evaluated (on a clean build, it misses it). The generated files are included just before the compilation. -->
-  <Target Name="IncludeGeneratedCode" BeforeTargets="CoreCompile">
-    <ItemGroup>
-      <Compile Remove="$StObjGen/**/*.cs" />
-      <Compile Include="$(MSBuildProjectDirectory)/$StObjGen/**/*.cs" />
-    </ItemGroup>
-  </Target>
 </Project>

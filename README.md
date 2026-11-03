@@ -13,7 +13,11 @@ client. It replaces the WebFrontAuth samples.
 
 Each host is three projects (the CK pattern): `*.App` (the model: packages, commands, services), `*.Builder` (it runs
 the CK engine after its build: the generated code of the host, the database of the Backend, the TypeScript and the
-Angular application of the Front and of the Admin) and `*.Host` (the program).
+Angular application of the Front and of the Admin) and `*.Host` (the program). The three hosts are the same: their
+`Program.cs` is `await CK.Core.CKomposableAppHost.RunAsync( args );` and their project references
+[CK.AppHost](https://github.com/signature-opensource/CK-AspNet/blob/stable/CK.AppHost/README.md) (the bootstrap and the
+conventions of a host project), their `*.App` and their `*.Builder`. What a host does is in its packages, its `*.App` and
+its `appsettings.json`.
 
 [Shared/Sample.Shared](Shared/Sample.Shared) is referenced by every `*.App`: its `IWhoAmIQCommand` is a party command
 handled by every party (see [the Architecture page](#the-architecture-page)), and it declares the application's Poco
@@ -42,7 +46,8 @@ its PartyActorId, that identifies it as the caller of the commands it sends.
 | `Weak` | CK.DB.Actor.WeakActor | `Operator`: passwordless, at the Unsafe level (the application's commands that require Normal refuse it). |
 | `Oidc.<Suffix>` | CK.DB.User.UserOidc | `Oidc.Duende` out of the box: "Continue with Duende", then `bob` / `bob` at the Duende demo server (its first login creates the user `Bob-Smith`). Other schemes: see below. An unknown identity creates its user only for a scheme with `AllowAccountCreation` (`SampleAccountCreation`): otherwise, only an identity bound to a user can log in. Critical level only when the provider authenticated the user recently (the `auth_time` of its identity token): a login on an older provider session is Normal. |
 
-The demo data is created at the start of the Backend when missing (`DemoData`): Albert (with his password), the
+The demo data is created at the start of the Backend when missing (`DemoData`, a real object of `Backend.App`: its
+`OnHostStartAsync`): Albert (with his password), the
 weak actor Operator, and the workspace "Demo" that Albert administers (the Admin's user management).
 
 The Critical level lasts 5 minutes after the authentication (`Local:AuthCenter:CriticalLifetime` of the Backend's
