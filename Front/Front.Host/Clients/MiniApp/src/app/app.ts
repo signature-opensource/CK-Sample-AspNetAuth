@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import axios from 'axios';
 import { HttpCrisEndpoint } from '@local/ck-gen/CK/Cris/HttpCrisEndpoint';
 import { FrontInfoQCommand } from '@local/ck-gen/CK/Sample/Front/FrontInfoQCommand';
@@ -10,6 +10,7 @@ import { FrontInfoQCommand } from '@local/ck-gen/CK/Sample/Front/FrontInfoQComma
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.less'
 })
 export class App {
