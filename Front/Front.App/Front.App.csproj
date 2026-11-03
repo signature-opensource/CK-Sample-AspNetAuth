@@ -9,7 +9,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!-- The Remote side of the AuthCenter feature (this application is a remote of the Backend): the token reader, the user's proof
          and the encryption of the sensitive fields for the Backend, the PartyActor identifiers. -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Remote" Version="3.0.0-0.cris-auth.0.ci.98" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Remote" Version="3.0.0-0.cris-auth.0.ci.98" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.26" />
     <PackageReference Include="CK.AspNet" Version="24.0.0-0.cris-auth.0.ci.33" />
     <!-- The "HttpEndpoint" feature: the web server of this party (Local:HttpEndpoint). -->

@@ -17,7 +17,7 @@ using System.Web;
 namespace CK.Sample.Tests;
 
 /// <summary>
-/// (A copy of the one of CK.AppIdentity.Cris.AuthCenter.Tests: test helpers are not packaged.)
+/// (A copy of the one of CK.AppIdentity.AuthCenter.Tests: test helpers are not packaged.)
 /// A minimal OpenID Connect provider on a loopback port: discovery, JWKS and token endpoint (authorization code with
 /// PKCE, client_secret_basic or client_secret_post). The "browser" part of the authorization is <see cref="Authorize"/>: the user logs in
 /// and the provider "redirects" (it returns the code and the state).

@@ -125,7 +125,7 @@ public sealed class ArchitectureHandlers : ISingletonAutoService
     public ITopology Handle( IGetTopologyQCommand command, CurrentLocalParty party )
     {
         var local = party.LocalParty;
-        var authCenter = local.GetFeature<CK.AppIdentity.Cris.AuthCenter.RemoteAuthCenter>()?.Center.AuthCenter;
+        var authCenter = local.GetFeature<CK.AppIdentity.AuthCenter.RemoteAuthCenter>()?.Center.AuthCenter;
         return command.CreateResult( t =>
         {
             t.LocalPartyFullName = local.FullName;

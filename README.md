@@ -28,7 +28,7 @@ them and the fronts read them, so every party knows the same Poco.
 A party is named after what it is in the application (the Backend, the Front, the Admin), not after a feature it
 implements: the Backend is the AuthCenter of the fronts, and it is also where the database is.
 
-The role of each host is its package (CK.AppIdentity.Cris.AuthCenter.Local or .Remote), and its "CK-AppIdentity"
+The role of each host is its package (CK.AppIdentity.AuthCenter.Local or .Remote), and its "CK-AppIdentity"
 configuration names what each party is: `"AllowFeatures": "AuthCenter"` on the party that is the AuthCenter,
 `"AuthCenterRemote"` on its remotes. The Backend allows `"AuthCenter"` in its `Local` section (it is the AuthCenter,
 its settings are `Local:AuthCenter`) and `"AuthCenterRemote"` on the `$Front` and `$Admin` parties; the Front and the
@@ -156,7 +156,7 @@ Deleting `#Dev/Store` resets the identities of the hosts.
 
 ### OpenID Connect
 
-OpenID Connect is a package of its own: the Backend references CK.AppIdentity.Cris.AuthCenter.Oidc (without it, an
+OpenID Connect is a package of its own: the Backend references CK.AppIdentity.AuthCenter.Oidc (without it, an
 "Local:AuthCenter:Oidc" section is a configuration error). The default configuration (`Backend/Backend.Host/appsettings.json`) has the scheme `Oidc.Duende`: the public demo
 server of Duende IdentityServer (`https://demo.duendesoftware.com`) with its public test client
 (`interactive.confidential` / `secret`, authorization code with PKCE). This secret is published by Duende for testing: it
