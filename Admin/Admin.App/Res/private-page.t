@@ -23,14 +23,14 @@ begin
     ensure import { Layout } from '@local/ck-gen';
     ensure import { NavigationSection } from '@local/ck-gen';
     ensure import { UserService } from '@local/ck-gen';
-    ensure import { TranslateModule, TranslateService } from '@ngx-translate/core';
+    ensure import { TranslatePipe, TranslateService } from '@ngx-translate/core';
     ensure import { Router } from '@angular/router';
 
     in after "@Component"
         in first {^braces}
             in after "imports:"
                 in first {^[]}
-                    replace "RouterOutlet" with "RouterOutlet, Layout, TranslateModule";
+                    replace "RouterOutlet" with "RouterOutlet, Layout, TranslatePipe";
 
     inject """
            readonly #router = inject( Router );
