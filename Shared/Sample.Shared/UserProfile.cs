@@ -3,12 +3,13 @@ namespace CK.Sample;
 /// <summary>
 /// The application's leaf of the user profile Poco family: a single materialization carries the extensions of the
 /// feature packages (the preferred culture, the preferred workspace and the groups, the temporary password state, the
-/// banishment state). The Backend reads it (see Backend.App's UserQueries), the fronts display it.
+/// banishment state, whether the user is a platform administrator: the isAdmin signal of CK.Ng.Admin). The Backend reads it (see Backend.App's UserQueries), the fronts display it.
 /// </summary>
 public interface IUserProfile : CK.IO.User.PreferredCulture.IUserProfile,
                                 CK.IO.UserProfile.Workspace.IUserProfile,
                                 CK.IO.User.UserPassword.Reset.IUserProfile,
-                                CK.IO.User.UserBanned.IUserProfile
+                                CK.IO.User.UserBanned.IUserProfile,
+                                CK.IO.Admin.IUserProfile
 {
 }
 

@@ -16,6 +16,7 @@
     <PackageReference Include="CK.IO.User.UserPassword.Reset" Version="31.0.0-0.cris-auth.0.ci.41" />
     <PackageReference Include="CK.IO.User.UserBanned" Version="4.0.0-0.cris-auth.0.ci.30" />
     <PackageReference Include="CK.IO.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.0.ci.39" />
+    <PackageReference Include="CK.IO.Admin" Version="3.0.0-0.cris-auth.0.ci.39" />
     <PackageReference Include="CK.IO.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.0.ci.39" />
   </ItemGroup>
 </Project>
