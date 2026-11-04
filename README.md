@@ -28,11 +28,12 @@ them and the fronts read them, so every party knows the same Poco.
 A party is named after what it is in the application (the Backend, the Front, the Admin), not after a feature it
 implements: the Backend is the AuthCenter of the fronts, and it is also where the database is.
 
-The role of each host is its package (CK.AppIdentity.AuthCenter.Local or .Remote), and its "CK-AppIdentity"
-configuration names what each party is: `"AllowFeatures": "AuthCenter"` on the party that is the AuthCenter,
-`"AuthCenterRemote"` on its remotes. The Backend allows `"AuthCenter"` in its `Local` section (it is the AuthCenter,
-its settings are `Local:AuthCenter`) and `"AuthCenterRemote"` on the `$Front` and `$Admin` parties; the Front and the
-Admin allow `"AuthCenterRemote"` in their `Local` section and `"AuthCenter"` on the `$Backend` party.
+The AuthCenter is an asymmetric feature: each host references its side (CK.AppIdentity.AuthCenter.Local or .Remote),
+and its "CK-AppIdentity" configuration gives the role of its party: `"AuthCenter"` in the `Local` section of the party
+that is the AuthCenter, `"AuthCenterRemote"` on a remote. The Backend allows `"AuthCenter"` in its `Local` section (it is
+the AuthCenter, its settings are `Local:AuthCenter`) and `"AuthCenterRemote"` on the `$Front` and `$Admin` parties (they
+use it); the Front and the Admin don't allow `"AuthCenter"` in their `Local` section and allow `"AuthCenterRemote"` on the
+`$Backend` party (it is their AuthCenter).
 
 The Backend references CK.DB.AppIdentity, the PartyActor registrar: every party (the Backend and its remotes) gets
 its PartyActorId, that identifies it as the caller of the commands it sends.
