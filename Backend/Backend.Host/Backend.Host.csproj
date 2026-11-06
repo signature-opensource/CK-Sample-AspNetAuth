@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- The bootstrap of the host (Program.cs) and the conventions of the host project. -->
-    <PackageReference Include="CK.AppHost" Version="24.0.0-0.cris-auth.0.ci.36" />
+    <PackageReference Include="CK.AppHost" Version="24.0.0-0.cris-auth.0.ci.37" />
     <ProjectReference Include="..\Backend.App\Backend.App.csproj" />
     <ProjectReference Include="..\Backend.Builder\Backend.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />
   </ItemGroup>
