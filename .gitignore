@@ -349,3 +349,6 @@ TestStore/
 
 # The screenshots of the UI smoke test run by the tests.
 Tests/**/UISmoke/
+
+# The install marker of the CK.TypeScript engine (it describes the local install).
+**/.yarn/ck-install-state
