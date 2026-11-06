@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "jest",
-    "ck-watch": "dotnet \"$PROJECT_CWD/../../../Admin.Builder/bin/Debug/net10.0/CK.TypeScript.LiveEngine.dll\""
+    "ck-watch": "dotnet \"$PROJECT_CWD/../../../Admin.Builder/bin/Release/net10.0/CK.TypeScript.LiveEngine.dll\""
   },
   "prettier": {
     "printWidth": 100,
