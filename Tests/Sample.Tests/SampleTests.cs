@@ -11,8 +11,8 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using Shouldly;
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -21,9 +21,10 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using System.Threading;
+using static CK.Monitoring.MultiLogReader;
 using static CK.Testing.MonitorTestHelper;
 
 namespace CK.Sample.Tests;
@@ -61,7 +62,7 @@ public class SampleTests
         if( Directory.Exists( store ) ) Directory.Delete( store, recursive: true );
         ApplicationIdentityServiceConfiguration.DefaultStoreRootPath = store;
         _idp = new FakeIdentityProvider();
-        _backend = CKomposableAppHost.Build( [], b => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
+        _backend = CKomposableAppHost.Build( [], (monitor, b, map) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["CK-AppIdentity:Defaults:ListeningAddress:0"] = BackendAddress,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
@@ -78,7 +79,7 @@ public class SampleTests
             ["CK-AppIdentity:Local:AuthCenter:CriticalLifetimes:Basic"] = "00:00:15"
         } ), TestHelper.SolutionFolder.Combine( "Backend/Backend.Host" ), Assembly.Load( "Backend.Host" ) );
         await _backend.StartAsync();
-        _front = CKomposableAppHost.Build( [], b => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
+        _front = CKomposableAppHost.Build( [], (monitor, b, map) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             // The web application of the "Main" endpoint of the front's party ("HttpEndpoint" feature).
             ["CK-AppIdentity:Local:HttpEndpoint:Main:Urls"] = FrontUrl,
@@ -87,7 +88,7 @@ public class SampleTests
             ["Clients:UseDist"] = "true"
         } ), TestHelper.SolutionFolder.Combine( "Front/Front.Host" ), Assembly.Load( "Front.Host" ) );
         await _front.StartAsync();
-        _admin = CKomposableAppHost.Build( [], b => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
+        _admin = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["CK-AppIdentity:Local:HttpEndpoint:Main:Urls"] = AdminUrl,
             ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
