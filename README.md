@@ -189,6 +189,34 @@ The callback URL is the Front's (`/.auth/oidc/callback`): register it at the pro
 callback URL: it accepts the ones on the public URL that the Front announces. Only the Backend knows the
 client secret (it redeems the code); the Front forwards the start of the login and the callback to it.
 
+### Behind a reverse proxy
+
+The demo runs without a proxy: the browser talks to the Front and the Admin directly. In a deployment, a reverse proxy
+usually terminates TLS in front of them: the browser is on `https://front.example.com`, the party receives `http`
+requests from the proxy. Two keys of the party's configuration handle it, for example in `Front/Front.Host/appsettings.json`:
+
+```jsonc
+"Local": {
+  "AllowFeatures": "HttpEndpoint",
+  // The URL that the party gives: the links of the mails, the passkey origins and the OIDC callbacks that the Backend
+  // accepts are derived from it.
+  "PublicUrl": "https://front.example.com",
+  "HttpEndpoint": {
+    "Main": {
+      "Urls": "http://0.0.0.0:5300",
+      // The client's scheme, host and address, from the headers of the proxy (its address: nothing is trusted by default).
+      "ForwardedHeaders": { "KnownProxies": "10.0.0.12" }
+    }
+  }
+}
+```
+
+Without the forwarded headers, the party sees the proxy's request (`http://internal-host`): a remote login (OIDC) starts
+with the internal callback URL, that the Backend refuses (it is not the public URL of the Front), the session cookies are
+not `Secure` when the internal host is a loopback, and a browser without fetch metadata is refused by the same origin
+check. See [the options of an endpoint](https://github.com/signature-opensource/CK-AspNet/blob/stable/CK.AppIdentity.HttpEndpoint/README.md#the-forwarded-headers)
+(`KnownNetworks`, `Headers`, `ForwardLimit`). The Admin is configured the same way, with its own public URL.
+
 ## The tests
 
 [Tests/Sample.Tests](Tests/Sample.Tests) runs the three hosts in one process (their own ports, a fresh AppIdentity store,
