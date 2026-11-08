@@ -4,6 +4,7 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.cris-auth.1.ci.37" />
     <PackageReference Include="CK.AppBuilder" Version="36.0.0-0.cris-auth.1.ci.38" />
     <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.cris-auth.1.ci.95" />
     <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.cris-auth.1.ci.95" />
