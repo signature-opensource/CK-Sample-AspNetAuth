@@ -567,7 +567,7 @@ public class SampleTests
         // An [Internal] operation on "/.cris/net" (all the exchangeable types): refused before its validation.
         using var m = new HttpRequestMessage( HttpMethod.Post, "/.cris/net" )
         {
-            Content = new StringContent( """["CK.IO.Authentication.IOpenSessionOperationCommand",{"scheme":"Basic","nextRefreshSecretHash":"x","nextBindingSecretHash":"y"}]""", Encoding.UTF8, "application/json" )
+            Content = new StringContent( """["CK.IO.Authentication.IOpenSessionOperationCommand",{"scheme":"Basic","nextRefreshSecretHash":"eA==","nextBindingSecretHash":"eQ=="}]""", Encoding.UTF8, "application/json" )
         };
         m.Headers.Add( "Origin", FrontUrl );
         using var http = new HttpClient { BaseAddress = new Uri( FrontUrl ) };
