@@ -466,11 +466,11 @@ public class SampleTests
     }
 
     // The names of the front and of its AuthCenter, from the topology.
-    static async Task<(string Front, int FrontId, string AuthCenter, JsonElement Topology)> TopologyAsync( Browser b )
+    static async Task<(string Front, string AuthCenter, JsonElement Topology)> TopologyAsync( Browser b )
     {
         var t = Value( await b.SendAsync( "/.cris", """["CK.Sample.Front.IGetTopologyQCommand",{"actorId":""" + b.ActorId + "}]" ) );
         var center = t.GetProperty( "remotes" ).EnumerateArray().Select( Value ).Single( r => r.GetProperty( "isAuthCenter" ).GetBoolean() );
-        return (t.GetProperty( "localPartyFullName" ).GetString()!, t.GetProperty( "localPartyActorId" ).GetInt32(), center.GetProperty( "fullName" ).GetString()!, t);
+        return (t.GetProperty( "localPartyFullName" ).GetString()!, center.GetProperty( "fullName" ).GetString()!, t);
     }
 
     static async Task<JsonElement> WhoAmIAsync( Browser b, string target )
@@ -484,22 +484,21 @@ public class SampleTests
     {
         using var b = new Browser();
         await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
-        var (front, frontId, authCenter, _) = await TopologyAsync( b );
-        frontId.ShouldBeGreaterThan( 0, "The front got its PartyActorId from its AuthCenter." );
+        var (front, authCenter, _) = await TopologyAsync( b );
 
         // Here: a direct request, the front is its own caller party.
         var here = await WhoAmIAsync( b, front );
         here.GetProperty( "partyFullName" ).GetString().ShouldBe( front );
         here.GetProperty( "actorName" ).GetString().ShouldBe( "Albert" );
         here.GetProperty( "level" ).GetString().ShouldBe( "Critical" );
-        here.GetProperty( "callerPartyId" ).GetInt32().ShouldBe( frontId );
+        here.GetProperty( "callerPartyFullName" ).GetString().ShouldBe( front );
 
         // There: dispatched to the Backend with the user's proof: the level is the proved one, the front is the caller.
         var there = await WhoAmIAsync( b, authCenter );
         there.GetProperty( "partyFullName" ).GetString().ShouldBe( authCenter );
         there.GetProperty( "actorName" ).GetString().ShouldBe( "Albert" );
         there.GetProperty( "level" ).GetString().ShouldBe( "Critical" );
-        there.GetProperty( "callerPartyId" ).GetInt32().ShouldBe( frontId );
+        there.GetProperty( "callerPartyFullName" ).GetString().ShouldBe( front );
     }
 
     [Test]
@@ -507,7 +506,7 @@ public class SampleTests
     {
         using var b = new Browser();
         await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
-        var (front, frontId, authCenter, _) = await TopologyAsync( b );
+        var (front, authCenter, _) = await TopologyAsync( b );
 
         // In the front's background, at the front: the same party, the identity is kept.
         (await AskLaterAsync( b, front )).GetProperty( "level" ).GetString().ShouldBe( "Critical" );
@@ -516,7 +515,7 @@ public class SampleTests
         later.GetProperty( "partyFullName" ).GetString().ShouldBe( authCenter );
         later.GetProperty( "actorName" ).GetString().ShouldBe( "Albert" );
         later.GetProperty( "level" ).GetString().ShouldBe( "Normal" );
-        later.GetProperty( "callerPartyId" ).GetInt32().ShouldBe( frontId );
+        later.GetProperty( "callerPartyFullName" ).GetString().ShouldBe( front );
     }
 
     [Test]
@@ -546,14 +545,13 @@ public class SampleTests
     }
 
     [Test]
-    public async Task the_topology_shows_the_parties_their_ids_and_the_routes_Async()
+    public async Task the_topology_shows_the_parties_and_the_routes_Async()
     {
         using var b = new Browser();
         await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
-        var (_, frontId, _, topology) = await TopologyAsync( b );
+        var (front, _, topology) = await TopologyAsync( b );
         var center = topology.GetProperty( "remotes" ).EnumerateArray().Select( Value ).Single( r => r.GetProperty( "isAuthCenter" ).GetBoolean() );
-        center.GetProperty( "partyActorId" ).GetInt32().ShouldBeGreaterThan( 0 );
-        center.GetProperty( "partyActorId" ).GetInt32().ShouldNotBe( frontId );
+        center.GetProperty( "fullName" ).GetString().ShouldNotBe( front );
         center.GetProperty( "connection" ).GetString().ShouldBe( "Connected" );
         var accepted = center.GetProperty( "acceptedCommands" ).EnumerateArray().Select( c => c.GetString() ).ToList();
         // The Backend accepts the party command, the self-service, and its internal operations (the front is inside the System).

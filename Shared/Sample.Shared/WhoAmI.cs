@@ -16,11 +16,6 @@ public interface IExecutionIdentity : IPoco
     string PartyFullName { get; set; }
 
     /// <summary>
-    /// Gets or sets the PartyActorId of the party that executed the command (0 when it is not resolved).
-    /// </summary>
-    int PartyActorId { get; set; }
-
-    /// <summary>
     /// Gets or sets the name of the actor for whom the command has been executed.
     /// </summary>
     string ActorName { get; set; }
@@ -37,10 +32,10 @@ public interface IExecutionIdentity : IPoco
     string? ActualActorName { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="AuthenticationInfo.CallerPartyId"/>: the party through which the identity entered the
-    /// executing party (the party itself for a direct request, the remote that vouched for the user otherwise).
+    /// Gets or sets the <see cref="AuthenticationInfo.CallerPartyFullName"/>: the party through which the identity entered
+    /// the executing party (the party itself for a direct request, the remote that vouched for the user otherwise).
     /// </summary>
-    int CallerPartyId { get; set; }
+    string? CallerPartyFullName { get; set; }
 }
 
 /// <summary>
@@ -70,11 +65,10 @@ public sealed class WhoAmIHandler : ISingletonAutoService
         return command.CreateResult( r =>
         {
             r.PartyFullName = party.LocalParty.FullName;
-            r.PartyActorId = party.LocalParty.PartyActorId;
             r.ActorName = info.Actor.ActorName;
             r.Level = info.Actor.Level.ToString();
             r.ActualActorName = info.IsImpersonated ? info.ActualActor.ActorName : null;
-            r.CallerPartyId = info.CallerPartyId;
+            r.CallerPartyFullName = info.CallerPartyFullName;
         } );
     }
 }

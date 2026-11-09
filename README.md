@@ -35,8 +35,9 @@ the AuthCenter, its settings are `Local:AuthCenter`) and `"AuthCenterRemote"` on
 use it); the Front and the Admin don't allow `"AuthCenter"` in their `Local` section and allow `"AuthCenterRemote"` on the
 `$Backend` party (it is their AuthCenter).
 
-The Backend references CK.DB.AppIdentity, the PartyActor registrar: every party (the Backend and its remotes) gets
-its PartyActorId, that identifies it as the caller of the commands it sends.
+A party is identified by its full name across the System: it is the caller party of the commands it sends
+(`AuthenticationInfo.CallerPartyFullName`). The Backend maps it to an actor where its database needs one (the issuing
+party of an invitation, CK.DB.AppIdentity).
 
 ## The logins
 
@@ -102,7 +103,7 @@ announce their public URL (the one of their endpoint) and their client applicati
 |---|---|
 | Here and there | `IWhoAmIQCommand` (Shared) is a party command (`ICommandTargetParty`): sent to the Front or to the Backend by the same code, it executes where its target is. At the Backend, the user's proof is verified: the level is kept, Critical included, and the Front is the caller party. |
 | Later | `IAskLaterQCommand`: the Front asks the same question in its background (like a deferred work). There is no user's proof: the Front only vouches for the user, and the Backend grants its remotes the Normal level at most. |
-| Topology | `IGetTopologyQCommand`: the Front's party and PartyActorId, its remotes with their PartyActorId, their connection and the commands they accept from the Front (their advertisement: the routes of the dispatch). |
+| Topology | `IGetTopologyQCommand`: the Front's party, its remotes, their connection and the commands they accept from the Front (their advertisement: the routes of the dispatch). |
 | Refused and protected calls | A little request console: predefined raw requests (an `[Internal]` operation on `/.cris/net`, a login on `/.cris`, a command for another actor, a plain text POST...) that can be edited and sent, with or without the bearer token. It dumps the HTTP status and the body of the answer. |
 
 ## Running it

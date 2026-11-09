@@ -145,14 +145,6 @@ export class Architecture implements OnInit {
     this.answers.update( list => [a, ...list] );
   }
 
-  protected partyName( partyActorId: number ): string {
-    const t = this.topology();
-    if( !t || partyActorId === 0 ) return '#0 (none)';
-    if( t.localPartyActorId === partyActorId ) return `#${partyActorId} (${t.localPartyFullName})`;
-    const r = t.remotes.find( p => p.partyActorId === partyActorId );
-    return r ? `#${partyActorId} (${r.fullName})` : `#${partyActorId}`;
-  }
-
   select( r: RawRequest ): void {
     this.selected.set( r );
     this.path = r.path;

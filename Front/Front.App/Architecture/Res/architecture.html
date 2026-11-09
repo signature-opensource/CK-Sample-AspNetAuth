@@ -27,10 +27,10 @@
             @if( a.identity; as i ) {
                 <nz-alert class="sample-architecture-answer" nzType="success" [nzMessage]="a.title" [nzDescription]="identity" />
                 <ng-template #identity>
-                    Executed by <b>{{ i.partyFullName }}</b> (#{{ i.partyActorId }}) for <b>{{ i.actorName }}</b>
+                    Executed by <b>{{ i.partyFullName }}</b> for <b>{{ i.actorName }}</b>
                     @if( i.actualActorName ) { (impersonated by {{ i.actualActorName }}) }
                     at the <nz-tag [nzColor]="i.level === 'Critical' ? 'red' : 'blue'">{{ i.level }}</nz-tag> level.
-                    Caller party: <b>{{ partyName( i.callerPartyId ) }}</b>.
+                    Caller party: <b>{{ i.callerPartyFullName ?? '(none)' }}</b>.
                 </ng-template>
             } @else {
                 <nz-alert class="sample-architecture-answer" nzType="error" [nzMessage]="a.title" [nzDescription]="a.error ?? ''" />
@@ -42,12 +42,11 @@
 <nz-card class="sample-architecture-card" nzTitle="Topology">
     @if( topology(); as t ) {
         <p>
-            This front is <b>{{ t.localPartyFullName }}</b>, PartyActor #{{ t.localPartyActorId }} (given by its AuthCenter
-            when the channel connected: the front has no actors database).
+            This front is <b>{{ t.localPartyFullName }}</b>: a party is identified by its full name across the System.
         </p>
         @for( r of t.remotes; track r.fullName ) {
             <p>
-                Remote <b>{{ r.fullName }}</b> (#{{ r.partyActorId }})
+                Remote <b>{{ r.fullName }}</b>
                 @if( r.isAuthCenter ) { <nz-tag nzColor="purple">AuthCenter</nz-tag> }
                 <nz-tag [nzColor]="r.connection === 'Connected' ? 'green' : 'orange'">{{ r.connection }}</nz-tag>
                 accepts {{ r.acceptedCommands.length }} commands from this front (its advertisement: the routes of the dispatch).

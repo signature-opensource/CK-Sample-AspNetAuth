@@ -26,7 +26,7 @@ public interface IAskLaterQCommand : ICommand<IExecutionIdentity>, ICommandAuthN
 }
 
 /// <summary>
-/// The topology of the front: its local party and its remotes, with their PartyActorId, their connection and what they
+/// The topology of the front: its local party and its remotes, with their connection and what they
 /// accept from the front (their advertisement over the Cris channel).
 /// </summary>
 public interface IGetTopologyQCommand : ICommand<ITopology>, ICommandAuthNormal
@@ -44,11 +44,6 @@ public interface ITopology : IPoco
     string LocalPartyFullName { get; set; }
 
     /// <summary>
-    /// Gets or sets the PartyActorId of the local party (given by its AuthCenter when the channel connected).
-    /// </summary>
-    int LocalPartyActorId { get; set; }
-
-    /// <summary>
     /// Gets the remotes of the local party.
     /// </summary>
     IList<IRemotePartyInfo> Remotes { get; }
@@ -63,11 +58,6 @@ public interface IRemotePartyInfo : IPoco
     /// Gets or sets the full name of the remote.
     /// </summary>
     string FullName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the PartyActorId of the remote (0 when it is not resolved).
-    /// </summary>
-    int PartyActorId { get; set; }
 
     /// <summary>
     /// Gets or sets whether this remote is the AuthCenter of the front.
@@ -129,13 +119,11 @@ public sealed class ArchitectureHandlers : ISingletonAutoService
         return command.CreateResult( t =>
         {
             t.LocalPartyFullName = local.FullName;
-            t.LocalPartyActorId = local.PartyActorId;
             foreach( var remote in local.Remotes )
             {
                 t.Remotes.Add( t.Create<IRemotePartyInfo>( r =>
                 {
                     r.FullName = remote.FullName;
-                    r.PartyActorId = remote.PartyActorId;
                     r.IsAuthCenter = remote == authCenter;
                     r.Connection = (remote.GetFeature<TransportFeature>()?.ConnectionAvailability ?? ConnectionAvailability.None).ToString();
                     if( remote.GetFeature<CrisChannelFeature>()?.AcceptedCommands is { } accepted )
