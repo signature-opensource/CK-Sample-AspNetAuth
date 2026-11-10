@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>False</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.cris-auth.1.ci.46" />
+    <PackageReference Include="CK.AppBuilder" Version="36.0.0-0.cris-auth.1.ci.39" />
+    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.cris-auth.1.ci.109" />
+    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.cris-auth.1.ci.109" />
+    <PackageReference Include="CK.Poco.Exchange.Engine" Version="36.0.0-0.cris-auth.1.ci.39" />
+    <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="36.0.0-0.cris-auth.1.ci.39" />
+    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.cris-auth.1.ci.28" />
+    <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
+    <ProjectReference Include="..\Worker.App\Worker.App.csproj" />
+  </ItemGroup>
+</Project>

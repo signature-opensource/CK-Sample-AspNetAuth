@@ -14,6 +14,8 @@
     <!-- The passkey (WebAuthn) scheme family: the ceremonies and their verification ("AuthCenter:Passkey" section). -->
     <PackageReference Include="CK.AppIdentity.AuthCenter.Passkey" Version="3.0.0-0.cris-auth.1.ci.168" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.1.ci.46" />
+    <!-- The enlistment: this Backend holds the pending approval of the Worker, approved from the Admin's approval page. -->
+    <PackageReference Include="CK.AppIdentity.Enlistment" Version="3.0.0-0.cris-auth.1.ci.168" />
     <!-- The login providers: Basic (user name and password), Oidc, Passkey, Weak (passwordless operators, Unsafe level). -->
     <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth.1.ci.52" />
     <PackageReference Include="CK.DB.User.UserOidc" Version="31.0.0-0.cris-auth.1.ci.59" />

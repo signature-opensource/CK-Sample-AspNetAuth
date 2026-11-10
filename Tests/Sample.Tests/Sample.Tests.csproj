@@ -12,9 +12,10 @@
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.23.0" />
   </ItemGroup>
   <ItemGroup>
-    <!-- The three hosts of the sample, run in this process. -->
+    <!-- The four hosts of the sample, run in this process. -->
     <ProjectReference Include="..\..\Backend\Backend.Host\Backend.Host.csproj" />
     <ProjectReference Include="..\..\Front\Front.Host\Front.Host.csproj" />
     <ProjectReference Include="..\..\Admin\Admin.Host\Admin.Host.csproj" />
+    <ProjectReference Include="..\..\Worker\Worker.Host\Worker.Host.csproj" />
   </ItemGroup>
 </Project>

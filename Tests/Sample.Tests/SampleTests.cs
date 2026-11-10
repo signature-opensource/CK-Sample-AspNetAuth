@@ -1,4 +1,5 @@
 using CK.AppIdentity;
+using CK.AppIdentity.TransportLayer;
 using CK.Core;
 using CK.Cris;
 using CK.Sample.Admin;
@@ -99,8 +100,10 @@ public class SampleTests
         // The Front and the Admin announce their public URL once their endpoint is started: the Backend derives the
         // passkey origins, the OIDC callbacks and the links of the mails from them.
         var backend = _backend.Services.GetRequiredService<ApplicationIdentityService>();
-        for( int i = 0; i < 100 && backend.Remotes.Any( r => r.Description.PublicUrl == null ); ++i ) await Task.Delay( 100 );
-        backend.Remotes.Select( r => r.Description.GetClientApplicationUrl() ).ShouldBe( [FrontUrl, AdminUrl], ignoreOrder: true );
+        // The Worker (started by the enlistment test only) has no web endpoint.
+        var fronts = backend.Remotes.Where( r => r.PartyName != "$Worker" ).ToList();
+        for( int i = 0; i < 100 && fronts.Any( r => r.Description.PublicUrl == null ); ++i ) await Task.Delay( 100 );
+        fronts.Select( r => r.Description.GetClientApplicationUrl() ).ShouldBe( [FrontUrl, AdminUrl], ignoreOrder: true );
     }
 
     [OneTimeTearDown]
@@ -575,5 +578,77 @@ public class SampleTests
         (await r.Content.ReadAsStringAsync()).ShouldContain( "is not accepted from HTTP" );
         // A login on "/.cris" must be sent to "/.cris/auth".
         Text( await b.SendAsync( "/.cris", """["CK.IO.Authentication.Weak.IWeakLoginCommand",{"weakActorName":"Operator"}]""" ) ).ShouldContain( "/.cris/auth" );
+    }
+
+    static async Task<T?> WaitForAsync<T>( Func<T?> get, int seconds = 60 ) where T : class
+    {
+        for( int i = 0; i < seconds * 10; ++i )
+        {
+            var v = get();
+            if( v != null ) return v;
+            await Task.Delay( 100 );
+        }
+        return null;
+    }
+
+    [Test]
+    public async Task an_operator_enlists_the_Worker_on_the_approval_page_of_the_Admin_Async()
+    {
+        // The Backend never trusts the Worker's key automatically ("AutoTrustKey": "Never"): the Worker waits for an approval.
+        using var worker = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
+        {
+            ["CK-AppIdentity:Parties:0:Address"] = BackendAddress
+        } ), TestHelper.SolutionFolder.Combine( "Worker/Worker.Host" ), Assembly.Load( "Worker.Host" ) );
+        await worker.StartAsync();
+        try
+        {
+            var workerParty = worker.Services.GetRequiredService<ApplicationIdentityService>();
+            var backend = _backend.Services.GetRequiredService<ApplicationIdentityService>();
+            var admin = _admin.Services.GetRequiredService<ApplicationIdentityService>();
+
+            // The Worker is told where to enlist (the approval page of the System, on the Admin, for itself) and shows the
+            // code that the operator reads.
+            var issue = await WaitForAsync( () => workerParty.GetRequiredFeature<TransportManagerFeature>().GetPeeringIssues()
+                                                             .FirstOrDefault( i => i.EnlistUrl != null && i.ApprovalCode != null ) );
+            issue.ShouldNotBeNull( "The Worker learns its enlistment URL and its approval code." );
+            issue.Kind.ShouldBe( PeeringIssueKind.RequiresRemoteApproval );
+            issue.EnlistUrl.ShouldBe( $"{AdminUrl}/app-identity/enlist?party={Uri.EscapeDataString( workerParty.FullName )}" );
+            var code = issue.ApprovalCode!;
+
+            // The pending approval of the Backend travelled the "Enlistment" route up to the Admin.
+            var item = await WaitForAsync( () => admin.Description.Collected.TryGetValue( TransportFeatureDriver.EnlistmentRouteName, out var items )
+                                                    ? items.FirstOrDefault()
+                                                    : null );
+            item.ShouldNotBeNull( "The pending approval reached the approval page." );
+            item.Path.ShouldBe( [backend.FullName, admin.FullName] );
+
+            // The operator signs in on the Admin (a password: the Critical level) and enters the code.
+            using var browser = new Browser( AdminUrl );
+            await browser.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+            async Task<(string Holder, int Status)> ApproveAsync( string c )
+            {
+                var r = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IApprovePartyCommand",{"actorId":{{browser.ActorId}},"partyFullName":"{{JsonEncodedText.Encode( workerParty.FullName )}}","codes":["{{c}}"]}]""" ) );
+                r.ValueKind.ShouldBe( JsonValueKind.Array, r.ToString() );
+                var o = Value( r.EnumerateArray().Single() );
+                return (o.GetProperty( "holderFullName" ).GetString()!, o.GetProperty( "status" ).GetInt32());
+            }
+            var wrong = code == "1234-5678" ? "8765-4321" : "1234-5678";
+            string backendName = backend.FullName;
+            var refused = await ApproveAsync( wrong );
+            refused.Holder.ShouldBe( backendName );
+            refused.Status.ShouldBe( (int)CK.IO.AppIdentity.Enlistment.PartyApprovalStatus.CodeMismatch );
+            var approved = await ApproveAsync( code );
+            approved.Holder.ShouldBe( backendName );
+            approved.Status.ShouldBe( (int)CK.IO.AppIdentity.Enlistment.PartyApprovalStatus.Approved );
+
+            // The Backend trusts the Worker's key: the Worker connects, and the pending approval disappears.
+            (await WaitForAsync( () => workerParty.Remotes.Single().GetRequiredFeature<TransportFeature>().ConnectionAvailability == ConnectionAvailability.Connected ? "connected" : null ))
+                .ShouldNotBeNull( "The approved Worker connects to the Backend." );
+            (await WaitForAsync( () => admin.Description.Collected.Count == 0 ? "gone" : null )).ShouldNotBeNull();
+        }
+        finally
+        {
+            await worker.StopAsync();
+        }
     }
 }

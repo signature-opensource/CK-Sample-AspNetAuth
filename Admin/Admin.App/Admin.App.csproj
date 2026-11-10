@@ -23,6 +23,10 @@
     <PackageReference Include="CK.Ng.Admin.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.1.ci.88" />
     <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="3.0.0-0.cris-auth.1.ci.105" />
     <PackageReference Include="CK.Ng.UserProfile.UserBanned" Version="3.0.0-0.cris-auth.1.ci.105" />
+    <!-- The approval page of the System (app-identity/enlist): the Admin hosts the "Enlistment" route; it handles the approval
+         itself (it checks the operator at the Critical level) and sends it down to the holder of the pending approval. -->
+    <PackageReference Include="CK.Ng.AppIdentity.Enlistment" Version="3.0.0-0.cris-auth.1.ci.88" />
+    <PackageReference Include="CK.AppIdentity.Enlistment" Version="3.0.0-0.cris-auth.1.ci.168" />
     <!-- The application shell (side bar, top bar with the UserInfoBox). -->
     <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.cris-auth.1.ci.78" />
     <!-- Serves the client application (app.MapClients()): its dev server in Development, its "dist" otherwise. -->

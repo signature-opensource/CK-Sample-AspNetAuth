@@ -26,4 +26,9 @@
   <Folder Name="/Tests/">
     <Project Path="Tests/Sample.Tests/Sample.Tests.csproj" />
   </Folder>
+  <Folder Name="/Worker/">
+    <Project Path="Worker/Worker.App/Worker.App.csproj" />
+    <Project Path="Worker/Worker.Builder/Worker.Builder.csproj" />
+    <Project Path="Worker/Worker.Host/Worker.Host.csproj" />
+  </Folder>
 </Solution>
