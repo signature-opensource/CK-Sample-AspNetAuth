@@ -625,6 +625,16 @@ public class SampleTests
             // The operator signs in on the Admin (a password: the Critical level) and enters the code.
             using var browser = new Browser( AdminUrl );
             await browser.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+            // The approval page lists the pending approvals (the operator chooses the Worker there rather than following a link).
+            async Task<List<(string Party, string Holder)>> PendingAsync()
+            {
+                var r = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IGetPendingApprovalsQCommand",{"actorId":{{browser.ActorId}}}]""" ) );
+                r.ValueKind.ShouldBe( JsonValueKind.Array, r.ToString() );
+                return r.EnumerateArray().Select( Value ).Select( p => (p.GetProperty( "partyFullName" ).GetString()!, p.GetProperty( "holderFullName" ).GetString()!) ).ToList();
+            }
+            string backendFullName = backend.FullName;
+            (await PendingAsync()).ShouldContain( (workerParty.FullName.Path, backendFullName) );
+
             async Task<(string Holder, int Status)> ApproveAsync( string c )
             {
                 var r = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IApprovePartyCommand",{"actorId":{{browser.ActorId}},"partyFullName":"{{JsonEncodedText.Encode( workerParty.FullName )}}","codes":["{{c}}"]}]""" ) );
@@ -645,6 +655,7 @@ public class SampleTests
             (await WaitForAsync( () => workerParty.Remotes.Single().GetRequiredFeature<TransportFeature>().ConnectionAvailability == ConnectionAvailability.Connected ? "connected" : null ))
                 .ShouldNotBeNull( "The approved Worker connects to the Backend." );
             (await WaitForAsync( () => admin.Description.Collected.Count == 0 ? "gone" : null )).ShouldNotBeNull();
+            (await PendingAsync()).ShouldBeEmpty( "The Worker is enlisted: nothing waits anymore." );
         }
         finally
         {
