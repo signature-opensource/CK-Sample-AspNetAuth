@@ -123,7 +123,9 @@ with the code that the waiting party shows (see
   down to the Backend.
 - **The demo:** `#Dev/Start.ps1` prints what the Worker waits for ("'Sample/Auth3/$Backend/#Dev' must accept this party:
   open http://localhost:5302/app-identity/enlist?party=..., the approval code is ..."). Open the link, sign in as
-  `Albert` / `pass` and enter the code: the page shows "Approved" for the Backend, and the Worker connects.
+  `Albert` / `pass` and enter the code: the page shows "Approved" for the Backend, and the Worker connects. Rather than
+  following a link, an operator can open the approval page itself (`http://localhost:5302/app-identity/enlist`): once
+  signed in, it lists the parties that wait for an approval.
 - **No right is checked:** any user at the Critical level on the Admin can approve a party. An application restricts it
   with a validator of `IApprovePartyCommand`.
 - **To replay it,** delete `#Dev/Store`: the Backend forgets the Worker's key (and every identity is reset).
