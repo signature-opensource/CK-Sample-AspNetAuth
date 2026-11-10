@@ -8,14 +8,14 @@
   <ItemGroup>
     <!-- The Local side of the AuthCenter feature (this application IS the Backend): sessions, tokens, the operations of its remotes,
          their caller party and the verification of the user's proof. -->
-    <PackageReference Include="CK.AppIdentity.AuthCenter.Local" Version="3.0.0-0.cris-auth.1.ci.171" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Local" Version="3.0.0-0.cris-auth.1.ci.172" />
     <!-- The OpenID Connect scheme family ("Package First": its "AuthCenter:Oidc" section requires it). -->
-    <PackageReference Include="CK.AppIdentity.AuthCenter.Oidc" Version="3.0.0-0.cris-auth.1.ci.171" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Oidc" Version="3.0.0-0.cris-auth.1.ci.172" />
     <!-- The passkey (WebAuthn) scheme family: the ceremonies and their verification ("AuthCenter:Passkey" section). -->
-    <PackageReference Include="CK.AppIdentity.AuthCenter.Passkey" Version="3.0.0-0.cris-auth.1.ci.171" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Passkey" Version="3.0.0-0.cris-auth.1.ci.172" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.1.ci.48" />
     <!-- The enlistment: this Backend holds the pending approval of the Worker, approved from the Admin's approval page. -->
-    <PackageReference Include="CK.AppIdentity.Enlistment" Version="3.0.0-0.cris-auth.1.ci.171" />
+    <PackageReference Include="CK.AppIdentity.Enlistment" Version="3.0.0-0.cris-auth.1.ci.172" />
     <!-- The login providers: Basic (user name and password), Oidc, Passkey, Weak (passwordless operators, Unsafe level). -->
     <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth.1.ci.54" />
     <PackageReference Include="CK.DB.User.UserOidc" Version="31.0.0-0.cris-auth.1.ci.61" />
@@ -23,11 +23,11 @@
     <PackageReference Include="CK.DB.Actor.WeakActor" Version="3.0.0-0.cris-auth.1.ci.45" />
     <!-- The server side of the fronts' features: the commands of the Front's profile page and of the Admin's user
          management are handled here, where the database is (dispatched by the fronts, with the user's proof). -->
-    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.1.ci.107" />
-    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.1.ci.107" />
-    <PackageReference Include="CK.UserManagement" Version="3.0.0-0.cris-auth.1.ci.66" />
-    <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.1.ci.66" />
-    <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.1.ci.66" />
+    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.1.ci.108" />
+    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.1.ci.108" />
+    <PackageReference Include="CK.UserManagement" Version="3.0.0-0.cris-auth.1.ci.67" />
+    <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.1.ci.67" />
+    <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.1.ci.67" />
     <PackageReference Include="CK.Cris.Workspace" Version="18.0.0-0.cris-auth.1.ci.40" />
     <!-- Their database: the workspaces (and their zones, ACLs), the names, the preferred culture, the e-mails, the
          banishments, the invitations and the temporary passwords. -->
