@@ -163,7 +163,7 @@ try {
     await click( 'sample-public-home button' );
     await waitFor( 'ck-weak-login-form input' );
     check( await path() === '/auth', 'The login page is /auth.' );
-    check( await exists( 'ck-basic-login-form input[formcontrolname=password]' ), 'The Basic form is on the login page.' );
+    check( await exists( 'ck-basic-login-form input[autocomplete=current-password]' ), 'The Basic form is on the login page.' );
     if( args.oidc ) {
       await waitFor( 'button.ck-login-provider-btn' );
       check( ( await text( '.ck-login-providers' ) ).includes( args.oidc ), `The '${args.oidc}' OpenID Connect button is on the login page.` );
@@ -171,8 +171,8 @@ try {
   } );
 
   await run( '3-wrong-password', async () => {
-    await fill( 'ck-basic-login-form input[formcontrolname=userName]', 'Albert' );
-    await fill( 'ck-basic-login-form input[formcontrolname=password]', 'not-the-password' );
+    await fill( 'ck-basic-login-form input[autocomplete=username]', 'Albert' );
+    await fill( 'ck-basic-login-form input[autocomplete=current-password]', 'not-the-password' );
     await click( 'ck-basic-login-form button.login-form-button' );
     await sleep( 1500 );
     check( await path() === '/auth', 'A wrong password stays on the login page.' );
@@ -195,8 +195,8 @@ try {
 
   await run( '6-basic-login', async () => {
     await navigate( '/auth' );
-    await fill( 'ck-basic-login-form input[formcontrolname=userName]', 'Albert' );
-    await fill( 'ck-basic-login-form input[formcontrolname=password]', 'pass' );
+    await fill( 'ck-basic-login-form input[autocomplete=username]', 'Albert' );
+    await fill( 'ck-basic-login-form input[autocomplete=current-password]', 'pass' );
     await click( 'ck-basic-login-form button.login-form-button' );
     await waitFor( 'ck-backoffice-layout sample-home' );
     check( await path() === '/', 'Albert is redirected to the private home.' );
@@ -276,11 +276,11 @@ try {
       const popup = await connect( found[0].webSocketDebuggerUrl );
       try {
         const p = helpers( popup.evaluate );
-        await p.waitFor( 'ck-basic-login-form input[formcontrolname=password]' );
+        await p.waitFor( 'ck-basic-login-form input[autocomplete=current-password]' );
         check( ( await p.text( '.ck-login-welcome' ) ).includes( "Confirm it's you" ), 'The login page asks for a new login.' );
         check( !await p.exists( 'ck-weak-login-form' ), 'Only the schemes of Albert that can elevate him are proposed.' );
-        await p.fill( 'ck-basic-login-form input[formcontrolname=userName]', 'Albert' );
-        await p.fill( 'ck-basic-login-form input[formcontrolname=password]', 'pass' );
+        await p.fill( 'ck-basic-login-form input[autocomplete=username]', 'Albert' );
+        await p.fill( 'ck-basic-login-form input[autocomplete=current-password]', 'pass' );
         await p.click( 'ck-basic-login-form button.login-form-button' );
       }
       finally {

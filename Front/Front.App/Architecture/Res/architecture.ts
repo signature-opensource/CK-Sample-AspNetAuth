@@ -44,7 +44,7 @@ export class Architecture implements OnInit {
     {
       label: 'An [Internal] operation on /.cris/net',
       path: '/.cris/net',
-      body: '["CK.IO.Authentication.IOpenSessionOperationCommand",{"scheme":"Basic","nextRefreshSecretHash":"x","nextBindingSecretHash":"y"}]',
+      body: '["CK.IO.Authentication.IOpenSessionOperationCommand",{"scheme":"Basic","nextRefreshSecretHash":"eA==","nextBindingSecretHash":"eQ=="}]',
       withToken: false,
       expected: 'Refused before its validation: only the public commands are received from HTTP (Cris.AspNet.ExposureRefused).'
     },
