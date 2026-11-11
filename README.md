@@ -127,7 +127,9 @@ with the code that the waiting party shows (see
 - **The Admin has the approval page.** Its client application references
   [CK.Ng.AppIdentity.Enlistment](https://github.com/signature-opensource/CK-Ng-Admin/blob/stable/CK.Ng.AppIdentity.Enlistment/README.md):
   the Admin hosts the "Enlistment" route of the System, and the pending approval of the Backend travels the route up to
-  it. The Admin handles the approval itself (CK.AppIdentity.Enlistment: the operator at the Critical level) and sends it
+  it. A route is accepted only toward an authorized host: the AuthCenter (the Backend) authorizes the Admin in its
+  `"AuthCenter:RouteHosts"`, and every party that has the AuthCenter follows its signed System list. The Admin handles the
+  approval itself (CK.AppIdentity.Enlistment: the operator at the Critical level) and sends it
   down to the Backend. The approval is countersigned by the AuthCenter (the Backend) in the operator's request
   (CK.AppIdentity.AuthCenter.Enlistment), and the Backend requires the countersignature.
 - **The demo:** `#Dev/Start.ps1` prints what the Workers wait for ("'Sample/Auth3/$Backend/#Dev' must accept this party:
