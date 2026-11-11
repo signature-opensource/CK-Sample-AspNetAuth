@@ -16,6 +16,9 @@
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.1.ci.48" />
     <!-- The enlistment: this Backend holds the pending approval of the Worker, approved from the Admin's approval page. -->
     <PackageReference Include="CK.AppIdentity.Enlistment" Version="3.0.0-0.cris-auth.1.ci.187" />
+    <!-- The AuthCenter in the enlistment: it countersigns the approvals and states the approval page of the System (an
+         authenticated enlistment URL for Worker2, that anchors it). -->
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Enlistment" Version="3.0.0-0.cris-auth.1.ci.187" />
     <!-- The login providers: Basic (user name and password), Oidc, Passkey, Weak (passwordless operators, Unsafe level). -->
     <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth.1.ci.54" />
     <PackageReference Include="CK.DB.User.UserOidc" Version="31.0.0-0.cris-auth.1.ci.61" />

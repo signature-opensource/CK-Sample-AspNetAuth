@@ -3,7 +3,7 @@
 A sample of the authentication of CK applications: Cris commands, an Authentication Center, and an Angular
 client. It replaces the WebFrontAuth samples.
 
-## Four hosts
+## Five hosts
 
 | Host | What | Reached by |
 |---|---|---|
@@ -11,10 +11,11 @@ client. It replaces the WebFrontAuth samples.
 | [Front](Front) | The HTTP front: the Angular application and its `/.cris` endpoints on the same origin (`http://localhost:5300`). No database, no login provider: it is a remote of its AuthCenter. Its endpoints execute the session commands (logins, refresh, logout...) whose operations are dispatched to the Backend, and it verifies the tokens with the Backend's keys. A .NET generic host: its web server is the "HttpEndpoint" feature of its party (CK.AppIdentity.HttpEndpoint), the `Main` endpoint of its `Local:HttpEndpoint` configuration. | The browser. |
 | [Admin](Admin) | The back-office, the second remote of the Backend (`http://localhost:5302`): the user management of CK-Ng-Admin (the users of a workspace, their banishment, their invitation) and the approval page of the System (see [the enlistment](#the-enlistment)). Like the Front, no database (its commands are dispatched to the Backend), and a .NET generic host whose web server is its "HttpEndpoint" feature. | The browser. |
 | [Worker](Worker) | A party that must be enlisted: the Backend never trusts its key automatically, an operator approves it on the Admin (see [the enlistment](#the-enlistment)). No database, no web server: a .NET generic host. | Nobody: it connects to the Backend. |
+| [Worker2](Worker2) | The same, with a trust anchor of the Backend (its AuthCenter) instead of a trust on first use: it receives an authenticated enlistment URL (see [the enlistment](#the-enlistment)). | Nobody: it connects to the Backend. |
 
 Each host is three projects (the CK pattern): `*.App` (the model: packages, commands, services), `*.Builder` (it runs
 the CK engine after its build: the generated code of the host, the database of the Backend, the TypeScript and the
-Angular application of the Front and of the Admin) and `*.Host` (the program). The four hosts are the same: their
+Angular application of the Front and of the Admin) and `*.Host` (the program). The five hosts are the same: their
 `Program.cs` is `await CK.Core.CKomposableAppHost.RunAsync( args );` and their project references
 [CK.AppHost](https://github.com/signature-opensource/CK-AspNet/blob/stable/CK.AppHost/README.md) (the bootstrap and the
 conventions of a host project), their `*.App` and their `*.Builder`. What a host does is in its packages, its `*.App` and
@@ -116,21 +117,31 @@ with the code that the waiting party shows (see
 - **The Worker waits.** The Backend declares `$Worker` with `"AutoTrustKey": "Never"`: it refuses the Worker's key until an
   operator approves it. The Worker trusts the Backend at its first contact (`"Once"`): the Backend is where it is
   configured to go.
+- **Worker2 anchors the AuthCenter.** It designates the Backend as its AuthCenter (`"Local:AuthCenterParty"`) and anchors
+  it (`"Local:TrustAnchors"`: `"#Dev"`, the checkpoint of the Backend's key event log read from its running status in
+  `#Dev/Store`): no trust on first use, the Backend is verified from its anchor. The
+  Backend refuses Worker2 until an operator approves it, like the Worker. The difference is the enlistment URL: the
+  AuthCenter states the approval page of the System (CK.AppIdentity.AuthCenter.Enlistment), Worker2 verifies the
+  statement with its anchor, so its URL is authenticated (`PeeringIssue.IsEnlistUrlAuthenticated`): a fake page can't be
+  handed to it. The Worker reads the same URL, not authenticated.
 - **The Admin has the approval page.** Its client application references
   [CK.Ng.AppIdentity.Enlistment](https://github.com/signature-opensource/CK-Ng-Admin/blob/stable/CK.Ng.AppIdentity.Enlistment/README.md):
   the Admin hosts the "Enlistment" route of the System, and the pending approval of the Backend travels the route up to
   it. The Admin handles the approval itself (CK.AppIdentity.Enlistment: the operator at the Critical level) and sends it
-  down to the Backend.
-- **The demo:** `#Dev/Start.ps1` prints what the Worker waits for ("'Sample/Auth3/$Backend/#Dev' must accept this party:
+  down to the Backend. The approval is countersigned by the AuthCenter (the Backend) in the operator's request
+  (CK.AppIdentity.AuthCenter.Enlistment), and the Backend requires the countersignature.
+- **The demo:** `#Dev/Start.ps1` prints what the Workers wait for ("'Sample/Auth3/$Backend/#Dev' must accept this party:
   open http://localhost:5302/app-identity/enlist?party=..., the approval code is ..."). Open the link, sign in as
-  `Albert` / `pass` and enter the code: the page shows "Approved" for the Backend, and the Worker connects. Rather than
+  `Albert` / `pass` and enter the code: the page shows "Approved" for the Backend, and the Worker connects (the same
+  for Worker2). Rather than
   following a link, an operator can open the approval page itself (`http://localhost:5302/app-identity/enlist`): once
   signed in, it lists the parties that wait for an approval.
 - **No right is checked:** any user at the Critical level on the Admin can approve a party. An application restricts it
   with a validator of `IApprovePartyCommand`.
-- **To replay it,** delete `#Dev/Store`: the Backend forgets the Worker's key (and every identity is reset).
+- **To replay it,** delete `#Dev/Store`: the Backend forgets the Workers' keys (and every identity is reset).
 
-`SampleTests` runs it end to end: the Worker learns its URL and its code, the operator approves it on the Admin.
+`SampleTests` runs it end to end: the Worker learns its URL and its code, the operator approves it on the Admin; Worker2
+learns an authenticated URL and is approved the same way.
 
 ## Running it
 
@@ -141,10 +152,10 @@ the packages of the Angular applications) and the database. The build of the hos
 [CK.AppIdentity.Hosting](https://github.com/signature-opensource/CK-AppIdentity/tree/stable/CK.AppIdentity.Hosting#the-dev-folder-of-a-development-solution)):
 their manifests (`#Dev/Parties`) and the launcher **`#Dev/Start.ps1`**. It runs the demo in Development:
 - it builds the hosts;
-- it starts the Backend, the Front, the Admin and the Worker, each in its own window, with `DOTNET_ENVIRONMENT=Development`;
+- it starts the Backend, the Front, the Admin, the Worker and Worker2, each in its own window, with `DOTNET_ENVIRONMENT=Development`;
 - it waits until they are ready (their outgoing remotes are connected, or wait for an approval) and their client
   applications are served (their dev servers compile them): each host writes its running status in `#Dev/Store`;
-- it prints their URLs and what an operator must do (the approval of the Worker), and opens the browser on the Front;
+- it prints their URLs and what an operator must do (the approval of the Workers), and opens the browser on the Front;
 - when Enter is pressed, it stops the hosts like Ctrl+C in their window: each one stops the dev servers it started.
 
 `-SkipBuild` starts what is already built, `-NoBrowser` does not open the browser. By hand:
@@ -154,8 +165,8 @@ their manifests (`#Dev/Parties`) and the launcher **`#Dev/Start.ps1`**. It runs 
    `Front/Front.Host/Clients/MiniApp` and `Admin/Admin.Host/Clients/App` (in Development, the dev servers compile them).
 3. Start `Backend.Host`, then `Front.Host` and `Admin.Host`, and open `http://localhost:5300`: log in as `Albert` / `pass`
    (Basic), as `Operator` (Weak), or with "Continue with Duende" then `bob` / `bob` (OpenID Connect, logs in as `Bob-Smith`,
-   created at the first login). The Admin is `http://localhost:5302`. `Worker.Host` logs its enlistment URL and its
-   approval code (see [the enlistment](#the-enlistment)).
+   created at the first login). The Admin is `http://localhost:5302`. `Worker.Host` and `Worker2.Host` log their enlistment URL
+   and their approval code (see [the enlistment](#the-enlistment)).
 
 ### The client applications
 

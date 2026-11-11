@@ -1,4 +1,5 @@
 using CK.AppIdentity;
+using CK.AppIdentity.KeyManagement;
 using CK.AppIdentity.TransportLayer;
 using CK.Core;
 using CK.Cris;
@@ -100,8 +101,8 @@ public class SampleTests
         // The Front and the Admin announce their public URL once their endpoint is started: the Backend derives the
         // passkey origins, the OIDC callbacks and the links of the mails from them.
         var backend = _backend.Services.GetRequiredService<ApplicationIdentityService>();
-        // The Worker (started by the enlistment test only) has no web endpoint.
-        var fronts = backend.Remotes.Where( r => r.PartyName != "$Worker" ).ToList();
+        // The Workers (started by the enlistment tests only) have no web endpoint.
+        var fronts = backend.Remotes.Where( r => r.PartyName is not "$Worker" and not "$Worker2" ).ToList();
         for( int i = 0; i < 100 && fronts.Any( r => r.Description.PublicUrl == null ); ++i ) await Task.Delay( 100 );
         fronts.Select( r => r.Description.GetClientApplicationUrl() ).ShouldBe( [FrontUrl, AdminUrl], ignoreOrder: true );
     }
@@ -660,6 +661,56 @@ public class SampleTests
         finally
         {
             await worker.StopAsync();
+        }
+    }
+
+    [Test]
+    public async Task Worker2_anchors_the_AuthCenter_and_receives_an_authenticated_enlistment_URL_Async()
+    {
+        var backend = _backend.Services.GetRequiredService<ApplicationIdentityService>();
+        var admin = _admin.Services.GetRequiredService<ApplicationIdentityService>();
+        string backendName = backend.FullName;
+        // Worker2 anchors the Backend (its AuthCenter): "#Dev" in its appsettings.json, its checkpoint here (the dev store is
+        // disabled by the tests).
+        using var worker2 = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
+        {
+            ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
+            [$"CK-AppIdentity:Local:TrustAnchors:{backendName}"] = backend.GetRequiredFeature<ILocalKeys>().Checkpoint.ToString()
+        } ), TestHelper.SolutionFolder.Combine( "Worker2/Worker2.Host" ), Assembly.Load( "Worker2.Host" ) );
+        await worker2.StartAsync();
+        try
+        {
+            var worker2Party = worker2.Services.GetRequiredService<ApplicationIdentityService>();
+
+            // Worker2 trusts the Backend from its anchor (no trust on first use), the Backend doesn't trust Worker2. The
+            // approval page reaches Worker2 in a statement of the AuthCenter (the Backend) that Worker2 verifies with its
+            // anchor: the enlistment URL is authenticated.
+            var issue = await WaitForAsync( () => worker2Party.GetRequiredFeature<TransportManagerFeature>().GetPeeringIssues()
+                                                              .FirstOrDefault( i => i.EnlistUrl != null && i.ApprovalCode != null ) );
+            issue.ShouldNotBeNull( "Worker2 learns its enlistment URL and its approval code." );
+            issue.Kind.ShouldBe( PeeringIssueKind.RequiresRemoteApproval );
+            issue.IsEnlistUrlAuthenticated.ShouldBeTrue( "The approval page is stated by the AuthCenter that Worker2 anchors." );
+            issue.EnlistUrl.ShouldBe( $"{AdminUrl}/app-identity/enlist?party={Uri.EscapeDataString( worker2Party.FullName )}" );
+            var code = issue.ApprovalCode!;
+            (await WaitForAsync( () => admin.Description.Collected.TryGetValue( TransportFeatureDriver.EnlistmentRouteName, out var items )
+                                          ? items.FirstOrDefault( i => i.Value.Contains( "Worker2" ) )
+                                          : null ))
+                .ShouldNotBeNull( "The pending approval reached the approval page." );
+
+            // The operator approves Worker2 on the page: the Backend pins it.
+            using var browser = new Browser( AdminUrl );
+            await browser.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+            var r = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IApprovePartyCommand",{"actorId":{{browser.ActorId}},"partyFullName":"{{JsonEncodedText.Encode( worker2Party.FullName )}}","codes":["{{code}}"]}]""" ) );
+            r.ValueKind.ShouldBe( JsonValueKind.Array, r.ToString() );
+            var o = Value( r.EnumerateArray().Single() );
+            o.GetProperty( "holderFullName" ).GetString().ShouldBe( backendName );
+            o.GetProperty( "status" ).GetInt32().ShouldBe( (int)CK.IO.AppIdentity.Enlistment.PartyApprovalStatus.Approved );
+            (await WaitForAsync( () => worker2Party.Remotes.Single().GetRequiredFeature<TransportFeature>().ConnectionAvailability == ConnectionAvailability.Connected ? "connected" : null ))
+                .ShouldNotBeNull( "The approved Worker2 connects to the Backend." );
+        }
+        finally
+        {
+            await worker2.StopAsync();
         }
     }
 }

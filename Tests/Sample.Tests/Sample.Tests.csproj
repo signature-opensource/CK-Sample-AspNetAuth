@@ -17,5 +17,6 @@
     <ProjectReference Include="..\..\Front\Front.Host\Front.Host.csproj" />
     <ProjectReference Include="..\..\Admin\Admin.Host\Admin.Host.csproj" />
     <ProjectReference Include="..\..\Worker\Worker.Host\Worker.Host.csproj" />
+    <ProjectReference Include="..\..\Worker2\Worker2.Host\Worker2.Host.csproj" />
   </ItemGroup>
 </Project>

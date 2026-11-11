@@ -27,6 +27,8 @@
          itself (it checks the operator at the Critical level) and sends it down to the holder of the pending approval. -->
     <PackageReference Include="CK.Ng.AppIdentity.Enlistment" Version="3.0.0-0.cris-auth.1.ci.93" />
     <PackageReference Include="CK.AppIdentity.Enlistment" Version="3.0.0-0.cris-auth.1.ci.187" />
+    <!-- The approval is countersigned by the AuthCenter (the Backend), in the operator's request. -->
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Enlistment" Version="3.0.0-0.cris-auth.1.ci.187" />
     <!-- The application shell (side bar, top bar with the UserInfoBox). -->
     <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.cris-auth.1.ci.82" />
     <!-- Serves the client application (app.MapClients()): its dev server in Development, its "dist" otherwise. -->

@@ -31,4 +31,9 @@
     <Project Path="Worker/Worker.Builder/Worker.Builder.csproj" />
     <Project Path="Worker/Worker.Host/Worker.Host.csproj" />
   </Folder>
+  <Folder Name="/Worker2/">
+    <Project Path="Worker2/Worker2.App/Worker2.App.csproj" />
+    <Project Path="Worker2/Worker2.Builder/Worker2.Builder.csproj" />
+    <Project Path="Worker2/Worker2.Host/Worker2.Host.csproj" />
+  </Folder>
 </Solution>
