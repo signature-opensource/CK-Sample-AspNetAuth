@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CK.Sample.Backend.WorkspaceUsers;
+namespace CK.Sample.Auth3.WorkspaceUsers;
 
 /// <summary>
 /// App-level workspace-user listing that combines the two feature-package projections: the core

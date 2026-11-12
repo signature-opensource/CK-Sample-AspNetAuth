@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CK.Sample.Backend.User;
+namespace CK.Sample.Auth3.User;
 
 /// <summary>
 /// Dapper queries that read a <see cref="IUserProfile"/> with its <see cref="IUserGroup"/> list.

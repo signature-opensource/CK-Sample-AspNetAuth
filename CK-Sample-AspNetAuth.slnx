@@ -12,10 +12,10 @@
     <Project Path="Admin/Admin.Builder/Admin.Builder.csproj" />
     <Project Path="Admin/Admin.Host/Admin.Host.csproj" />
   </Folder>
-  <Folder Name="/Backend/">
-    <Project Path="Backend/Backend.App/Backend.App.csproj" />
-    <Project Path="Backend/Backend.Builder/Backend.Builder.csproj" />
-    <Project Path="Backend/Backend.Host/Backend.Host.csproj" />
+  <Folder Name="/Auth3/">
+    <Project Path="Auth3/Auth3.App/Auth3.App.csproj" />
+    <Project Path="Auth3/Auth3.Builder/Auth3.Builder.csproj" />
+    <Project Path="Auth3/Auth3.Host/Auth3.Host.csproj" />
   </Folder>
   <Folder Name="/Front/">
     <Project Path="Front/Front.App/Front.App.csproj" />

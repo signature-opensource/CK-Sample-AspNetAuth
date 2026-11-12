@@ -10,7 +10,7 @@
          no web server. -->
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.1.ci.61" />
     <PackageReference Include="CK.AppIdentity.Cris.Authentication" Version="3.0.0-0.cris-auth.1.ci.240" />
-    <!-- The AuthCenter (the Backend) is designated by its full name and anchored ("Local:AuthCenterParty" and
+    <!-- The AuthCenter (Auth3) is designated by its full name and anchored ("Local:AuthCenterParty" and
          "Local:TrustAnchors"): what it states is verified here with its anchor. -->
     <PackageReference Include="CK.AppIdentity.AuthCenter.Remote" Version="3.0.0-0.cris-auth.1.ci.240" />
     <!-- The enlistment with the AuthCenter: the approval page stated by the AuthCenter (an authenticated enlistment URL;

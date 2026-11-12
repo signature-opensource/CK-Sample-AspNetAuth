@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Backend.Host": {
+    "Auth3.Host": {
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"

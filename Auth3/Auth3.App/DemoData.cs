@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
-namespace CK.Sample.Backend;
+namespace CK.Sample.Auth3;
 
 /// <summary>
 /// The demo data of the sample, created when missing when the host starts (configuration section "Demo"):

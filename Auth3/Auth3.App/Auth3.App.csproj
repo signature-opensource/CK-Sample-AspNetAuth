@@ -2,11 +2,11 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
-    <RootNamespace>CK.Sample.Backend</RootNamespace>
+    <RootNamespace>CK.Sample.Auth3</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <!-- The Local side of the AuthCenter feature (this application IS the Backend): sessions, tokens, the operations of its remotes,
+    <!-- The Local side of the AuthCenter feature (this application IS Auth3): sessions, tokens, the operations of its remotes,
          their caller party and the verification of the user's proof. -->
     <PackageReference Include="CK.AppIdentity.AuthCenter.Local" Version="3.0.0-0.cris-auth.1.ci.240" />
     <!-- The OpenID Connect scheme family ("Package First": its "AuthCenter:Oidc" section requires it). -->
@@ -14,7 +14,7 @@
     <!-- The passkey (WebAuthn) scheme family: the ceremonies and their verification ("AuthCenter:Passkey" section). -->
     <PackageReference Include="CK.AppIdentity.AuthCenter.Passkey" Version="3.0.0-0.cris-auth.1.ci.240" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.1.ci.61" />
-    <!-- The enlistment: this Backend holds the pending approval of the Worker, approved from the Admin's approval page. -->
+    <!-- The enlistment: Auth3 holds the pending approval of the Worker, approved from the Admin's approval page. -->
     <PackageReference Include="CK.AppIdentity.Enlistment" Version="3.0.0-0.cris-auth.1.ci.240" />
     <!-- The AuthCenter in the enlistment: it countersigns the approvals and states the approval page of the System (an
          authenticated enlistment URL for Worker2, that anchors it). -->

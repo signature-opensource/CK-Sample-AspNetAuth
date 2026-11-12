@@ -4,7 +4,7 @@ using CK.AppIdentity.TransportLayer;
 using CK.Core;
 using CK.Cris;
 using CK.Sample.Admin;
-using CK.Sample.Backend;
+using CK.Sample.Auth3;
 using CK.Sample.Front;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -34,9 +34,9 @@ namespace CK.Sample.Tests;
 /// <summary>
 /// The sample, end to end: its three hosts run in this process (with their own ports and an OpenID Connect scheme on the
 /// <see cref="FakeIdentityProvider"/>), and a "browser" (an HttpClient that keeps the cookies) talks to the front (or to
-/// the Admin). The fronts relay the session commands to the Backend over the AppIdentity channel.
+/// the Admin). The fronts relay the session commands to Auth3 over the AppIdentity channel.
 /// <para>
-/// This crosses CK-AppIdentity-Transport (the Backend, the relay) and CK-Cris-TypeScript (the HTTP front) on a real
+/// This crosses CK-AppIdentity-Transport (Auth3, the relay) and CK-Cris-TypeScript (the HTTP front) on a real
 /// database: their own tests use fakes on the other side.
 /// </para>
 /// </summary>
@@ -46,12 +46,12 @@ public class SampleTests
 {
     // "localhost", not 127.0.0.1: the passkeys are bound to a domain name (the RP ID), never to an IP address.
     const string FrontUrl = "http://localhost:5310";
-    const string BackendAddress = "tcp:127.0.0.1:37310";
+    const string Auth3Address = "tcp:127.0.0.1:37310";
     const string Callback = FrontUrl + "/.auth/oidc/callback";
     const string AdminUrl = "http://localhost:5312";
 
     FakeIdentityProvider _idp = null!;
-    IHost _backend = null!;
+    IHost _auth3 = null!;
     IHost _front = null!;
     IHost _admin = null!;
 
@@ -64,9 +64,9 @@ public class SampleTests
         if( Directory.Exists( store ) ) Directory.Delete( store, recursive: true );
         ApplicationIdentityServiceConfiguration.DefaultStoreRootPath = store;
         _idp = new FakeIdentityProvider();
-        _backend = CKomposableAppHost.Build( [], (monitor, b, map) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
+        _auth3 = CKomposableAppHost.Build( [], (monitor, b, map) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
-            ["CK-AppIdentity:Defaults:ListeningAddress:0"] = BackendAddress,
+            ["CK-AppIdentity:Defaults:ListeningAddress:0"] = Auth3Address,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientSecret"] = FakeIdentityProvider.ClientSecret,
@@ -79,13 +79,13 @@ public class SampleTests
             // (the one of their endpoint). The RP ID "localhost" is the configured one.
             // A short Critical level for the Basic logins: the UI smoke test sees its end (--critical-wait).
             ["CK-AppIdentity:Local:AuthCenter:CriticalLifetimes:Basic"] = "00:00:15"
-        } ), TestHelper.SolutionFolder.Combine( "Backend/Backend.Host" ), Assembly.Load( "Backend.Host" ) );
-        await _backend.StartAsync();
+        } ), TestHelper.SolutionFolder.Combine( "Auth3/Auth3.Host" ), Assembly.Load( "Auth3.Host" ) );
+        await _auth3.StartAsync();
         _front = CKomposableAppHost.Build( [], (monitor, b, map) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             // The web application of the "Main" endpoint of the front's party ("HttpEndpoint" feature).
             ["CK-AppIdentity:Local:HttpEndpoint:Main:Urls"] = FrontUrl,
-            ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
+            ["CK-AppIdentity:Parties:0:Address"] = Auth3Address,
             // The UI smoke test runs on the built client applications (never their dev server).
             ["Clients:UseDist"] = "true"
         } ), TestHelper.SolutionFolder.Combine( "Front/Front.Host" ), Assembly.Load( "Front.Host" ) );
@@ -93,16 +93,16 @@ public class SampleTests
         _admin = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["CK-AppIdentity:Local:HttpEndpoint:Main:Urls"] = AdminUrl,
-            ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
+            ["CK-AppIdentity:Parties:0:Address"] = Auth3Address,
             ["Clients:UseDist"] = "true"
         } ), TestHelper.SolutionFolder.Combine( "Admin/Admin.Host" ), Assembly.Load( "Admin.Host" ) );
         await _admin.StartAsync();
 
-        // The Front and the Admin announce their public URL once their endpoint is started: the Backend derives the
+        // The Front and the Admin announce their public URL once their endpoint is started: Auth3 derives the
         // passkey origins, the OIDC callbacks and the links of the mails from them.
-        var backend = _backend.Services.GetRequiredService<ApplicationIdentityService>();
+        var auth3 = _auth3.Services.GetRequiredService<ApplicationIdentityService>();
         // The Workers (started by the enlistment tests only) have no web endpoint.
-        var fronts = backend.Remotes.Where( r => r.PartyName is not "$Worker" and not "$Worker2" ).ToList();
+        var fronts = auth3.Remotes.Where( r => r.PartyName is not "$Worker" and not "$Worker2" ).ToList();
         for( int i = 0; i < 100 && fronts.Any( r => r.Description.PublicUrl == null ); ++i ) await Task.Delay( 100 );
         fronts.Select( r => r.Description.GetClientApplicationUrl() ).ShouldBe( [FrontUrl, AdminUrl], ignoreOrder: true );
     }
@@ -120,7 +120,7 @@ public class SampleTests
             await _front.StopAsync();
             _front.Dispose();
         }
-        _backend?.Dispose();
+        _auth3?.Dispose();
         _idp?.Dispose();
     }
 
@@ -191,19 +191,19 @@ public class SampleTests
     }
 
     [Test]
-    public async Task the_user_manages_its_login_methods_at_the_Backend_through_the_front_Async()
+    public async Task the_user_manages_its_login_methods_at_Auth3_through_the_front_Async()
     {
-        // The front has no database: these commands are posted to "/.cris" and dispatched to the Backend (that handles
-        // them) with the browser's proof (its token and its binding): the Backend verifies it.
+        // The front has no database: these commands are posted to "/.cris" and dispatched to Auth3 (that handles
+        // them) with the browser's proof (its token and its binding): Auth3 verifies it.
         using var anonymous = new Browser();
         Value( await anonymous.SendAsync( "/.cris", """["CK.IO.User.UserPasskey.IGetPasskeysQCommand",{"actorId":1}]""" ) ).ValueKind.ShouldNotBe( JsonValueKind.Array, "Refused: not a list." );
 
         using var b = new Browser();
         await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
         var albertId = b.ActorId;
-        // A passkey of Albert, stored directly in the Backend (a unique name: the database outlives the test runs).
+        // A passkey of Albert, stored directly in Auth3 (a unique name: the database outlives the test runs).
         var keyName = $"Sample key {Guid.NewGuid():N}";
-        var store = _backend.Services.GetRequiredService<IPasskeyStore>();
+        var store = _auth3.Services.GetRequiredService<IPasskeyStore>();
         var handle = await store.GetOrCreateUserHandleAsync( TestHelper.Monitor, albertId );
         (await store.CreateAsync( TestHelper.Monitor, new PasskeyCredential( RandomNumberGenerator.GetBytes( 32 ), albertId, handle, RandomNumberGenerator.GetBytes( 77 ), 0, true, false, Guid.Empty, [], keyName ) )).ShouldBeTrue();
 
@@ -234,13 +234,13 @@ public class SampleTests
     }
 
     [Test]
-    public async Task the_profile_page_reads_the_profile_and_the_sign_in_methods_at_the_Backend_Async()
+    public async Task the_profile_page_reads_the_profile_and_the_sign_in_methods_at_Auth3_Async()
     {
         using var b = new Browser();
         await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
         var albertId = b.ActorId;
 
-        // The profile (the application's leaf, read by the Backend): Albert administers the demo workspace.
+        // The profile (the application's leaf, read by Auth3): Albert administers the demo workspace.
         var profile = Value( await b.SendAsync( "/.cris", $$"""["CK.IO.Actor.IGetUserProfileQCommand",{"actorId":{{albertId}},"userId":{{albertId}}}]""" ) );
         profile.GetProperty( "userName" ).GetString().ShouldBe( "Albert", profile.ToString() );
         profile.GetProperty( "preferredWorkspaceId" ).GetInt32().ShouldBeGreaterThan( 0 );
@@ -257,7 +257,7 @@ public class SampleTests
     }
 
     [Test]
-    public async Task the_Admin_front_administers_the_users_at_the_Backend_Async()
+    public async Task the_Admin_front_administers_the_users_at_Auth3_Async()
     {
         // The second remote of the AuthCenter: its sessions are its own (its origin, its cookies).
         using var admin = new Browser( AdminUrl );
@@ -267,7 +267,7 @@ public class SampleTests
         var profile = Value( await admin.SendAsync( "/.cris", $$"""["CK.IO.Actor.IGetUserProfileQCommand",{"actorId":{{albertId}},"userId":{{albertId}}}]""" ) );
         var workspaceId = profile.GetProperty( "preferredWorkspaceId" ).GetInt32();
 
-        // Albert administers the demo workspace: the Backend lists its users (the application's query, with the
+        // Albert administers the demo workspace: Auth3 lists its users (the application's query, with the
         // banishments and the e-mails).
         var users = Value( await admin.SendAsync( "/.cris", $$"""["CK.IO.UserManagement.IGetWorkspaceUsersQCommand",{"actorId":{{albertId}},"currentWorkspaceId":{{workspaceId}},"currentCultureName":"en"}]""" ) );
         users.ValueKind.ShouldBe( JsonValueKind.Array, users.ToString() );
@@ -283,7 +283,7 @@ public class SampleTests
     static bool IsString( JsonElement result ) => (result.ValueKind == JsonValueKind.Array ? result[1] : result).ValueKind == JsonValueKind.String;
 
     [Test]
-    public async Task a_basic_login_through_the_front_opens_a_session_on_the_Backend_Async()
+    public async Task a_basic_login_through_the_front_opens_a_session_on_Auth3_Async()
     {
         using var b = new Browser();
         var login = await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
@@ -299,7 +299,7 @@ public class SampleTests
         await b.SessionAsync( """["CK.IO.Authentication.IRefreshSessionCommand",{}]""" );
         Text( await b.HelloAsync() ).ShouldBe( "Hello Albert, at the Normal level." );
 
-        // Logout: the session ends on the Backend, the cookies are cleared.
+        // Logout: the session ends on Auth3, the cookies are cleared.
         await b.SendAsync( "/.cris/auth", """["CK.IO.Authentication.ILogoutSessionCommand",{}]""" );
         b.Cookies.GetAllCookies().ShouldNotContain( c => c.Name == "ck-auth-binding" && !c.Expired );
         Text( await b.HelloAsync() ).ShouldContain( "match the current authentication" );
@@ -357,13 +357,13 @@ public class SampleTests
     }
 
     [Test]
-    public async Task an_oidc_login_through_the_front_and_the_Backend_Async()
+    public async Task an_oidc_login_through_the_front_and_Auth3_Async()
     {
         using var b = new Browser();
-        // The schemes come from the Backend.
+        // The schemes come from Auth3.
         Text( await b.SendAsync( "/.cris", """["CK.IO.Authentication.IGetLoginSchemesQCommand",{}]""" ) ).ShouldContain( "Oidc.Test" );
 
-        // Start: the front relays it, the Backend returns the provider's URL; the front sets the remote login cookie.
+        // Start: the front relays it, Auth3 returns the provider's URL; the front sets the remote login cookie.
         var start = await b.SessionAsync( """["CK.IO.Authentication.IStartLoginCommand",{"scheme":"Oidc.Test","inlineMode":false,"rememberMe":false}]""" );
         var url = start[1].GetProperty( "url" ).GetString().ShouldNotBeNull();
         b.Cookies.GetAllCookies().ShouldContain( c => c.Name == "ck-auth-login" && c.Path == "/.auth/oidc/callback" );
@@ -374,7 +374,7 @@ public class SampleTests
         using var callback = await b.GetAsync( $"/.auth/oidc/callback?state={HttpUtility.UrlEncode( state )}&code={HttpUtility.UrlEncode( code )}" );
         callback.StatusCode.ShouldBe( HttpStatusCode.OK );
         (await callback.Content.ReadAsStringAsync()).ShouldContain( "\"success\":true" );
-        _idp.RedeemCount.ShouldBeGreaterThan( 0, "The Backend redeemed the code." );
+        _idp.RedeemCount.ShouldBeGreaterThan( 0, "Auth3 redeemed the code." );
         _idp.LastAuthMethod.ShouldBe( "client_secret_basic", "The default client authentication." );
 
         // The page has no token: the client refreshes with the session cookies set by the callback.
@@ -497,7 +497,7 @@ public class SampleTests
         here.GetProperty( "level" ).GetString().ShouldBe( "Critical" );
         here.GetProperty( "callerPartyFullName" ).GetString().ShouldBe( front );
 
-        // There: dispatched to the Backend with the user's proof: the level is the proved one, the front is the caller.
+        // There: dispatched to Auth3 with the user's proof: the level is the proved one, the front is the caller.
         var there = await WhoAmIAsync( b, authCenter );
         there.GetProperty( "partyFullName" ).GetString().ShouldBe( authCenter );
         there.GetProperty( "actorName" ).GetString().ShouldBe( "Albert" );
@@ -506,7 +506,7 @@ public class SampleTests
     }
 
     [Test]
-    public async Task asked_later_the_front_only_vouches_and_the_Backend_caps_the_level_Async()
+    public async Task asked_later_the_front_only_vouches_and_Auth3_caps_the_level_Async()
     {
         using var b = new Browser();
         await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
@@ -523,12 +523,12 @@ public class SampleTests
     }
 
     [Test]
-    public async Task a_Critical_command_deferred_by_the_front_is_refused_by_the_Backend_Async()
+    public async Task a_Critical_command_deferred_by_the_front_is_refused_by_Auth3_Async()
     {
         using var b = new Browser();
         await b.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
         var albertId = b.ActorId;
-        // The front submits a password change for Albert to its background executor: no proof, the Backend refuses.
+        // The front submits a password change for Albert to its background executor: no proof, Auth3 refuses.
         var pocos = _front.Services.GetRequiredService<PocoDirectory>();
         var command = pocos.Create<CK.IO.User.UserPassword.ISetPasswordCommand>( c =>
         {
@@ -537,7 +537,7 @@ public class SampleTests
             c.Password = "deferred";
         } );
         // In "#Dev", the front validates the command again before executing it (its background has no user: the actor
-        // mismatches). This is a development check: it is skipped, the refusal under test is the Backend's.
+        // mismatches). This is a development check: it is skipped, the refusal under test is Auth3's.
         var executed = await _front.Services.GetRequiredService<CrisBackgroundExecutorService>()
                                             .Submit( TestHelper.Monitor, command, null, incomingValidationCheck: false )
                                             .ExecutedCommand.WaitAsync( TimeSpan.FromSeconds( 30 ) );
@@ -558,7 +558,7 @@ public class SampleTests
         center.GetProperty( "fullName" ).GetString().ShouldNotBe( front );
         center.GetProperty( "connection" ).GetString().ShouldBe( "Connected" );
         var accepted = center.GetProperty( "acceptedCommands" ).EnumerateArray().Select( c => c.GetString() ).ToList();
-        // The Backend accepts the party command, the self-service, and its internal operations (the front is inside the System).
+        // Auth3 accepts the party command, the self-service, and its internal operations (the front is inside the System).
         accepted.ShouldContain( "CK.Sample.IWhoAmIQCommand" );
         accepted.ShouldContain( "CK.IO.User.UserPasskey.IGetPasskeysQCommand" );
         accepted.ShouldContain( "CK.IO.Authentication.IOpenSessionOperationCommand" );
@@ -595,16 +595,16 @@ public class SampleTests
     [Test]
     public async Task an_operator_enlists_the_Worker_on_the_approval_page_of_the_Admin_Async()
     {
-        // The Backend never trusts the Worker's key automatically ("AutoTrustKey": "Never"): the Worker waits for an approval.
+        // Auth3 never trusts the Worker's key automatically ("AutoTrustKey": "Never"): the Worker waits for an approval.
         using var worker = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
-            ["CK-AppIdentity:Parties:0:Address"] = BackendAddress
+            ["CK-AppIdentity:Parties:0:Address"] = Auth3Address
         } ), TestHelper.SolutionFolder.Combine( "Worker/Worker.Host" ), Assembly.Load( "Worker.Host" ) );
         await worker.StartAsync();
         try
         {
             var workerParty = worker.Services.GetRequiredService<ApplicationIdentityService>();
-            var backend = _backend.Services.GetRequiredService<ApplicationIdentityService>();
+            var auth3 = _auth3.Services.GetRequiredService<ApplicationIdentityService>();
             var admin = _admin.Services.GetRequiredService<ApplicationIdentityService>();
 
             // The Worker is told where to enlist (the approval page of the System, on the Admin, for itself) and shows the
@@ -616,12 +616,12 @@ public class SampleTests
             issue.EnlistUrl.ShouldBe( $"{AdminUrl}/app-identity/enlist?party={Uri.EscapeDataString( workerParty.FullName )}" );
             var code = issue.ApprovalCode!;
 
-            // The pending approval of the Backend travelled the "Enlistment" route up to the Admin.
+            // The pending approval of Auth3 travelled the "Enlistment" route up to the Admin.
             var item = await WaitForAsync( () => admin.Description.Collected.TryGetValue( TransportFeatureDriver.EnlistmentRouteName, out var items )
                                                     ? items.FirstOrDefault()
                                                     : null );
             item.ShouldNotBeNull( "The pending approval reached the approval page." );
-            item.Path.ShouldBe( [backend.FullName, admin.FullName] );
+            item.Path.ShouldBe( [auth3.FullName, admin.FullName] );
 
             // The operator signs in on the Admin (a password: the Critical level) and enters the code.
             using var browser = new Browser( AdminUrl );
@@ -633,8 +633,8 @@ public class SampleTests
                 r.ValueKind.ShouldBe( JsonValueKind.Array, r.ToString() );
                 return r.EnumerateArray().Select( Value ).Select( p => (p.GetProperty( "partyFullName" ).GetString()!, p.GetProperty( "holderFullName" ).GetString()!) ).ToList();
             }
-            string backendFullName = backend.FullName;
-            (await PendingAsync()).ShouldContain( (workerParty.FullName.Path, backendFullName) );
+            string auth3FullName = auth3.FullName;
+            (await PendingAsync()).ShouldContain( (workerParty.FullName.Path, auth3FullName) );
 
             async Task<(string Holder, int Status)> ApproveAsync( string c )
             {
@@ -644,17 +644,17 @@ public class SampleTests
                 return (o.GetProperty( "holderFullName" ).GetString()!, o.GetProperty( "status" ).GetInt32());
             }
             var wrong = code == "1234-5678" ? "8765-4321" : "1234-5678";
-            string backendName = backend.FullName;
+            string auth3Name = auth3.FullName;
             var refused = await ApproveAsync( wrong );
-            refused.Holder.ShouldBe( backendName );
+            refused.Holder.ShouldBe( auth3Name );
             refused.Status.ShouldBe( (int)CK.IO.AppIdentity.Enlistment.PartyApprovalStatus.CodeMismatch );
             var approved = await ApproveAsync( code );
-            approved.Holder.ShouldBe( backendName );
+            approved.Holder.ShouldBe( auth3Name );
             approved.Status.ShouldBe( (int)CK.IO.AppIdentity.Enlistment.PartyApprovalStatus.Approved );
 
-            // The Backend trusts the Worker's key: the Worker connects, and the pending approval disappears.
+            // Auth3 trusts the Worker's key: the Worker connects, and the pending approval disappears.
             (await WaitForAsync( () => workerParty.Remotes.Single().GetRequiredFeature<TransportFeature>().ConnectionAvailability == ConnectionAvailability.Connected ? "connected" : null ))
-                .ShouldNotBeNull( "The approved Worker connects to the Backend." );
+                .ShouldNotBeNull( "The approved Worker connects to Auth3." );
             (await WaitForAsync( () => admin.Description.Collected.Count == 0 ? "gone" : null )).ShouldNotBeNull();
             (await PendingAsync()).ShouldBeEmpty( "The Worker is enlisted: nothing waits anymore." );
         }
@@ -667,23 +667,23 @@ public class SampleTests
     [Test]
     public async Task Worker2_anchors_the_AuthCenter_and_receives_an_authenticated_enlistment_URL_Async()
     {
-        var backend = _backend.Services.GetRequiredService<ApplicationIdentityService>();
+        var auth3 = _auth3.Services.GetRequiredService<ApplicationIdentityService>();
         var admin = _admin.Services.GetRequiredService<ApplicationIdentityService>();
-        string backendName = backend.FullName;
-        // Worker2 anchors the Backend (its AuthCenter): "#Dev" in its appsettings.json, its checkpoint here (the dev store is
+        string auth3Name = auth3.FullName;
+        // Worker2 anchors Auth3 (its AuthCenter): "#Dev" in its appsettings.json, its checkpoint here (the dev store is
         // disabled by the tests).
         using var worker2 = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
-            ["CK-AppIdentity:Parties:0:Address"] = BackendAddress,
-            [$"CK-AppIdentity:Local:TrustAnchors:{backendName}"] = backend.GetRequiredFeature<ILocalKeys>().Checkpoint.ToString()
+            ["CK-AppIdentity:Parties:0:Address"] = Auth3Address,
+            [$"CK-AppIdentity:Local:TrustAnchors:{auth3Name}"] = auth3.GetRequiredFeature<ILocalKeys>().Checkpoint.ToString()
         } ), TestHelper.SolutionFolder.Combine( "Worker2/Worker2.Host" ), Assembly.Load( "Worker2.Host" ) );
         await worker2.StartAsync();
         try
         {
             var worker2Party = worker2.Services.GetRequiredService<ApplicationIdentityService>();
 
-            // Worker2 trusts the Backend from its anchor (no trust on first use), the Backend doesn't trust Worker2. The
-            // approval page reaches Worker2 in a statement of the AuthCenter (the Backend) that Worker2 verifies with its
+            // Worker2 trusts Auth3 from its anchor (no trust on first use), Auth3 doesn't trust Worker2. The
+            // approval page reaches Worker2 in a statement of the AuthCenter (Auth3) that Worker2 verifies with its
             // anchor: the enlistment URL is authenticated.
             var issue = await WaitForAsync( () => worker2Party.GetRequiredFeature<TransportManagerFeature>().GetPeeringIssues()
                                                               .FirstOrDefault( i => i.EnlistUrl != null && i.ApprovalCode != null ) );
@@ -697,16 +697,16 @@ public class SampleTests
                                           : null ))
                 .ShouldNotBeNull( "The pending approval reached the approval page." );
 
-            // The operator approves Worker2 on the page: the Backend pins it.
+            // The operator approves Worker2 on the page: Auth3 pins it.
             using var browser = new Browser( AdminUrl );
             await browser.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
             var r = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IApprovePartyCommand",{"actorId":{{browser.ActorId}},"partyFullName":"{{JsonEncodedText.Encode( worker2Party.FullName )}}","codes":["{{code}}"]}]""" ) );
             r.ValueKind.ShouldBe( JsonValueKind.Array, r.ToString() );
             var o = Value( r.EnumerateArray().Single() );
-            o.GetProperty( "holderFullName" ).GetString().ShouldBe( backendName );
+            o.GetProperty( "holderFullName" ).GetString().ShouldBe( auth3Name );
             o.GetProperty( "status" ).GetInt32().ShouldBe( (int)CK.IO.AppIdentity.Enlistment.PartyApprovalStatus.Approved );
             (await WaitForAsync( () => worker2Party.Remotes.Single().GetRequiredFeature<TransportFeature>().ConnectionAvailability == ConnectionAvailability.Connected ? "connected" : null ))
-                .ShouldNotBeNull( "The approved Worker2 connects to the Backend." );
+                .ShouldNotBeNull( "The approved Worker2 connects to Auth3." );
         }
         finally
         {
