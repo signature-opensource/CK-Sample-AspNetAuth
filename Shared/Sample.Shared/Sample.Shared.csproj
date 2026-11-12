@@ -10,13 +10,13 @@
     <PackageReference Include="CK.AppIdentity.Abstractions" Version="3.0.0-0.cris-auth.1.ci.61" />
     <!-- The application's Poco leaves (IUserProfile, ICombinedWorkspaceUser): Auth3 materializes them, the
          fronts read them. Every party knows the same Poco, with the same properties. -->
-    <PackageReference Include="CK.IO.UserProfile" Version="3.0.0-0.cris-auth.1.ci.113" />
+    <PackageReference Include="CK.IO.UserProfile" Version="3.0.0-0.cris-auth.1.ci.114" />
     <PackageReference Include="CK.IO.UserProfile.Workspace" Version="18.0.0-0.cris-auth.1.ci.44" />
     <PackageReference Include="CK.IO.User.PreferredCulture" Version="3.0.0-0.cris-auth.1.ci.50" />
     <PackageReference Include="CK.IO.User.UserPassword.Reset" Version="31.0.0-0.cris-auth.1.ci.58" />
     <PackageReference Include="CK.IO.User.UserBanned" Version="4.0.0-0.cris-auth.1.ci.47" />
-    <PackageReference Include="CK.IO.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.1.ci.72" />
-    <PackageReference Include="CK.IO.Admin" Version="3.0.0-0.cris-auth.1.ci.72" />
-    <PackageReference Include="CK.IO.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.1.ci.72" />
+    <PackageReference Include="CK.IO.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.1.ci.73" />
+    <PackageReference Include="CK.IO.Admin" Version="3.0.0-0.cris-auth.1.ci.73" />
+    <PackageReference Include="CK.IO.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.1.ci.73" />
   </ItemGroup>
 </Project>
