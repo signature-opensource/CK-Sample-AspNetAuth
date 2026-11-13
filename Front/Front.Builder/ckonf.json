@@ -1,0 +1,53 @@
+{
+  // The configuration of the Front App: its BinPath "Front" is the Front.App project (its code) and the Front.Host
+  // project, whose appsettings.json is generated from the "Front" section below (without its compile time keys).
+  "App": {
+    "BinPaths": {
+      "Front": {
+        "CK-AppIdentity": {
+          // A development configuration: its environment is fixed, whatever the run mode of the host (the parties inherit it).
+          "FullName": "Sample/Auth3/$Front/#Dev",
+          // This application is a remote of an AuthCenter (CK.AppIdentity.AuthCenter.Remote), and a web server: its
+          // "HttpEndpoint" feature (CK.AppIdentity.HttpEndpoint) starts the web application of each endpoint.
+          "Local": {
+            "AllowFeatures": "HttpEndpoint",
+            // The "Main" endpoint: the SPA and its "/.cris" endpoints share this origin (no CORS).
+            "HttpEndpoint": { "Main": { "Urls": "http://localhost:5300" } },
+            // The two client applications of the Front host. Their name gives their project ("Clients/{Name}") and the
+            // TypeFilterName of the types they exchange with this host ("TypeScript{Name}"); their Kind gives their request
+            // path; they are served by their dev server on their DevServerPort in Development, by their built files otherwise.
+            "PartyClient": {
+              // The application (the authentication, the profile, the home page), served at "/".
+              "App": { "Type": "TypeScript", "Kind": "DefaultApp", "DevServerPort": 4200 },
+              // A client application without authentication, served at "/mini-app/": it sends the IFrontInfoQCommand. It lists
+              // its packages: it gets the Cris client package (and what it requires), not the App's pages, authentication and
+              // styles.
+              "MiniApp": {
+                "Type": "TypeScript",
+                "Kind": "App",
+                "DevServerPort": 4201,
+                "Types": [ "CK.Ng.Cris.AspNet.CrisAspNetPackage, CK.Ng.Cris.AspNet", "CK.Sample.Front.IFrontInfoQCommand, Front.App" ]
+              }
+            }
+          },
+          "Parties": [
+            {
+              "PartyName": "$Auth3",
+              // This front's AuthCenter (the remote that allows "AuthCenterRemote", as this "Local" doesn't allow "AuthCenter"):
+              // the session operations are dispatched to it, its keys verify the tokens.
+              "AllowFeatures": "AuthCenterRemote",
+              "Address": "tcp:127.0.0.1:37300",
+              // The AuthCenter's key is pinned at the first connection (a demo: production pins it explicitly).
+              "AutoTrustKey": "Once"
+            }
+          ]
+        },
+        "Logging": { "LogLevel": { "Default": "Warning" } },
+        "CK-Monitoring": {
+          "GlobalDefaultFilter": "Debug",
+          "GrandOutput": { "Handlers": { "Console": true, "TextFile": { "Path": "Text" } } }
+        }
+      }
+    }
+  }
+}
