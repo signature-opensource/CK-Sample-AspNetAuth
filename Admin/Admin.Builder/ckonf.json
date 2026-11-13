@@ -1,0 +1,41 @@
+{
+  // The configuration of the Admin App: its BinPath "Admin" is the Admin.App project (its code) and the Admin.Host
+  // project, whose appsettings.json is generated from the "Admin" section below (without its compile time keys).
+  "App": {
+    "BinPaths": {
+      "Admin": {
+        "CK-AppIdentity": {
+          // A development configuration: its environment is fixed, whatever the run mode of the host (the parties inherit it).
+          "FullName": "Sample/Auth3/$Admin/#Dev",
+          // This application is a remote of an AuthCenter (CK.AppIdentity.AuthCenter.Remote), and a web server: its
+          // "HttpEndpoint" feature (CK.AppIdentity.HttpEndpoint) starts the web application of each endpoint.
+          "Local": {
+            "AllowFeatures": "HttpEndpoint",
+            // The "Main" endpoint: the SPA and its "/.cris" endpoints share this origin (no CORS).
+            "HttpEndpoint": { "Main": { "Urls": "http://localhost:5302" } },
+            // Its client application (Admin.Host/Clients/App), served at "/" (the Front's client applications use 4200 and 4201).
+            "PartyClient": { "App": { "Type": "TypeScript", "Kind": "DefaultApp", "DevServerPort": 4300 } }
+          },
+          "Parties": [
+            {
+              "PartyName": "$Auth3",
+              // This back-office's AuthCenter (the remote that allows "AuthCenterRemote", as this "Local" doesn't allow
+              // "AuthCenter"): the session operations and the administration commands are dispatched to it, its keys verify
+              // the tokens.
+              "AllowFeatures": "AuthCenterRemote",
+              "Address": "tcp:127.0.0.1:37300",
+              // The AuthCenter's key is pinned at the first connection (a demo: production pins it explicitly).
+              "AutoTrustKey": "Once"
+            }
+          ]
+        },
+
+        "Logging": { "LogLevel": { "Default": "Warning" } },
+        "CK-Monitoring": {
+          "GlobalDefaultFilter": "Debug",
+          "GrandOutput": { "Handlers": { "Console": true, "TextFile": { "Path": "Text" } } }
+        }
+      }
+    }
+  }
+}

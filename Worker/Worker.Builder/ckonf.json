@@ -1,0 +1,30 @@
+{
+  // The configuration of the Worker App: its BinPath "Worker" is the Worker.App project (its code) and the Worker.Host
+  // project, whose appsettings.json is generated from the "Worker" section below.
+  "App": {
+    "BinPaths": {
+      "Worker": {
+        "CK-AppIdentity": {
+          // A development configuration: its environment is fixed, whatever the run mode of the host (the parties inherit it).
+          "FullName": "Sample/Auth3/$Worker/#Dev",
+          "Parties": [
+            {
+              "PartyName": "$Auth3",
+              "Address": "tcp:127.0.0.1:37300",
+              // The Worker trusts Auth3, the party it is configured to reach, at its first contact (a trust on first
+              // use). Auth3 doesn't trust the Worker ("AutoTrustKey": "Never" on its "$Worker"): until an operator approves it on the
+              // approval page of the System, the Worker logs the enlistment URL and the approval code at each attempt.
+              "AutoTrustKey": "Once"
+            }
+          ]
+        },
+
+        "Logging": { "LogLevel": { "Default": "Warning" } },
+        "CK-Monitoring": {
+          "GlobalDefaultFilter": "Debug",
+          "GrandOutput": { "Handlers": { "Console": true, "TextFile": { "Path": "Text" } } }
+        }
+      }
+    }
+  }
+}
