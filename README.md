@@ -19,7 +19,10 @@ Angular application of the Front and of the Admin) and `*.Host` (the program). T
 `Program.cs` is `await CK.Core.CKomposableAppHost.RunAsync( args );` and their project references
 [CK.AppHost](https://github.com/signature-opensource/CK-AspNet/blob/stable/CK.AppHost/README.md) (the bootstrap and the
 conventions of a host project), their `*.App` and their `*.Builder`. What a host does is in its packages, its `*.App` and
-its `appsettings.json`.
+its configuration: the `ckonf.json` of its `*.Builder` (see
+[CK.AppBuilder](https://github.com/signature-opensource/CK-StObj/blob/stable/CK.AppBuilder/README.md)). The
+`appsettings.json` of a host is generated from it when the builder runs (a projection, without the compile time keys):
+edit the `ckonf.json`.
 
 [Shared/Sample.Shared](Shared/Sample.Shared) is referenced by every `*.App`: its `IWhoAmIQCommand` is a party command
 handled by every party (see [the Architecture page](#the-architecture-page)), and it declares the application's Poco
@@ -174,8 +177,9 @@ their manifests (`#Dev/Parties`) and the launcher **`#Dev/Start.ps1`**. It runs 
 
 ### The client applications
 
-The Angular applications are the client applications of their host (`<TypeScript Name="..." Kind="...">` in
-`Front/Front.Builder/CKSetup.xml` and in `Admin/Admin.Builder/Program.cs`), served by CK.TS.AspNet.Clients (its
+The Angular applications are the client applications of their host, declared by their party in the `ckonf.json` of
+its builder (`"PartyClient": { "App": { "Type": "TypeScript", "Kind": "DefaultApp", "DevServerPort": 4200 } }`), served
+by CK.TS.AspNet.Clients (its
 `EnableClients`, applied by the "HttpEndpoint" feature of the host):
 
 | Host | Client application | Request path | Dev server port |
@@ -201,7 +205,7 @@ Deleting `#Dev/Store` resets the identities of the hosts.
 ### OpenID Connect
 
 OpenID Connect is a package of its own: Auth3 references CK.AppIdentity.AuthCenter.Oidc (without it, an
-"Local:AuthCenter:Oidc" section is a configuration error). The default configuration (`Auth3/Auth3.Host/appsettings.json`) has the scheme `Oidc.Duende`: the public demo
+"Local:AuthCenter:Oidc" section is a configuration error). The default configuration (`Auth3/Auth3.Builder/ckonf.json`) has the scheme `Oidc.Duende`: the public demo
 server of Duende IdentityServer (`https://demo.duendesoftware.com`) with its public test client
 (`interactive.confidential` / `secret`, authorization code with PKCE). This secret is published by Duende for testing: it
 protects nothing. The scheme allows account creation (`AllowAccountCreation`) and reads the UserInfo endpoint
@@ -236,7 +240,7 @@ client secret (it redeems the code); the Front forwards the start of the login a
 
 The demo runs without a proxy: the browser talks to the Front and the Admin directly. In a deployment, a reverse proxy
 usually terminates TLS in front of them: the browser is on `https://front.example.com`, the party receives `http`
-requests from the proxy. Two keys of the party's configuration handle it, for example in `Front/Front.Host/appsettings.json`:
+requests from the proxy. Two keys of the party's configuration handle it, for example in `Front/Front.Builder/ckonf.json`:
 
 ```jsonc
 "Local": {
