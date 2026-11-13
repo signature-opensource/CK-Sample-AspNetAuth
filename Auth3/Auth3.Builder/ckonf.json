@@ -1,103 +1,100 @@
 {
-  // The configuration of the Auth3 App: its BinPath "Auth3" is the Auth3.App project (its code) and the Auth3.Host
-  // project, whose appsettings.json is generated from the "Auth3" section below. Its database aspect is still configured
-  // by its Program.cs (the App features: UC step 2).
-  "App": {
-    "BinPaths": {
-      "Auth3": {
-        "CK-AppIdentity": {
-          // A development configuration: its environment is fixed, whatever the run mode of the host (the parties inherit it).
-          "FullName": "Sample/Auth3/$Auth3/#Dev",
-          "Defaults": {
-            // The fronts (the remotes without an address) connect here.
-            "ListeningAddress": [ "tcp:127.0.0.1:37300" ]
-          },
-          // This application is the "AuthCenter" (CK.AppIdentity.AuthCenter.Local).
-          "Local": {
-            "AllowFeatures": "AuthCenter",
-            "AuthCenter": {
-              "SessionLifetime": "1.00:00:00",
-              "Oidc": {
-                // The public demo server of Duende IdentityServer, with its public test client (a known, risk-free secret):
-                // log in as bob / bob. Its first login creates the user "Bob-Smith" (SampleAccountCreation, named from the
-                // "name" claim that the demo server returns from its UserInfo endpoint only).
-                "Duende": {
-                  "Authority": "https://demo.duendesoftware.com",
-                  "ClientId": "interactive.confidential",
-                  "ClientSecret": "secret",
-                  "Scopes": "openid profile email",
-                  "GetClaimsFromUserInfoEndpoint": true,
-                  "AllowAccountCreation": true
-                  // The callback is the endpoint of the party through which the user logs in (the Front): derived from the
-                  // public URL that this party announces. Register "http://localhost:5300/.auth/oidc/callback" at the provider.
-                }
-                // Other schemes (a real provider, with a real secret) go in the user-secrets of this application (see the README).
-              },
-              "Passkey": {
-                // The passkeys are bound to this domain: changing it orphans every registered passkey (a deployment constant).
-                // "localhost" is a secure context for the browsers, so the http front works; any other host needs https.
-                "RpId": "localhost",
-                "RpName": "CK Sample"
-                // The accepted origins are the ones of the parties (their public URL, announced: the Front, the Admin).
-              },
-              // The hosts of the routes of the System, known at deployment: a route is accepted only toward an authorized host
-              // (any party can announce a route). The Admin hosts the approval page: its target is the one it announces.
-              "RouteHosts": {
-                "Enlistment": [ "Sample/Auth3/$Admin/#Dev" ]
-              }
-            },
-            // The links of the mails (an invitation, a lost password) open the client application of the party through which
-            // the request was made (its public URL, announced): the Admin, where the registration and the password recovery
-            // pages are.
-            // The mails are written in a pickup directory (a demo: nothing is sent).
-            "EmailSender": {
-              "Smtp": {
-                "SendEmail": false,
-                "UsePickupDirectory": true,
-                "PickupDirectory": "Mails",
-                "From": "noreply@sample.local"
-              }
+  // The configuration of the builder: its App "Auth3" is the Auth3.App project (its code) and the Auth3.Host project,
+  // whose appsettings.json is generated from the "Auth3" section below (without its compile time keys; the keys of its
+  // party go in the "CK-AppIdentity" section).
+  // Its database aspect is still configured by its Program.cs (the Builder aspects: UC step 2).
+  "Apps": {
+    "Auth3": {
+      // A development configuration: its environment is fixed, whatever the run mode of the host (the parties inherit it).
+      "FullName": "Sample/Auth3/$Auth3/#Dev",
+      "Defaults": {
+        // The fronts (the remotes without an address) connect here.
+        "ListeningAddress": [ "tcp:127.0.0.1:37300" ]
+      },
+      // This application is the "AuthCenter" (CK.AppIdentity.AuthCenter.Local).
+      "Local": {
+        "AllowFeatures": "AuthCenter",
+        "AuthCenter": {
+          "SessionLifetime": "1.00:00:00",
+          "Oidc": {
+            // The public demo server of Duende IdentityServer, with its public test client (a known, risk-free secret):
+            // log in as bob / bob. Its first login creates the user "Bob-Smith" (SampleAccountCreation, named from the
+            // "name" claim that the demo server returns from its UserInfo endpoint only).
+            "Duende": {
+              "Authority": "https://demo.duendesoftware.com",
+              "ClientId": "interactive.confidential",
+              "ClientSecret": "secret",
+              "Scopes": "openid profile email",
+              "GetClaimsFromUserInfoEndpoint": true,
+              "AllowAccountCreation": true
+              // The callback is the endpoint of the party through which the user logs in (the Front): derived from the
+              // public URL that this party announces. Register "http://localhost:5300/.auth/oidc/callback" at the provider.
             }
+            // Other schemes (a real provider, with a real secret) go in the user-secrets of this application (see the README).
           },
-          "Parties": [
-            {
-              "PartyName": "$Front",
-              // One of the remotes of this AuthCenter.
-              "AllowFeatures": "AuthCenterRemote",
-              // The front's key is pinned at its first connection (a demo: production pins it explicitly).
-              "AutoTrustKey": "Once"
-            },
-            {
-              "PartyName": "$Admin",
-              // The second remote of this AuthCenter: the back-office (the user management, the approval page).
-              "AllowFeatures": "AuthCenterRemote",
-              "AutoTrustKey": "Once"
-            },
-            {
-              "PartyName": "$Worker",
-              // The enlistment: the Worker's key is never trusted automatically. An operator approves it on the approval page
-              // of the System (the Admin), with the code shown by the Worker.
-              "AutoTrustKey": "Never"
-            },
-            {
-              "PartyName": "$Worker2",
-              // The same for Worker2, that anchors Auth3 (the AuthCenter): it receives an authenticated enlistment URL.
-              "AutoTrustKey": "Never"
-            }
-          ]
+          "Passkey": {
+            // The passkeys are bound to this domain: changing it orphans every registered passkey (a deployment constant).
+            // "localhost" is a secure context for the browsers, so the http front works; any other host needs https.
+            "RpId": "localhost",
+            "RpName": "CK Sample"
+            // The accepted origins are the ones of the parties (their public URL, announced: the Front, the Admin).
+          },
+          // The hosts of the routes of the System, known at deployment: a route is accepted only toward an authorized host
+          // (any party can announce a route). The Admin hosts the approval page: its target is the one it announces.
+          "RouteHosts": {
+            "Enlistment": [ "Sample/Auth3/$Admin/#Dev" ]
+          }
         },
-
-        "Demo": {
-          "AlbertPassword": "pass"
-          // To bind Albert to your own account at a provider, set "OidcScheme" and "OidcSub" in the user-secrets
-          // ("OidcScheme": "Google", "OidcSub": "<your sub at the provider>").
-        },
-
-        "Logging": { "LogLevel": { "Default": "Warning" } },
-        "CK-Monitoring": {
-          "GlobalDefaultFilter": "Debug",
-          "GrandOutput": { "Handlers": { "Console": true, "TextFile": { "Path": "Text" } } }
+        // The links of the mails (an invitation, a lost password) open the client application of the party through which
+        // the request was made (its public URL, announced): the Admin, where the registration and the password recovery
+        // pages are.
+        // The mails are written in a pickup directory (a demo: nothing is sent).
+        "EmailSender": {
+          "Smtp": {
+            "SendEmail": false,
+            "UsePickupDirectory": true,
+            "PickupDirectory": "Mails",
+            "From": "noreply@sample.local"
+          }
         }
+      },
+      "Parties": [
+        {
+          "PartyName": "$Front",
+          // One of the remotes of this AuthCenter.
+          "AllowFeatures": "AuthCenterRemote",
+          // The front's key is pinned at its first connection (a demo: production pins it explicitly).
+          "AutoTrustKey": "Once"
+        },
+        {
+          "PartyName": "$Admin",
+          // The second remote of this AuthCenter: the back-office (the user management, the approval page).
+          "AllowFeatures": "AuthCenterRemote",
+          "AutoTrustKey": "Once"
+        },
+        {
+          "PartyName": "$Worker",
+          // The enlistment: the Worker's key is never trusted automatically. An operator approves it on the approval page
+          // of the System (the Admin), with the code shown by the Worker.
+          "AutoTrustKey": "Never"
+        },
+        {
+          "PartyName": "$Worker2",
+          // The same for Worker2, that anchors Auth3 (the AuthCenter): it receives an authenticated enlistment URL.
+          "AutoTrustKey": "Never"
+        }
+      ],
+
+      "Demo": {
+        "AlbertPassword": "pass"
+        // To bind Albert to your own account at a provider, set "OidcScheme" and "OidcSub" in the user-secrets
+        // ("OidcScheme": "Google", "OidcSub": "<your sub at the provider>").
+      },
+
+      "Logging": { "LogLevel": { "Default": "Warning" } },
+      "CK-Monitoring": {
+        "GlobalDefaultFilter": "Debug",
+        "GrandOutput": { "Handlers": { "Console": true, "TextFile": { "Path": "Text" } } }
       }
     }
   }

@@ -1,36 +1,33 @@
 {
-  // The configuration of the Worker2 App: its BinPath "Worker2" is the Worker2.App project (its code) and the Worker2.Host
-  // project, whose appsettings.json is generated from the "Worker2" section below.
-  "App": {
-    "BinPaths": {
-      "Worker2": {
-        "CK-AppIdentity": {
-          // A development configuration: its environment is fixed, whatever the run mode of the host (the parties inherit it).
-          "FullName": "Sample/Auth3/$Worker2/#Dev",
-          "Local": {
-            // The AuthCenter of the System is Auth3: it is designated by its full name and anchored ("#Dev": its
-            // checkpoint is read from its running status in the dev store). Worker2 verifies what the AuthCenter states, whatever
-            // the path: the approval page of the System (an authenticated enlistment URL).
-            "AuthCenterParty": "Sample/Auth3/$Auth3/#Dev",
-            "TrustAnchors": {
-              "Sample/Auth3/$Auth3/#Dev": "#Dev"
-            }
-          },
-          "Parties": [
-            {
-              "PartyName": "$Auth3",
-              // Unlike the Worker, no "AutoTrustKey": Auth3 is anchored, its key event log is verified from the anchor
-              // (never a trust on first use). Auth3 doesn't trust Worker2: an operator approves it on the approval page.
-              "Address": "tcp:127.0.0.1:37300"
-            }
-          ]
-        },
-
-        "Logging": { "LogLevel": { "Default": "Warning" } },
-        "CK-Monitoring": {
-          "GlobalDefaultFilter": "Debug",
-          "GrandOutput": { "Handlers": { "Console": true, "TextFile": { "Path": "Text" } } }
+  // The configuration of the builder: its App "Worker2" is the Worker2.App project (its code) and the Worker2.Host project,
+  // whose appsettings.json is generated from the "Worker2" section below (without its compile time keys; the keys of its
+  // party go in the "CK-AppIdentity" section).
+  "Apps": {
+    "Worker2": {
+      // A development configuration: its environment is fixed, whatever the run mode of the host (the parties inherit it).
+      "FullName": "Sample/Auth3/$Worker2/#Dev",
+      "Local": {
+        // The AuthCenter of the System is Auth3: it is designated by its full name and anchored ("#Dev": its
+        // checkpoint is read from its running status in the dev store). Worker2 verifies what the AuthCenter states, whatever
+        // the path: the approval page of the System (an authenticated enlistment URL).
+        "AuthCenterParty": "Sample/Auth3/$Auth3/#Dev",
+        "TrustAnchors": {
+          "Sample/Auth3/$Auth3/#Dev": "#Dev"
         }
+      },
+      "Parties": [
+        {
+          "PartyName": "$Auth3",
+          // Unlike the Worker, no "AutoTrustKey": Auth3 is anchored, its key event log is verified from the anchor
+          // (never a trust on first use). Auth3 doesn't trust Worker2: an operator approves it on the approval page.
+          "Address": "tcp:127.0.0.1:37300"
+        }
+      ],
+
+      "Logging": { "LogLevel": { "Default": "Warning" } },
+      "CK-Monitoring": {
+        "GlobalDefaultFilter": "Debug",
+        "GrandOutput": { "Handlers": { "Console": true, "TextFile": { "Path": "Text" } } }
       }
     }
   }
