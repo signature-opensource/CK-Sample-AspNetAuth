@@ -8,15 +8,15 @@
   <ItemGroup>
     <!-- A party of the System, with the Cris channels to its remotes (the IWhoAmIQCommand of Sample.Shared): no database,
          no web server. -->
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.1.ci.61" />
-    <PackageReference Include="CK.AppIdentity.Cris.Authentication" Version="3.0.0-0.cris-auth.1.ci.241" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.1.ci.65" />
+    <PackageReference Include="CK.AppIdentity.Cris.Authentication" Version="3.0.0-0.cris-auth.1.ci.242" />
     <!-- The AuthCenter (Auth3) is designated by its full name and anchored ("Local:AuthCenterParty" and
          "Local:TrustAnchors"): what it states is verified here with its anchor. -->
-    <PackageReference Include="CK.AppIdentity.AuthCenter.Remote" Version="3.0.0-0.cris-auth.1.ci.241" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Remote" Version="3.0.0-0.cris-auth.1.ci.242" />
     <!-- The enlistment with the AuthCenter: the approval page stated by the AuthCenter (an authenticated enlistment URL;
          with a holder that is not the anchored AuthCenter, its pin grant would also approve the holder here). -->
-    <PackageReference Include="CK.AppIdentity.Enlistment" Version="3.0.0-0.cris-auth.1.ci.241" />
-    <PackageReference Include="CK.AppIdentity.AuthCenter.Enlistment" Version="3.0.0-0.cris-auth.1.ci.241" />
+    <PackageReference Include="CK.AppIdentity.Enlistment" Version="3.0.0-0.cris-auth.1.ci.242" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Enlistment" Version="3.0.0-0.cris-auth.1.ci.242" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Sample.Shared\Sample.Shared.csproj" />
