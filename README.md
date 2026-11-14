@@ -178,7 +178,8 @@ their manifests (`#Dev/Parties`) and the launcher **`#Dev/Start.ps1`**. It runs 
 ### The client applications
 
 The Angular applications are the client applications of their host, declared by their party in the `ckonf.json` of
-its builder (`"PartyClient": { "App": { "Type": "TypeScript", "Kind": "DefaultApp", "DevServerPort": 4200 } }`), served
+its builder: an Angular application (`"NgApp"`) served by its host (`"Hosting"`):
+`"PartyClient": { "App": { "NgApp": true, "Hosting": { "RequestPath": "/", "DevServerPort": 4200 } } }`, served
 by CK.TS.AspNet.Clients (its
 `EnableClients`, applied by the "HttpEndpoint" feature of the host):
 

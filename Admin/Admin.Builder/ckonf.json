@@ -10,10 +10,10 @@
       // "HttpEndpoint" feature (CK.AppIdentity.HttpEndpoint) starts the web application of its endpoint.
       "Local": {
         "AllowFeatures": "HttpEndpoint",
-        // The "Main" endpoint: the SPA and its "/.cris" endpoints share this origin (no CORS).
+        // Its endpoint: the SPA and its "/.cris" endpoints share this origin (no CORS).
         "HttpEndpoint": { "Urls": "http://localhost:5302" },
         // Its client application (Admin.Host/Clients/App), served at "/" (the Front's client applications use 4200 and 4201).
-        "PartyClient": { "App": { "Type": "TypeScript", "Kind": "DefaultApp", "DevServerPort": 4300 } }
+        "PartyClient": { "App": { "NgApp": true, "Hosting": { "RequestPath": "/", "DevServerPort": 4300 } } }
       },
       "Parties": [
         {
