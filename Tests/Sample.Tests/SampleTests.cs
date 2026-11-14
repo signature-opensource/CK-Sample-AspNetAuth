@@ -84,7 +84,7 @@ public class SampleTests
         _front = CKomposableAppHost.Build( [], (monitor, b, map) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             // The web application of the "Main" endpoint of the front's party ("HttpEndpoint" feature).
-            ["CK-AppIdentity:Local:HttpEndpoint:Main:Urls"] = FrontUrl,
+            ["CK-AppIdentity:Local:HttpEndpoint:Urls"] = FrontUrl,
             ["CK-AppIdentity:Parties:0:Address"] = Auth3Address,
             // The UI smoke test runs on the built client applications (never their dev server).
             ["Clients:UseDist"] = "true"
@@ -92,7 +92,7 @@ public class SampleTests
         await _front.StartAsync();
         _admin = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
-            ["CK-AppIdentity:Local:HttpEndpoint:Main:Urls"] = AdminUrl,
+            ["CK-AppIdentity:Local:HttpEndpoint:Urls"] = AdminUrl,
             ["CK-AppIdentity:Parties:0:Address"] = Auth3Address,
             ["Clients:UseDist"] = "true"
         } ), TestHelper.SolutionFolder.Combine( "Admin/Admin.Host" ), Assembly.Load( "Admin.Host" ) );

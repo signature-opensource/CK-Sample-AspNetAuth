@@ -7,11 +7,11 @@
       // A development configuration: its environment is fixed, whatever the run mode of the host (the parties inherit it).
       "FullName": "Sample/Auth3/$Admin/#Dev",
       // This application is a remote of an AuthCenter (CK.AppIdentity.AuthCenter.Remote), and a web server: its
-      // "HttpEndpoint" feature (CK.AppIdentity.HttpEndpoint) starts the web application of each endpoint.
+      // "HttpEndpoint" feature (CK.AppIdentity.HttpEndpoint) starts the web application of its endpoint.
       "Local": {
         "AllowFeatures": "HttpEndpoint",
         // The "Main" endpoint: the SPA and its "/.cris" endpoints share this origin (no CORS).
-        "HttpEndpoint": { "Main": { "Urls": "http://localhost:5302" } },
+        "HttpEndpoint": { "Urls": "http://localhost:5302" },
         // Its client application (Admin.Host/Clients/App), served at "/" (the Front's client applications use 4200 and 4201).
         "PartyClient": { "App": { "Type": "TypeScript", "Kind": "DefaultApp", "DevServerPort": 4300 } }
       },
