@@ -13,7 +13,6 @@
       },
       // This application is the "AuthCenter" (CK.AppIdentity.AuthCenter.Local).
       "Local": {
-        "AllowFeatures": "AuthCenter",
         "AuthCenter": {
           "SessionLifetime": "1.00:00:00",
           "Oidc": {
@@ -62,14 +61,14 @@
         {
           "PartyName": "$Front",
           // One of the remotes of this AuthCenter.
-          "AllowFeatures": "AuthCenterRemote",
+          "AuthCenterRemote": true,
           // The front's key is pinned at its first connection (a demo: production pins it explicitly).
           "AutoTrustKey": "Once"
         },
         {
           "PartyName": "$Admin",
           // The second remote of this AuthCenter: the back-office (the user management, the approval page).
-          "AllowFeatures": "AuthCenterRemote",
+          "AuthCenterRemote": true,
           "AutoTrustKey": "Once"
         },
         {

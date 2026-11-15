@@ -9,7 +9,6 @@
       // This application is a remote of an AuthCenter (CK.AppIdentity.AuthCenter.Remote), and a web server: its
       // "HttpEndpoint" feature (CK.AppIdentity.HttpEndpoint) starts the web application of its endpoint.
       "Local": {
-        "AllowFeatures": "HttpEndpoint",
         // The "Main" endpoint: the SPA and its "/.cris" endpoints share this origin (no CORS).
         "HttpEndpoint": { "Urls": "http://localhost:5300" },
         // The two client applications of the Front host: Angular applications ("NgApp") served by the host ("Hosting"). Their
@@ -32,9 +31,9 @@
       "Parties": [
         {
           "PartyName": "$Auth3",
-          // This front's AuthCenter (the remote that allows "AuthCenterRemote", as this "Local" doesn't allow "AuthCenter"):
+          // This front's AuthCenter (the remote that declares "AuthCenterRemote", as this "Local" doesn't declare "AuthCenter"):
           // the session operations are dispatched to it, its keys verify the tokens.
-          "AllowFeatures": "AuthCenterRemote",
+          "AuthCenterRemote": true,
           "Address": "tcp:127.0.0.1:37300",
           // The AuthCenter's key is pinned at the first connection (a demo: production pins it explicitly).
           "AutoTrustKey": "Once"

@@ -7,7 +7,7 @@ client. It replaces the WebFrontAuth samples.
 
 | Host | What | Reached by |
 |---|---|---|
-| [Auth3](Auth3) | The domain controller (`Sample/Auth3/$Auth3`: the party named after its domain), the Authentication Center of the fronts (its local party allows "AuthCenter"): the database (SQL Server), the login providers (Basic, Oidc, Passkey, Weak), the sessions and the signing keys of the tokens, and the handlers of the fronts' features (the profile, the user management). A console application (the .NET generic host): no ASP.NET Core, no HTTP endpoint. | The AppIdentity channel (`tcp:127.0.0.1:37300`). |
+| [Auth3](Auth3) | The domain controller (`Sample/Auth3/$Auth3`: the party named after its domain), the Authentication Center of the fronts (its local party declares "AuthCenter"): the database (SQL Server), the login providers (Basic, Oidc, Passkey, Weak), the sessions and the signing keys of the tokens, and the handlers of the fronts' features (the profile, the user management). A console application (the .NET generic host): no ASP.NET Core, no HTTP endpoint. | The AppIdentity channel (`tcp:127.0.0.1:37300`). |
 | [Front](Front) | The HTTP front: the Angular application and its `/.cris` endpoints on the same origin (`http://localhost:5300`). No database, no login provider: it is a remote of its AuthCenter. Its endpoints execute the session commands (logins, refresh, logout...) whose operations are dispatched to Auth3, and it verifies the tokens with Auth3's keys. A .NET generic host: its web server is the "HttpEndpoint" feature of its party (CK.AppIdentity.HttpEndpoint), configured by its `Local:HttpEndpoint`. | The browser. |
 | [Admin](Admin) | The back-office, the second remote of Auth3 (`http://localhost:5302`): the user management of CK-Ng-Admin (the users of a workspace, their banishment, their invitation) and the approval page of the System (see [the enlistment](#the-enlistment)). Like the Front, no database (its commands are dispatched to Auth3), and a .NET generic host whose web server is its "HttpEndpoint" feature. | The browser. |
 | [Worker](Worker) | A party that must be enlisted: Auth3 never trusts its key automatically, an operator approves it on the Admin (see [the enlistment](#the-enlistment)). No database, no web server: a .NET generic host. | Nobody: it connects to Auth3. |
@@ -37,9 +37,9 @@ The Front and the Admin are named after what they are.
 
 The AuthCenter is an asymmetric feature: each host references its side (CK.AppIdentity.AuthCenter.Local or .Remote),
 and its "CK-AppIdentity" configuration gives the role of its party: `"AuthCenter"` in the `Local` section of the party
-that is the AuthCenter, `"AuthCenterRemote"` on a remote. Auth3 allows `"AuthCenter"` in its `Local` section (it is
+that is the AuthCenter, `"AuthCenterRemote"` on a remote. Auth3 declares `"AuthCenter"` in its `Local` section (it is
 the AuthCenter, its settings are `Local:AuthCenter`) and `"AuthCenterRemote"` on the `$Front` and `$Admin` parties (they
-use it); the Front and the Admin don't allow `"AuthCenter"` in their `Local` section and allow `"AuthCenterRemote"` on the
+use it); the Front and the Admin don't declare `"AuthCenter"` in their `Local` section and declare `"AuthCenterRemote"` on the
 `$Auth3` party (it is their AuthCenter).
 
 A party is identified by its full name across the System: it is the caller party of the commands it sends
@@ -245,7 +245,6 @@ requests from the proxy. Two keys of the party's configuration handle it, for ex
 
 ```jsonc
 "Local": {
-  "AllowFeatures": "HttpEndpoint",
   // The URL that the party gives: the links of the mails, the passkey origins and the OIDC callbacks that Auth3
   // accepts are derived from it.
   "PublicUrl": "https://front.example.com",
