@@ -9,7 +9,7 @@
       "FullName": "Sample/Auth3/$Auth3/#Dev",
       "Defaults": {
         // The fronts (the remotes without an address) connect here.
-        "ListeningAddress": [ "tcp:127.0.0.1:37300" ]
+        "Transport": { "ListeningAddress": [ "tcp:127.0.0.1:37300" ] }
       },
       // This application is the "AuthCenter" (CK.AppIdentity.AuthCenter.Local).
       "Local": {
@@ -63,24 +63,24 @@
           // One of the remotes of this AuthCenter.
           "AuthCenterRemote": true,
           // The front's key is pinned at its first connection (a demo: production pins it explicitly).
-          "AutoTrustKey": "Once"
+          "KeyManagement": { "AutoTrustKey": "Once" }
         },
         {
           "PartyName": "$Admin",
           // The second remote of this AuthCenter: the back-office (the user management, the approval page).
           "AuthCenterRemote": true,
-          "AutoTrustKey": "Once"
+          "KeyManagement": { "AutoTrustKey": "Once" }
         },
         {
           "PartyName": "$Worker",
           // The enlistment: the Worker's key is never trusted automatically. An operator approves it on the approval page
           // of the System (the Admin), with the code shown by the Worker.
-          "AutoTrustKey": "Never"
+          "KeyManagement": { "AutoTrustKey": "Never" }
         },
         {
           "PartyName": "$Worker2",
           // The same for Worker2, that anchors Auth3 (the AuthCenter): it receives an authenticated enlistment URL.
-          "AutoTrustKey": "Never"
+          "KeyManagement": { "AutoTrustKey": "Never" }
         }
       ],
 

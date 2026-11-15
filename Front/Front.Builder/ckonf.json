@@ -36,7 +36,7 @@
           "AuthCenterRemote": true,
           "Address": "tcp:127.0.0.1:37300",
           // The AuthCenter's key is pinned at the first connection (a demo: production pins it explicitly).
-          "AutoTrustKey": "Once"
+          "KeyManagement": { "AutoTrustKey": "Once" }
         }
       ],
       "Logging": { "LogLevel": { "Default": "Warning" } },

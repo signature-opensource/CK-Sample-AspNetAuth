@@ -11,9 +11,9 @@
           "PartyName": "$Auth3",
           "Address": "tcp:127.0.0.1:37300",
           // The Worker trusts Auth3, the party it is configured to reach, at its first contact (a trust on first
-          // use). Auth3 doesn't trust the Worker ("AutoTrustKey": "Never" on its "$Worker"): until an operator approves it on the
+          // use). Auth3 doesn't trust the Worker ("KeyManagement": { "AutoTrustKey": "Never" } on its "$Worker"): until an operator approves it on the
           // approval page of the System, the Worker logs the enlistment URL and the approval code at each attempt.
-          "AutoTrustKey": "Once"
+          "KeyManagement": { "AutoTrustKey": "Once" }
         }
       ],
 
