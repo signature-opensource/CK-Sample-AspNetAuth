@@ -8,8 +8,8 @@
   <ItemGroup>
     <!-- A party of the System, with the Cris channels to its remotes (the IWhoAmIQCommand of Sample.Shared): no database,
          no web server. -->
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.0.ci.84" />
-    <PackageReference Include="CK.AppIdentity.Cris.Authentication" Version="3.0.0-0.uc.0.ci.253" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.0.ci.91" />
+    <PackageReference Include="CK.AppIdentity.Cris.Authentication" Version="3.0.0-0.uc.0.ci.261" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Sample.Shared\Sample.Shared.csproj" />
