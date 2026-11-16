@@ -66,7 +66,7 @@ public class SampleTests
         _idp = new FakeIdentityProvider();
         _auth3 = CKomposableAppHost.Build( [], (monitor, b, map) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
-            ["CK-AppIdentity:Defaults:ListeningAddress:0"] = Auth3Address,
+            ["CK-AppIdentity:Defaults:Transport:ListeningAddress:0"] = Auth3Address,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientSecret"] = FakeIdentityProvider.ClientSecret,
@@ -675,7 +675,7 @@ public class SampleTests
         using var worker2 = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["CK-AppIdentity:Parties:0:Address"] = Auth3Address,
-            [$"CK-AppIdentity:Local:TrustAnchors:{auth3Name}"] = auth3.GetRequiredFeature<ILocalKeys>().Checkpoint.ToString()
+            [$"CK-AppIdentity:Local:KeyManagement:TrustAnchors:{auth3Name}"] = auth3.GetRequiredFeature<ILocalKeys>().Checkpoint.ToString()
         } ), TestHelper.SolutionFolder.Combine( "Worker2/Worker2.Host" ), Assembly.Load( "Worker2.Host" ) );
         await worker2.StartAsync();
         try
