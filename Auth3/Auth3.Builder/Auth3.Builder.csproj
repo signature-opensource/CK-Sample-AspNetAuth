@@ -4,14 +4,14 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.102" />
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.103" />
     <PackageReference Include="CK.AppBuilder" Version="37.0.0-0.uc.0.ci.2" />
-    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.0.ci.147" />
-    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.0.ci.147" />
+    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.0.ci.148" />
+    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.0.ci.148" />
     <PackageReference Include="CK.Poco.Exchange.Engine" Version="37.0.0-0.uc.0.ci.2" />
     <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="37.0.0-0.uc.0.ci.2" />
-    <PackageReference Include="CK.Setupable.Engine" Version="37.0.0-0.uc.0.ci.2" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="37.0.0-0.uc.0.ci.2" />
+    <PackageReference Include="CK.Setupable.Engine" Version="37.0.0-0.uc.0.ci.3" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="37.0.0-0.uc.0.ci.3" />
     <!-- The mail templates (CK.UserProfile.UserPassword.Lost, CK.UserManagement.UserInvitation) and the translations of the
          server messages. -->
     <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.0.ci.40" />
