@@ -4,18 +4,18 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.99" />
-    <PackageReference Include="CK.AppBuilder" Version="36.0.1-0.uc.0.ci.19" />
-    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.0.ci.144" />
-    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.0.ci.144" />
-    <PackageReference Include="CK.Poco.Exchange.Engine" Version="36.0.1-0.uc.0.ci.19" />
-    <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="36.0.1-0.uc.0.ci.19" />
-    <PackageReference Include="CK.Setupable.Engine" Version="36.0.0-0.uc.0.ci.77" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="36.0.0-0.uc.0.ci.77" />
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.101" />
+    <PackageReference Include="CK.AppBuilder" Version="37.0.0-0.uc.0.ci.1" />
+    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.0.ci.146" />
+    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.0.ci.146" />
+    <PackageReference Include="CK.Poco.Exchange.Engine" Version="37.0.0-0.uc.0.ci.1" />
+    <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="37.0.0-0.uc.0.ci.1" />
+    <PackageReference Include="CK.Setupable.Engine" Version="37.0.0-0.uc.0.ci.1" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="37.0.0-0.uc.0.ci.1" />
     <!-- The mail templates (CK.UserProfile.UserPassword.Lost, CK.UserManagement.UserInvitation) and the translations of the
          server messages. -->
-    <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.0.ci.37" />
-    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.0.ci.41" />
+    <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.0.ci.39" />
+    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.0.ci.43" />
     <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
     <ProjectReference Include="..\Auth3.App\Auth3.App.csproj" />
   </ItemGroup>
