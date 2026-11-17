@@ -2,7 +2,11 @@
   // The configuration of the builder: its App "Auth3" is the Auth3.App project (its code) and the Auth3.Host project,
   // whose appsettings.json is generated from the "Auth3" section below (without its compile time keys; the keys of its
   // party go in the "CK-AppIdentity" section).
-  // Its database aspect is still configured by its Program.cs (the Builder aspects: UC step 2).
+  // The Builder aspects: the database of the engine run; its connection string is projected in the
+  // "SqlServer" section of the hosts' appsettings.json.
+  "Aspects": {
+    "SqlServer": { "DefaultDatabaseConnectionString": "Server=.;Database=CKSampleAuth3;Integrated Security=True;TrustServerCertificate=true" }
+  },
   "Apps": {
     "Auth3": {
       // A development configuration: its environment is fixed, whatever the run mode of the host (the parties inherit it).
