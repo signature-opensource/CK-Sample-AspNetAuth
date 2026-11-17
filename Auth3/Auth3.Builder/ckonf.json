@@ -48,12 +48,14 @@
         // the request was made (its public URL, announced): the Admin, where the registration and the password recovery
         // pages are.
         // The mails are written in a pickup directory (a demo: nothing is sent).
-        "EmailSender": {
-          "Smtp": {
-            "SendEmail": false,
-            "UsePickupDirectory": true,
-            "PickupDirectory": "Mails",
-            "From": "noreply@sample.local"
+        "MailSender": {
+          "MailKit": {
+            "NoReply": {
+              "SendEmail": false,
+              "UsePickupDirectory": true,
+              "PickupDirectory": "Mails",
+              "From": "noreply@sample.local"
+            }
           }
         }
       },
