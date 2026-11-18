@@ -64,22 +64,7 @@ public class SampleTests
         if( Directory.Exists( store ) ) Directory.Delete( store, recursive: true );
         ApplicationIdentityServiceConfiguration.DefaultStoreRootPath = store;
         _idp = new FakeIdentityProvider();
-        _auth3 = CKomposableAppHost.Build( [], (monitor, b, map) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
-        {
-            ["CK-AppIdentity:Defaults:Transport:ListeningAddress:0"] = Auth3Address,
-            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
-            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
-            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientSecret"] = FakeIdentityProvider.ClientSecret,
-            // An unknown identity of the "Test" scheme creates its user (SampleAccountCreation).
-            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:AllowAccountCreation"] = "true",
-            // Albert is bound to the "albert-sub" identity of the "Test" scheme.
-            ["Demo:OidcScheme"] = "Test",
-            ["Demo:OidcSub"] = "albert-sub",
-            // The passkey origins and the OIDC callbacks are the ones of the Front and the Admin: the public URL they announce
-            // (the one of their endpoint). The RP ID "localhost" is the configured one.
-            // A short Critical level for the Basic logins: the UI smoke test sees its end (--critical-wait).
-            ["CK-AppIdentity:Local:AuthCenter:CriticalLifetimes:Basic"] = "00:00:15"
-        } ), TestHelper.SolutionFolder.Combine( "Auth3/Auth3.Host" ), Assembly.Load( "Auth3.Host" ) );
+        _auth3 = BuildAuth3();
         await _auth3.StartAsync();
         _front = CKomposableAppHost.Build( [], (monitor, b, map) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
@@ -97,14 +82,38 @@ public class SampleTests
             ["Clients:UseDist"] = "true"
         } ), TestHelper.SolutionFolder.Combine( "Admin/Admin.Host" ), Assembly.Load( "Admin.Host" ) );
         await _admin.StartAsync();
+        await WaitForTheFrontsAsync();
+    }
 
-        // The Front and the Admin announce their public URL once their endpoint is started: Auth3 derives the
-        // passkey origins, the OIDC callbacks and the links of the mails from them.
+    // The Front and the Admin announce their public URL once their endpoint is started: Auth3 derives the
+    // passkey origins, the OIDC callbacks and the links of the mails from them.
+    async Task WaitForTheFrontsAsync()
+    {
         var auth3 = _auth3.Services.GetRequiredService<ApplicationIdentityService>();
         // The Workers (started by the enlistment tests only) have no web endpoint.
         var fronts = auth3.Remotes.Where( r => !r.PartyName.StartsWith( "$Worker" ) ).ToList();
-        for( int i = 0; i < 100 && fronts.Any( r => r.Description.PublicUrl == null ); ++i ) await Task.Delay( 100 );
+        for( int i = 0; i < 300 && fronts.Any( r => r.Description.PublicUrl == null ); ++i ) await Task.Delay( 100 );
         fronts.Select( r => r.Description.GetClientApplicationUrl() ).ShouldBe( [FrontUrl, AdminUrl], ignoreOrder: true );
+    }
+
+    IHost BuildAuth3()
+    {
+        return CKomposableAppHost.Build( [], (monitor, b, map) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
+        {
+            ["CK-AppIdentity:Defaults:Transport:ListeningAddress:0"] = Auth3Address,
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientSecret"] = FakeIdentityProvider.ClientSecret,
+            // An unknown identity of the "Test" scheme creates its user (SampleAccountCreation).
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:AllowAccountCreation"] = "true",
+            // Albert is bound to the "albert-sub" identity of the "Test" scheme.
+            ["Demo:OidcScheme"] = "Test",
+            ["Demo:OidcSub"] = "albert-sub",
+            // The passkey origins and the OIDC callbacks are the ones of the Front and the Admin: the public URL they announce
+            // (the one of their endpoint). The RP ID "localhost" is the configured one.
+            // A short Critical level for the Basic logins: the UI smoke test sees its end (--critical-wait).
+            ["CK-AppIdentity:Local:AuthCenter:CriticalLifetimes:Basic"] = "00:00:15"
+        } ), TestHelper.SolutionFolder.Combine( "Auth3/Auth3.Host" ), Assembly.Load( "Auth3.Host" ) );
     }
 
     [OneTimeTearDown]
@@ -659,6 +668,81 @@ public class SampleTests
                 .ShouldNotBeNull( "The approved Worker connects to Auth3." );
             (await WaitForAsync( () => admin.Description.Collected.Count == 0 ? "gone" : null )).ShouldNotBeNull();
             (await PendingAsync()).ShouldBeEmpty( "The Worker is enlisted: nothing waits anymore." );
+        }
+        finally
+        {
+            await worker.StopAsync();
+        }
+    }
+
+    [Test]
+    public async Task a_dynamic_Worker_is_enlisted_kept_by_Auth3_at_restart_and_removed_Async()
+    {
+        // The Worker fleet is Opened ("MaxInstanceCount": 4): "$Worker-3" is not configured, Auth3 accepts it as a candidate.
+        using var worker = CKomposableAppHost.Build( ["--Instance=3"], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
+        {
+            ["CK-AppIdentity:Parties:0:Address"] = Auth3Address
+        } ), TestHelper.SolutionFolder.Combine( "Worker/Worker.Host" ), Assembly.Load( "Worker.Host" ) );
+        await worker.StartAsync();
+        try
+        {
+            var workerParty = worker.Services.GetRequiredService<ApplicationIdentityService>();
+            workerParty.PartyName.ShouldBe( "$Worker-3" );
+            string worker3 = workerParty.FullName;
+            var issue = await WaitForAsync( () => workerParty.GetRequiredFeature<TransportManagerFeature>().GetPeeringIssues()
+                                                             .FirstOrDefault( i => i.EnlistUrl != null && i.ApprovalCode != null ) );
+            issue.ShouldNotBeNull( "The candidate learns its enlistment URL and its approval code." );
+            var auth3 = _auth3.Services.GetRequiredService<ApplicationIdentityService>();
+            var candidate = auth3.Remotes.Single( r => r.FullName.Path == worker3 );
+            candidate.Configuration.IsDynamicInstance.ShouldBeTrue();
+            string auth3Name = auth3.FullName;
+
+            using var browser = new Browser( AdminUrl );
+            await browser.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+            // The approval page says that it is a new instance of the template.
+            JsonElement pending = default;
+            (await WaitForAsync( () =>
+            {
+                var r = Value( browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IGetPendingApprovalsQCommand",{"actorId":{{browser.ActorId}}}]""" ).Result );
+                pending = r.EnumerateArray().Select( Value ).FirstOrDefault( p => p.GetProperty( "partyFullName" ).GetString() == worker3 );
+                return pending.ValueKind == JsonValueKind.Object ? "found" : null;
+            } )).ShouldNotBeNull( "The candidate waits on the approval page." );
+            pending.GetProperty( "templatePartyName" ).GetString().ShouldBe( "$Worker-{Name}" );
+            var a = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IApprovePartyCommand",{"actorId":{{browser.ActorId}},"partyFullName":"{{JsonEncodedText.Encode( worker3 )}}","codes":["{{issue.ApprovalCode}}"]}]""" ) );
+            Value( a.EnumerateArray().Single() ).GetProperty( "status" ).GetInt32().ShouldBe( (int)CK.IO.AppIdentity.Enlistment.PartyApprovalStatus.Approved );
+            (await WaitForAsync( () => workerParty.Remotes.Single().GetRequiredFeature<TransportFeature>().ConnectionAvailability == ConnectionAvailability.Connected ? "connected" : null ))
+                .ShouldNotBeNull( "The approved instance connects to Auth3." );
+
+            // Auth3 restarts: the approved instance is still its remote (its identity is pinned in the store).
+            await _auth3.StopAsync();
+            _auth3.Dispose();
+            _auth3 = BuildAuth3();
+            await _auth3.StartAsync();
+            auth3 = _auth3.Services.GetRequiredService<ApplicationIdentityService>();
+            var w3 = auth3.Remotes.Single( r => r.FullName.Path == worker3 );
+            w3.IsDynamic.ShouldBeTrue();
+            (await WaitForAsync( () => w3.GetRequiredFeature<TransportFeature>().ConnectionAvailability == ConnectionAvailability.Connected ? "connected" : null ))
+                .ShouldNotBeNull( "The instance connects to the restarted Auth3: no approval." );
+            await WaitForTheFrontsAsync();
+
+            // The approval page lists it, and removes it.
+            JsonElement instance = default;
+            (await WaitForAsync( () =>
+            {
+                var r = Value( browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IGetPartyInstancesQCommand",{"actorId":{{browser.ActorId}}}]""" ).Result );
+                instance = r.ValueKind == JsonValueKind.Array
+                            ? r.EnumerateArray().Select( Value ).FirstOrDefault( p => p.GetProperty( "partyFullName" ).GetString() == worker3 )
+                            : default;
+                return instance.ValueKind == JsonValueKind.Object ? "found" : null;
+            } )).ShouldNotBeNull( "The approved instance reaches the approval page." );
+            instance.GetProperty( "holderFullName" ).GetString().ShouldBe( auth3Name );
+            instance.GetProperty( "templatePartyName" ).GetString().ShouldBe( "$Worker-{Name}" );
+            var folder = w3.SharedFileStore.FolderPath;
+            var removed = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IRemovePartyInstanceCommand",{"actorId":{{browser.ActorId}},"partyFullName":"{{JsonEncodedText.Encode( worker3 )}}"}]""" ) );
+            removed.GetInt32().ShouldBe( 1, removed.ToString() );
+            auth3.Remotes.ShouldNotContain( r => r.FullName.Path == worker3 && !r.IsDestroyed );
+            Directory.EnumerateFiles( folder, IFileStore.TrustFilePattern ).ShouldBeEmpty( "Its pinned identity is forgotten." );
+            Directory.Exists( folder.AppendPart( "-Local" ) ).ShouldBeTrue( "The Worker's own folder (the same store) is kept." );
         }
         finally
         {

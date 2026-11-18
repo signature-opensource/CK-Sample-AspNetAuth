@@ -127,6 +127,11 @@ with the code that the waiting party shows (see
   from Auth3 to `$Worker-{Name}` declares both on Auth3 with `"AutoTrustKey": "Never"`: it refuses a Worker's key until an
   operator approves it. Each Worker trusts Auth3 at its first contact (`"Once"`): Auth3 is where it is
   configured to go.
+- **More Workers may come.** The fleet is Opened (`"MaxInstanceCount": 4`): `$Worker-3` and `$Worker-4` are not
+  configured, they are started by hand (`dotnet run -- --Instance=3` in `Worker/Worker.Host`). Auth3 accepts such a
+  caller as a candidate, an operator approves it on the same page ("A new instance of $Worker-{Name}"). Its approved
+  identity is kept by Auth3 (pinned in the store): it is still a remote of Auth3 after a restart. The approval page lists
+  the approved instances, "Remove" forgets one (it can be approved again).
 - **Worker2 anchors the AuthCenter.** It designates Auth3 as its AuthCenter (`"Local:AuthCenterParty"`) and anchors
   it (`"Local:TrustAnchors"`: `"#Dev"`, the checkpoint of Auth3's key event log read from its running status in
   `#Dev/Store`): no trust on first use, Auth3 is verified from its anchor.

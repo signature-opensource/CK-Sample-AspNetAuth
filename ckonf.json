@@ -135,10 +135,13 @@
     },
 
     "Worker/Worker.Builder": {
-      // A fleet of two workers: one build, one process per instance ("$Worker-1" and "$Worker-2", started with
-      // "--Instance=1" or "--Instance=2"; #Dev/Start.ps1 starts both). What they must not share is templated by "{Name}".
+      // An Opened fleet of workers: one build, one process per instance. Two are configured ("$Worker-1" and "$Worker-2",
+      // started with "--Instance=1" or "--Instance=2"; #Dev/Start.ps1 starts both), two more may exist ("$Worker-3" and
+      // "$Worker-4", started by hand: "dotnet run -- --Instance=3"): Auth3 accepts them as candidates, an operator
+      // approves them on the approval page. What they must not share is templated by "{Name}".
       "App": {
         "InstanceCount": 2,
+        "MaxInstanceCount": 4,
         "CK-Monitoring": { "GrandOutput": { "Handlers": { "TextFile": { "Path": "Text/{Name}" } } } }
       }
     },
@@ -182,7 +185,7 @@
     // The enlistment: the keys of the workers are never trusted automatically. An operator approves them on the approval
     // page of the System (the Admin), with the code shown by the worker (Worker2, that anchors Auth3, receives an
     // authenticated enlistment URL). Until then, a worker logs the enlistment URL and the approval code at each attempt.
-    // A link to the fleet is a remote of Auth3 for each of its instances.
+    // A link to the fleet is a remote of Auth3 for each of its instances (and its dynamic instances, once approved).
     { "From": "$Auth3", "To": "$Worker-{Name}", "Link": { "KeyManagement": { "AutoTrustKey": "Never" } } },
     { "From": "$Auth3", "To": "$Worker2", "Link": { "KeyManagement": { "AutoTrustKey": "Never" } } }
   ]
