@@ -758,11 +758,7 @@ public class SampleTests
         string auth3Name = auth3.FullName;
         // Worker2 anchors Auth3 (its AuthCenter): "#Dev" in its appsettings.json, its checkpoint here (the dev store is
         // disabled by the tests).
-        using var worker2 = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
-        {
-            ["CK-AppIdentity:Parties:0:Address"] = Auth3Address,
-            [$"CK-AppIdentity:Local:KeyManagement:TrustAnchors:{auth3Name}"] = auth3.GetRequiredFeature<ILocalKeys>().Checkpoint.ToString()
-        } ), TestHelper.SolutionFolder.Combine( "Worker2/Worker2.Host" ), Assembly.Load( "Worker2.Host" ) );
+        using var worker2 = BuildWorker2( auth3 );
         await worker2.StartAsync();
         try
         {
@@ -797,6 +793,101 @@ public class SampleTests
         finally
         {
             await worker2.StopAsync();
+        }
+    }
+
+    // Worker2 anchors Auth3 (its AuthCenter): "#Dev" in its appsettings.json, its checkpoint here (the dev store is disabled by
+    // the tests). Its "Parties" are its tenant template (0) and its link to Auth3 (1): the links are appended by the projection.
+    IHost BuildWorker2( ApplicationIdentityService auth3 )
+    {
+        return CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
+        {
+            ["CK-AppIdentity:Parties:1:Address"] = Auth3Address,
+            [$"CK-AppIdentity:Local:KeyManagement:TrustAnchors:{auth3.FullName}"] = auth3.GetRequiredFeature<ILocalKeys>().Checkpoint.ToString()
+        } ), TestHelper.SolutionFolder.Combine( "Worker2/Worker2.Host" ), Assembly.Load( "Worker2.Host" ) );
+    }
+
+    // Starts Worker2 and, when Auth3 doesn't trust it yet, approves it on the approval page (an operator signed in at the
+    // Critical level). Returns once Worker2 is connected to Auth3.
+    async Task<IHost> StartEnlistedWorker2Async( Browser browser )
+    {
+        var auth3 = _auth3.Services.GetRequiredService<ApplicationIdentityService>();
+        var worker2 = BuildWorker2( auth3 );
+        await worker2.StartAsync();
+        var worker2Party = worker2.Services.GetRequiredService<ApplicationIdentityService>();
+        var toAuth3 = worker2Party.Remotes.Single().GetRequiredFeature<TransportFeature>();
+        var connected = await WaitForAsync( () => toAuth3.ConnectionAvailability == ConnectionAvailability.Connected
+                                                    ? "connected"
+                                                    : worker2Party.GetRequiredFeature<TransportManagerFeature>().GetPeeringIssues()
+                                                                  .FirstOrDefault( i => i.ApprovalCode != null )?.ApprovalCode );
+        connected.ShouldNotBeNull( "Worker2 connects to Auth3, or waits for its approval." );
+        if( connected != "connected" )
+        {
+            var r = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IApprovePartyCommand",{"actorId":{{browser.ActorId}},"partyFullName":"{{JsonEncodedText.Encode( worker2Party.FullName )}}","codes":["{{connected}}"]}]""" ) );
+            r.ValueKind.ShouldBe( JsonValueKind.Array, r.ToString() );
+            (await WaitForAsync( () => toAuth3.ConnectionAvailability == ConnectionAvailability.Connected ? "connected" : null ))
+                .ShouldNotBeNull( "The approved Worker2 connects to Auth3." );
+        }
+        return worker2;
+    }
+
+    [Test]
+    public async Task a_tenant_of_Worker2_is_created_from_the_Admin_kept_moved_and_removed_Async()
+    {
+        using var browser = new Browser( AdminUrl );
+        await browser.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+        var worker2 = await StartEnlistedWorker2Async( browser );
+        try
+        {
+            var worker2Party = worker2.Services.GetRequiredService<ApplicationIdentityService>();
+            string worker2Name = worker2Party.FullName;
+            var template = worker2Party.TenantTemplates.ShouldHaveSingleItem();
+            template.DomainPrefix.ShouldBe( "Sample/Auth3/Customers" );
+            // A previous run may have left Acme: the test starts without it.
+            if( worker2Party.TenantDomains.Any( t => t.Configuration.Instance?.Name == "Acme" ) || worker2Party.UnloadedTenants.Any( u => u.Name == "Acme" ) )
+            {
+                (await worker2Party.RemoveTenantInstanceAsync( TestHelper.Monitor, template.GetFullName( "Acme" ) )).ShouldBeTrue();
+            }
+
+            // The Admin (the tenants page) finds Worker2: the host of the "Tenants" route, authorized by Auth3.
+            (await WaitForAsync( () =>
+            {
+                var hosts = Value( browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Tenants.IGetTenantHostsQCommand",{"actorId":{{browser.ActorId}}}]""" ).Result );
+                return hosts.ValueKind == JsonValueKind.Array && hosts.EnumerateArray().Any( h => h.GetString() == worker2Name ) ? "found" : null;
+            } )).ShouldNotBeNull( "Worker2 hosts the Tenants route, that reaches the Admin through Auth3." );
+
+            // Created from the Admin: the command travels Admin > Auth3 > Worker2 along "Tenants".
+            var created = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Tenants.ICreateTenantInstanceCommand",{"actorId":{{browser.ActorId}},"targetPartyFullName":"{{JsonEncodedText.Encode( worker2Name )}}","templateName":"Sample/Auth3/Customers","name":"Acme"}]""" ) );
+            created.ValueKind.ShouldBe( JsonValueKind.String, created.ToString() );
+            var acmeName = created.GetString()!;
+            acmeName.ShouldBe( "Sample/Auth3/Customers/Acme/$Acme/#Dev" );
+            var acme = worker2Party.TenantDomains.Single( t => t.FullName == acmeName );
+            acme.Configuration.Instance!.Index.ShouldBe( 1 );
+            var key = acme.GetRequiredFeature<ILocalKeys>().CurrentIdentity.PublicKeyRawData.ToArray();
+            var local = acme.LocalFileStore.FolderPath;
+
+            // Worker2 restarts: Acme is still there, with the same key.
+            await worker2.StopAsync();
+            worker2.Dispose();
+            worker2 = await StartEnlistedWorker2Async( browser );
+            worker2Party = worker2.Services.GetRequiredService<ApplicationIdentityService>();
+            acme = worker2Party.TenantDomains.Single( t => t.FullName == acmeName );
+            acme.GetRequiredFeature<ILocalKeys>().CurrentIdentity.PublicKeyRawData.ToArray().ShouldBe( key );
+
+            // Moved, then removed from the Admin.
+            var moved = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Tenants.ISetTenantIndexCommand",{"actorId":{{browser.ActorId}},"targetPartyFullName":"{{JsonEncodedText.Encode( worker2Name )}}","tenantFullName":"{{JsonEncodedText.Encode( acmeName )}}","index":3}]""" ) );
+            moved.ValueKind.ShouldBe( JsonValueKind.True, moved.ToString() );
+            worker2Party.TenantDomains.Single( t => t.FullName == acmeName ).Configuration.Instance!.Index.ShouldBe( 3 );
+            var removed = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Tenants.IRemoveTenantInstanceCommand",{"actorId":{{browser.ActorId}},"targetPartyFullName":"{{JsonEncodedText.Encode( worker2Name )}}","tenantFullName":"{{JsonEncodedText.Encode( acmeName )}}"}]""" ) );
+            removed.ValueKind.ShouldBe( JsonValueKind.True, removed.ToString() );
+            worker2Party.TenantDomains.ShouldNotContain( t => t.FullName == acmeName );
+            File.Exists( local.AppendPart( "Instance.json" ) ).ShouldBeFalse( "Its record is in the trash bin." );
+            Directory.EnumerateFiles( local.AppendPart( "CoreKeys" ) ).ShouldBeEmpty( "Its keys are destroyed." );
+        }
+        finally
+        {
+            await worker2.StopAsync();
+            worker2.Dispose();
         }
     }
 }

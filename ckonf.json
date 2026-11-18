@@ -63,7 +63,9 @@
             // The hosts of the routes of the System, known at deployment: a route is accepted only toward an authorized host
             // (any party can announce a route). The Admin hosts the approval page: its target is the one it announces.
             "RouteHosts": {
-              "Enlistment": [ "Sample/Auth3/$Admin/#Dev" ]
+              "Enlistment": [ "Sample/Auth3/$Admin/#Dev" ],
+              // Worker2 holds the tenants: the tenants page of the Admin reaches it along this route.
+              "Tenants": [ "Sample/Auth3/$Worker2/#Dev" ]
             }
           },
           // The links of the mails (an invitation, a lost password) open the client application of the party through which
@@ -158,7 +160,15 @@
               "Sample/Auth3/$Auth3/#Dev": "#Dev"
             }
           }
-        }
+        },
+        // The run-time tenants of Worker2: an Opened tenant template (at most 5 tenants, none configured). A tenant is created
+        // by an operator on the tenants page of the Admin ("Acme" is "Sample/Auth3/Customers/Acme/$Acme"), its index is kept in
+        // its store. The template owns the domain "Sample/Auth3/Customers": no other party is directly under it.
+        // A tenant has no link to Auth3: one peer can't be a remote of two local parties of the same application (a known
+        // limit), and Worker2 itself is the remote of Auth3.
+        "Parties": [
+          { "DomainName": "Sample/Auth3/Customers/{Name}", "PartyName": "${Name}", "InstanceCount": 0, "MaxInstanceCount": 5 }
+        ]
       }
     }
   },

@@ -11,7 +11,7 @@ client. It replaces the WebFrontAuth samples.
 | [Front](Front) | The HTTP front: the Angular application and its `/.cris` endpoints on the same origin (`http://localhost:5300`). No database, no login provider: it is a remote of its AuthCenter. Its endpoints execute the session commands (logins, refresh, logout...) whose operations are dispatched to Auth3, and it verifies the tokens with Auth3's keys. A .NET generic host: its web server is the "HttpEndpoint" feature of its party (CK.AppIdentity.HttpEndpoint), configured by its `Local:HttpEndpoint`. | The browser. |
 | [Admin](Admin) | The back-office, the second remote of Auth3 (`http://localhost:5302`): the user management of CK-Ng-Admin (the users of a workspace, their banishment, their invitation) and the approval page of the System (see [the enlistment](#the-enlistment)). Like the Front, no database (its commands are dispatched to Auth3), and a .NET generic host whose web server is its "HttpEndpoint" feature. | The browser. |
 | [Worker](Worker) | A fleet of two parties (`$Worker-1`, `$Worker-2`: one build, one process per instance) that must be enlisted: Auth3 never trusts their key automatically, an operator approves each of them on the Admin (see [the enlistment](#the-enlistment)). No database, no web server: a .NET generic host. | Nobody: they connect to Auth3. |
-| [Worker2](Worker2) | The same, with a trust anchor of Auth3 (its AuthCenter) instead of a trust on first use: it receives an authenticated enlistment URL (see [the enlistment](#the-enlistment)). | Nobody: it connects to Auth3. |
+| [Worker2](Worker2) | The same, with a trust anchor of Auth3 (its AuthCenter) instead of a trust on first use: it receives an authenticated enlistment URL (see [the enlistment](#the-enlistment)). It holds run-time tenant domains (see [the tenants of Worker2](#the-tenants-of-worker2)). | Nobody: it connects to Auth3. |
 
 Each host is three projects (the CK pattern): `*.App` (the model: packages, commands, services), `*.Builder` (it runs
 the CK engine after its build: the generated code of the host, the database of Auth3, the TypeScript and the
@@ -159,6 +159,25 @@ with the code that the waiting party shows (see
 
 `SampleTests` runs it end to end: the Worker learns its URL and its code, the operator approves it on the Admin; Worker2
 learns an authenticated URL and is approved the same way.
+
+## The tenants of Worker2
+
+Worker2 holds an Opened tenant template (in [`ckonf.json`](ckonf.json)): its tenant domains are created at run time, at
+most 5, each one named by the operator. The tenant `Acme` is `Sample/Auth3/Customers/Acme/$Acme`: a local party of
+Worker2, with its own identity (its keys), created again at each start (its index is kept in its store). The template
+owns the domain `Sample/Auth3/Customers`: no other party of the System is directly under it.
+
+- **The tenants page** of the Admin (`http://localhost:5302/app-identity/tenants`, CK.Ng.AppIdentity.Tenants): once
+  signed in at the Critical level, it lists Worker2 (the host of the "Tenants" route, that Auth3 authorizes in its
+  `RouteHosts`), its template and its tenants. The operator creates a tenant (a name), moves it to another index, or
+  removes it (its keys are deleted: a new tenant of the same name is a new identity).
+- **The commands travel along the route:** the Admin is not linked to Worker2, the tenant commands go Admin > Auth3 >
+  Worker2 (CK.AppIdentity.Tenants, referenced by Worker2 and by the Admin).
+- **A known limit:** a tenant of Worker2 has no link to Auth3. One peer can't be a remote of two local parties of the
+  same application (a remote is found by the full name of the caller), and Worker2 itself is the remote of Auth3.
+
+`SampleTests` runs it end to end: `Acme` is created from the Admin, it is still there with the same key after a restart
+of Worker2, it is moved and removed.
 
 ## Running it
 
