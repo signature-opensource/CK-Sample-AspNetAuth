@@ -102,7 +102,7 @@ public class SampleTests
         // passkey origins, the OIDC callbacks and the links of the mails from them.
         var auth3 = _auth3.Services.GetRequiredService<ApplicationIdentityService>();
         // The Workers (started by the enlistment tests only) have no web endpoint.
-        var fronts = auth3.Remotes.Where( r => r.PartyName is not "$Worker" and not "$Worker2" ).ToList();
+        var fronts = auth3.Remotes.Where( r => !r.PartyName.StartsWith( "$Worker" ) ).ToList();
         for( int i = 0; i < 100 && fronts.Any( r => r.Description.PublicUrl == null ); ++i ) await Task.Delay( 100 );
         fronts.Select( r => r.Description.GetClientApplicationUrl() ).ShouldBe( [FrontUrl, AdminUrl], ignoreOrder: true );
     }
@@ -596,7 +596,8 @@ public class SampleTests
     public async Task an_operator_enlists_the_Worker_on_the_approval_page_of_the_Admin_Async()
     {
         // Auth3 never trusts the Worker's key automatically ("AutoTrustKey": "Never"): the Worker waits for an approval.
-        using var worker = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
+        // The Worker is a fleet of two: this is its second instance ("$Worker-2").
+        using var worker = CKomposableAppHost.Build( ["--Instance=2"], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["CK-AppIdentity:Parties:0:Address"] = Auth3Address
         } ), TestHelper.SolutionFolder.Combine( "Worker/Worker.Host" ), Assembly.Load( "Worker.Host" ) );
@@ -604,6 +605,7 @@ public class SampleTests
         try
         {
             var workerParty = worker.Services.GetRequiredService<ApplicationIdentityService>();
+            workerParty.PartyName.ShouldBe( "$Worker-2" );
             var auth3 = _auth3.Services.GetRequiredService<ApplicationIdentityService>();
             var admin = _admin.Services.GetRequiredService<ApplicationIdentityService>();
 

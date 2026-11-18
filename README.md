@@ -10,7 +10,7 @@ client. It replaces the WebFrontAuth samples.
 | [Auth3](Auth3) | The domain controller (`Sample/Auth3/$Auth3`: the party named after its domain), the Authentication Center of the fronts (its local party declares "AuthCenter"): the database (SQL Server), the login providers (Basic, Oidc, Passkey, Weak), the sessions and the signing keys of the tokens, and the handlers of the fronts' features (the profile, the user management). A console application (the .NET generic host): no ASP.NET Core, no HTTP endpoint. | The AppIdentity channel (`tcp:127.0.0.1:37300`). |
 | [Front](Front) | The HTTP front: the Angular application and its `/.cris` endpoints on the same origin (`http://localhost:5300`). No database, no login provider: it is a remote of its AuthCenter. Its endpoints execute the session commands (logins, refresh, logout...) whose operations are dispatched to Auth3, and it verifies the tokens with Auth3's keys. A .NET generic host: its web server is the "HttpEndpoint" feature of its party (CK.AppIdentity.HttpEndpoint), configured by its `Local:HttpEndpoint`. | The browser. |
 | [Admin](Admin) | The back-office, the second remote of Auth3 (`http://localhost:5302`): the user management of CK-Ng-Admin (the users of a workspace, their banishment, their invitation) and the approval page of the System (see [the enlistment](#the-enlistment)). Like the Front, no database (its commands are dispatched to Auth3), and a .NET generic host whose web server is its "HttpEndpoint" feature. | The browser. |
-| [Worker](Worker) | A party that must be enlisted: Auth3 never trusts its key automatically, an operator approves it on the Admin (see [the enlistment](#the-enlistment)). No database, no web server: a .NET generic host. | Nobody: it connects to Auth3. |
+| [Worker](Worker) | A fleet of two parties (`$Worker-1`, `$Worker-2`: one build, one process per instance) that must be enlisted: Auth3 never trusts their key automatically, an operator approves each of them on the Admin (see [the enlistment](#the-enlistment)). No database, no web server: a .NET generic host. | Nobody: they connect to Auth3. |
 | [Worker2](Worker2) | The same, with a trust anchor of Auth3 (its AuthCenter) instead of a trust on first use: it receives an authenticated enlistment URL (see [the enlistment](#the-enlistment)). | Nobody: it connects to Auth3. |
 
 Each host is three projects (the CK pattern): `*.App` (the model: packages, commands, services), `*.Builder` (it runs
@@ -122,8 +122,10 @@ A party that a holder doesn't trust waits to be enlisted: an operator approves i
 with the code that the waiting party shows (see
 [CK.AppIdentity.Enlistment](https://github.com/signature-opensource/CK-AppIdentity-Transport/blob/stable/CK.AppIdentity.Enlistment/README.md)).
 
-- **The Worker waits.** Auth3 declares `$Worker` with `"AutoTrustKey": "Never"`: it refuses the Worker's key until an
-  operator approves it. The Worker trusts Auth3 at its first contact (`"Once"`): Auth3 is where it is
+- **The Workers wait.** The Worker is a fleet (`"InstanceCount": 2` in the `ckonf.json` of the solution): `$Worker-1`
+  and `$Worker-2` run the same host, each one started with its instance (`--Instance=1`, `--Instance=2`). The link
+  from Auth3 to `$Worker-{Name}` declares both on Auth3 with `"AutoTrustKey": "Never"`: it refuses a Worker's key until an
+  operator approves it. Each Worker trusts Auth3 at its first contact (`"Once"`): Auth3 is where it is
   configured to go.
 - **Worker2 anchors the AuthCenter.** It designates Auth3 as its AuthCenter (`"Local:AuthCenterParty"`) and anchors
   it (`"Local:TrustAnchors"`: `"#Dev"`, the checkpoint of Auth3's key event log read from its running status in
