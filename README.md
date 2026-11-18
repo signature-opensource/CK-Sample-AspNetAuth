@@ -19,10 +19,13 @@ Angular application of the Front and of the Admin) and `*.Host` (the program). T
 `Program.cs` is `await CK.Core.CKomposableAppHost.RunAsync( args );` and their project references
 [CK.AppHost](https://github.com/signature-opensource/CK-AspNet/blob/stable/CK.AppHost/README.md) (the bootstrap and the
 conventions of a host project), their `*.App` and their `*.Builder`. What a host does is in its packages, its `*.App` and
-its configuration: the `ckonf.json` of its `*.Builder` (see
-[CK.AppBuilder](https://github.com/signature-opensource/CK-StObj/blob/stable/CK.AppBuilder/README.md)). The
-`appsettings.json` of a host is generated from it when the builder runs (a projection, without the compile time keys):
-edit the `ckonf.json`.
+its configuration: its entry in the [`ckonf.json`](ckonf.json) of the solution, the central configuration of the five
+parties and of their links (see
+[the App builder model](https://github.com/signature-opensource/CK-ResourceSpace/blob/stable/CK.Engine.Configuration/AppBuilder/README.md#the-central-configuration)).
+When a builder runs, it generates its own `ckonf.json` from its entry, then the `appsettings.json` of its host (a
+projection, without the compile time keys; see
+[CK.AppBuilder](https://github.com/signature-opensource/CK-StObj/blob/stable/CK.AppBuilder/README.md)): edit the
+`ckonf.json` of the solution, not the projections.
 
 [Shared/Sample.Shared](Shared/Sample.Shared) is referenced by every `*.App`: its `IWhoAmIQCommand` is a party command
 handled by every party (see [the Architecture page](#the-architecture-page)), and it declares the application's Poco
@@ -178,7 +181,7 @@ their manifests (`#Dev/Parties`) and the launcher **`#Dev/Start.ps1`**. It runs 
 ### The client applications
 
 The Angular applications are the client applications of their host, declared by their party in the `ckonf.json` of
-its builder: an Angular application (`"NgApp"`) served by its host (`"Hosting"`):
+the solution: an Angular application (`"NgApp"`) served by its host (`"Hosting"`):
 `"PartyClient": { "App": { "NgApp": true, "Hosting": { "RequestPath": "/", "DevServerPort": 4200 } } }`, served
 by CK.TS.AspNet.Clients (its
 `EnableClients`, applied by the "HttpEndpoint" feature of the host):
@@ -206,7 +209,7 @@ Deleting `#Dev/Store` resets the identities of the hosts.
 ### OpenID Connect
 
 OpenID Connect is a package of its own: Auth3 references CK.AppIdentity.AuthCenter.Oidc (without it, an
-"Local:AuthCenter:Oidc" section is a configuration error). The default configuration (`Auth3/Auth3.Builder/ckonf.json`) has the scheme `Oidc.Duende`: the public demo
+"Local:AuthCenter:Oidc" section is a configuration error). The default configuration (the `ckonf.json` of the solution) has the scheme `Oidc.Duende`: the public demo
 server of Duende IdentityServer (`https://demo.duendesoftware.com`) with its public test client
 (`interactive.confidential` / `secret`, authorization code with PKCE). This secret is published by Duende for testing: it
 protects nothing. The scheme allows account creation (`AllowAccountCreation`) and reads the UserInfo endpoint
@@ -241,7 +244,7 @@ client secret (it redeems the code); the Front forwards the start of the login a
 
 The demo runs without a proxy: the browser talks to the Front and the Admin directly. In a deployment, a reverse proxy
 usually terminates TLS in front of them: the browser is on `https://front.example.com`, the party receives `http`
-requests from the proxy. Two keys of the party's configuration handle it, for example in `Front/Front.Builder/ckonf.json`:
+requests from the proxy. Two keys of the party's configuration handle it, for example in the `"Front/Front.Builder"` entry of the `ckonf.json` of the solution:
 
 ```jsonc
 "Local": {

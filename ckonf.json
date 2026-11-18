@@ -1,0 +1,183 @@
+{
+  // The central configuration of the solution: its five parties and their links. The ckonf.json of each builder is
+  // generated from its entry below when the builder runs (then the appsettings.json of its host, from its App, without the
+  // compile time keys; the keys of its party go in the "CK-AppIdentity" section): edit this file, not the projections.
+
+  // A development configuration: the full name of each party is "Sample/Auth3/$<App>/#Dev" (the environment is "#Dev"
+  // by default), whatever the run mode of the host.
+  "Domain": "Sample/Auth3",
+
+  // The defaults of every App (an App's own value wins).
+  "Defaults": {
+    "App": {
+      "Logging": { "LogLevel": { "Default": "Warning" } },
+      "CK-Monitoring": {
+        "GlobalDefaultFilter": "Debug",
+        "GrandOutput": { "Handlers": { "Console": true, "TextFile": { "Path": "Text" } } }
+      }
+    }
+  },
+
+  // The builders, keyed by the path of their folder. Each one builds one App, named after it ("Auth3/Auth3.Builder"
+  // builds the App "Auth3": the Auth3.App and Auth3.Host projects, the party "$Auth3").
+  "Builders": {
+
+    "Auth3/Auth3.Builder": {
+      // The Builder aspects: the database of the engine run; its connection string is projected in the "SqlServer"
+      // section of the host's appsettings.json.
+      "Aspects": {
+        "SqlServer": { "DefaultDatabaseConnectionString": "Server=.;Database=CKSampleAuth3;Integrated Security=True;TrustServerCertificate=true" }
+      },
+      "App": {
+        "Defaults": {
+          // The fronts (the remotes without an address) connect here.
+          "Transport": { "ListeningAddress": [ "tcp:127.0.0.1:37300" ] }
+        },
+        // This application is the "AuthCenter" (CK.AppIdentity.AuthCenter.Local).
+        "Local": {
+          "AuthCenter": {
+            "SessionLifetime": "1.00:00:00",
+            "Oidc": {
+              // The public demo server of Duende IdentityServer, with its public test client (a known, risk-free secret):
+              // log in as bob / bob. Its first login creates the user "Bob-Smith" (SampleAccountCreation, named from the
+              // "name" claim that the demo server returns from its UserInfo endpoint only).
+              "Duende": {
+                "Authority": "https://demo.duendesoftware.com",
+                "ClientId": "interactive.confidential",
+                "ClientSecret": "secret",
+                "Scopes": "openid profile email",
+                "GetClaimsFromUserInfoEndpoint": true,
+                "AllowAccountCreation": true
+                // The callback is the endpoint of the party through which the user logs in (the Front): derived from the
+                // public URL that this party announces. Register "http://localhost:5300/.auth/oidc/callback" at the provider.
+              }
+              // Other schemes (a real provider, with a real secret) go in the user-secrets of this application (see the README).
+            },
+            "Passkey": {
+              // The passkeys are bound to this domain: changing it orphans every registered passkey (a deployment constant).
+              // "localhost" is a secure context for the browsers, so the http front works; any other host needs https.
+              "RpId": "localhost",
+              "RpName": "CK Sample"
+              // The accepted origins are the ones of the parties (their public URL, announced: the Front, the Admin).
+            },
+            // The hosts of the routes of the System, known at deployment: a route is accepted only toward an authorized host
+            // (any party can announce a route). The Admin hosts the approval page: its target is the one it announces.
+            "RouteHosts": {
+              "Enlistment": [ "Sample/Auth3/$Admin/#Dev" ]
+            }
+          },
+          // The links of the mails (an invitation, a lost password) open the client application of the party through which
+          // the request was made (its public URL, announced): the Admin, where the registration and the password recovery
+          // pages are.
+          // The mails are written in a pickup directory (a demo: nothing is sent).
+          "MailSender": {
+            "MailKit": {
+              "NoReply": {
+                "SendEmail": false,
+                "UsePickupDirectory": true,
+                "PickupDirectory": "Mails",
+                "From": "noreply@sample.local"
+              }
+            }
+          }
+        },
+        "Demo": {
+          "AlbertPassword": "pass"
+          // To bind Albert to your own account at a provider, set "OidcScheme" and "OidcSub" in the user-secrets
+          // ("OidcScheme": "Google", "OidcSub": "<your sub at the provider>").
+        }
+      }
+    },
+
+    "Front/Front.Builder": {
+      // This application is a remote of an AuthCenter (CK.AppIdentity.AuthCenter.Remote), and a web server: its
+      // "HttpEndpoint" feature (CK.AppIdentity.HttpEndpoint) starts the web application of its endpoint.
+      "App": {
+        "Local": {
+          // The "Main" endpoint: the SPA and its "/.cris" endpoints share this origin (no CORS).
+          "HttpEndpoint": { "Urls": "http://localhost:5300" },
+          // The two client applications of the Front host: Angular applications ("NgApp") served by the host ("Hosting"). Their
+          // name gives their project ("Clients/{Name}"), the TypeFilterName of the types they exchange with this host
+          // ("TypeScript{Name}") and their request path ("/{kebab-name}" unless set); they are served by their dev server on
+          // their DevServerPort in Development, by their built files otherwise.
+          "PartyClient": {
+            // The application (the authentication, the profile, the home page), served at "/".
+            "App": { "NgApp": true, "Hosting": { "RequestPath": "/", "DevServerPort": 4200 } },
+            // A client application without authentication, served at "/mini-app/": it sends the IFrontInfoQCommand. It lists
+            // its types (the types drive): the Cris client package (and what it requires), not the App's pages, authentication
+            // and styles, and its client features (NgApp and Hosting: a key doesn't bring its feature in a restricted set).
+            "MiniApp": {
+              "Types": [
+                "CK.Ng.Cris.AspNet.CrisAspNetPackage, CK.Ng.Cris.AspNet",
+                "CK.Sample.Front.IFrontInfoQCommand, Front.App",
+                "CK.TS.Angular.NgAppClientFeature, CK.TS.Angular",
+                "CK.TypeScript.HostingClientFeature, CK.TS.AspNet.Clients"
+              ],
+              "NgApp": true,
+              "Hosting": { "DevServerPort": 4201 }
+            }
+          }
+        }
+      }
+    },
+
+    "Admin/Admin.Builder": {
+      // This application is a remote of an AuthCenter (CK.AppIdentity.AuthCenter.Remote), and a web server: its
+      // "HttpEndpoint" feature (CK.AppIdentity.HttpEndpoint) starts the web application of its endpoint.
+      "App": {
+        "Local": {
+          // Its endpoint: the SPA and its "/.cris" endpoints share this origin (no CORS).
+          "HttpEndpoint": { "Urls": "http://localhost:5302" },
+          // Its client application (Admin.Host/Clients/App), served at "/" (the Front's client applications use 4200 and 4201).
+          "PartyClient": { "App": { "NgApp": true, "Hosting": { "RequestPath": "/", "DevServerPort": 4300 } } }
+        }
+      }
+    },
+
+    "Worker/Worker.Builder": {
+      "App": {}
+    },
+
+    "Worker2/Worker2.Builder": {
+      "App": {
+        "Local": {
+          // The AuthCenter of the System is Auth3: it is designated by its full name and anchored ("#Dev": its
+          // checkpoint is read from its running status in the dev store). Worker2 verifies what the AuthCenter states, whatever
+          // the path: the approval page of the System (an authenticated enlistment URL).
+          "AuthCenterRemote": { "Party": "Sample/Auth3/$Auth3/#Dev" },
+          "KeyManagement": {
+            "TrustAnchors": {
+              "Sample/Auth3/$Auth3/#Dev": "#Dev"
+            }
+          }
+        }
+      }
+    }
+  },
+
+  // The links between the parties: a link is the remote entry that "From" has for "To" (in the "Parties" of "From"). Each
+  // side of a connection is a link of its own.
+  "Links": [
+    // The Front and the Admin are the remotes of their AuthCenter (the remote that declares "AuthCenterRemote", as their
+    // "Local" doesn't declare "AuthCenter"): the session operations (and the administration commands of the Admin) are
+    // dispatched to it, its keys verify the tokens. The AuthCenter's key is pinned at the first connection (a demo:
+    // production pins it explicitly).
+    { "From": "$Front", "To": "$Auth3", "Link": { "AuthCenterRemote": true, "Address": "tcp:127.0.0.1:37300", "KeyManagement": { "AutoTrustKey": "Once" } } },
+    { "From": "$Admin", "To": "$Auth3", "Link": { "AuthCenterRemote": true, "Address": "tcp:127.0.0.1:37300", "KeyManagement": { "AutoTrustKey": "Once" } } },
+    // The Worker trusts Auth3, the party it is configured to reach, at its first contact (a trust on first use).
+    { "From": "$Worker", "To": "$Auth3", "Link": { "Address": "tcp:127.0.0.1:37300", "KeyManagement": { "AutoTrustKey": "Once" } } },
+    // Unlike the Worker, no "AutoTrustKey": Auth3 is anchored, its key event log is verified from the anchor (never a
+    // trust on first use).
+    { "From": "$Worker2", "To": "$Auth3", "Link": { "Address": "tcp:127.0.0.1:37300" } },
+
+    // The remotes of the AuthCenter: the Front and the Admin (the back-office: the user management, the approval page).
+    // Their keys are pinned at their first connection (a demo: production pins them explicitly).
+    { "From": "$Auth3", "To": "$Front", "Link": { "AuthCenterRemote": true, "KeyManagement": { "AutoTrustKey": "Once" } } },
+    { "From": "$Auth3", "To": "$Admin", "Link": { "AuthCenterRemote": true, "KeyManagement": { "AutoTrustKey": "Once" } } },
+    // The enlistment: the keys of the workers are never trusted automatically. An operator approves them on the approval
+    // page of the System (the Admin), with the code shown by the worker (Worker2, that anchors Auth3, receives an
+    // authenticated enlistment URL). Until then, a worker logs the enlistment URL and the approval code at each attempt.
+    { "From": "$Auth3", "To": "$Worker", "Link": { "KeyManagement": { "AutoTrustKey": "Never" } } },
+    { "From": "$Auth3", "To": "$Worker2", "Link": { "KeyManagement": { "AutoTrustKey": "Never" } } }
+  ]
+}
