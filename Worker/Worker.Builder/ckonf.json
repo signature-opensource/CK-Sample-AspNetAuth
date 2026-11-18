@@ -1,7 +1,19 @@
 // Generated from ../../ckonf.json: do not edit.
 {
   "App": {
-    "FullName": "Sample/Auth3/$Worker/#Dev",
+    "FullName": "Sample/Auth3/$Worker-{Name}/#Dev",
+    "InstanceCount": 2,
+    "CK-Monitoring": {
+      "GrandOutput": {
+        "Handlers": {
+          "TextFile": {
+            "Path": "Text/{Name}"
+          },
+          "Console": true
+        }
+      },
+      "GlobalDefaultFilter": "Debug"
+    },
     "Parties": [
       {
         "PartyName": "$Auth3",
@@ -14,17 +26,6 @@
     "Logging": {
       "LogLevel": {
         "Default": "Warning"
-      }
-    },
-    "CK-Monitoring": {
-      "GlobalDefaultFilter": "Debug",
-      "GrandOutput": {
-        "Handlers": {
-          "Console": true,
-          "TextFile": {
-            "Path": "Text"
-          }
-        }
       }
     }
   }
