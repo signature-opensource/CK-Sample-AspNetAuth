@@ -3,6 +3,7 @@
   "App": {
     "FullName": "Sample/Auth3/$Worker-{Name}/#Dev",
     "InstanceCount": 2,
+    "MaxInstanceCount": 4,
     "CK-Monitoring": {
       "GrandOutput": {
         "Handlers": {
