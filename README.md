@@ -248,15 +248,31 @@ no test uses it (the tests use a fake provider).
 The logo of its button is the sample's (`Front/Front.App/Res/ts-assets`, mapped to `login-providers/duende.png`): the
 login page looks for `login-providers/<suffix>.png`, and an application adds the logos of its own schemes this way.
 
-A real provider (with a real secret) goes in the user-secrets of Auth3.Host (`dotnet user-secrets` in
-`Auth3/Auth3.Host`). For Google (the `Demo` keys bind Albert to your account):
+A real provider has a real secret: its scheme is configured next to Duende's in the `ckonf.json`, but its secret is a
+handle, the name of a secret, never its value (the handle is projected in the `appsettings.json` of Auth3.Host, the host
+resolves it when it starts: see CK.AppHost). For Google:
+
+```jsonc
+"Google": {
+  "Authority": "https://accounts.google.com",
+  "ClientId": "...",
+  "ClientSecret": { "$SECRET": "Google:ClientSecret" },
+  "Scopes": "openid email"
+}
+```
+
+In development, the values of the secrets are in the `#Dev/Secrets.json` file of the solution (ignored by git, shared by
+the parties; a missing secret fails the start of Auth3):
+
+```json
+{ "Google": { "ClientSecret": "..." } }
+```
+
+The `Demo` keys bind Albert to your account: they go in the user-secrets of Auth3.Host (`dotnet user-secrets` in
+`Auth3/Auth3.Host`):
 
 ```json
 {
-  "CK-AppIdentity:Local:AuthCenter:Oidc:Google:Authority": "https://accounts.google.com",
-  "CK-AppIdentity:Local:AuthCenter:Oidc:Google:ClientId": "...",
-  "CK-AppIdentity:Local:AuthCenter:Oidc:Google:ClientSecret": "...",
-  "CK-AppIdentity:Local:AuthCenter:Oidc:Google:Scopes": "openid email",
   "Demo:OidcScheme": "Google",
   "Demo:OidcSub": "<the sub of your Google account>"
 }

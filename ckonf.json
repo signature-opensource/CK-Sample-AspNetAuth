@@ -60,7 +60,8 @@
                 // The callback is the endpoint of the party through which the user logs in (the Front): derived from the
                 // public URL that this party announces. Register "http://localhost:5300/.auth/oidc/callback" at the provider.
               }
-              // Other schemes (a real provider, with a real secret) go in the user-secrets of this application (see the README).
+              // Another scheme (a real provider) holds its secret as a handle, { "$SECRET": "Google:ClientSecret" }, whose value
+              // is in "#Dev/Secrets.json" (see the README).
             },
             "Passkey": {
               // The passkeys are bound to this domain: changing it orphans every registered passkey (a deployment constant).
