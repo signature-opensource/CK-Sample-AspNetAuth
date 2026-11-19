@@ -1,0 +1,57 @@
+{
+  // The "#Production" deployment of the sample: an overlay of the central ckonf.json (a JSON Merge Patch: an object merges,
+  // null removes, any other value, an array included, replaces). Its domain is the central one ("Sample/Auth3"), its
+  // environment is the name of its folder: the full name of each party is "Sample/Auth3/$<App>/#Production".
+  // It writes the values per deployment (the "$PER_DEPLOYMENT" of the central file, the addresses and the URLs): the build
+  // refuses to inherit them. Its merged configuration is ckonf.merged.json, next to it (generated: do not edit).
+  "Builders": {
+    "Auth3/Auth3.Builder": {
+      // The database of the deployment: a secret (its value is the configuration key "Secrets:Auth3:Database" of the host).
+      "Aspects": { "SqlServer": { "DefaultDatabaseConnectionString": { "$SECRET": "Auth3:Database" } } },
+      "App": {
+        "Defaults": { "Transport": { "ListeningAddress": [ "tcp:0.0.0.0:37300" ] } },
+        "Local": {
+          "AuthCenter": {
+            "Passkey": { "RpId": "sample.example.com" },
+            "RouteHosts": { "Enlistment": [ "Sample/Auth3/$Admin/#Production" ] }
+          },
+          "MailSender": {
+            "MailKit": {
+              "NoReply": {
+                "SendEmail": true,
+                "UsePickupDirectory": false,
+                "PickupDirectory": null,
+                "Host": "smtp.sample.example.com",
+                "From": "noreply@sample.example.com"
+              }
+            }
+          }
+        },
+        // No demo data in production.
+        "Demo": null
+      }
+    },
+    "Front/Front.Builder": { "App": { "Local": { "HttpEndpoint": { "Urls": "http://*:5300" } } } },
+    "Admin/Admin.Builder": { "App": { "Local": { "HttpEndpoint": { "Urls": "http://*:5302" } } } },
+    "Worker2/Worker2.Builder": {
+      "App": {
+        "Local": {
+          "AuthCenterRemote": { "Party": "Sample/Auth3/$Auth3/#Production" },
+          // The anchor of Auth3 comes with its first start (the ceremony of the anchors): none yet.
+          "KeyManagement": { "TrustAnchors": null }
+        }
+      }
+    }
+  },
+  // The links of production: Auth3 is reached at its host name, no key is trusted on first use.
+  "Links": [
+    { "From": "$Front", "To": "$Auth3", "Link": { "AuthCenterRemote": true, "Address": "tcp:auth3.sample.example.com:37300", "KeyManagement": { "AutoTrustKey": "Never" } } },
+    { "From": "$Admin", "To": "$Auth3", "Link": { "AuthCenterRemote": true, "Address": "tcp:auth3.sample.example.com:37300", "KeyManagement": { "AutoTrustKey": "Never" } } },
+    { "From": "$Worker-{Name}", "To": "$Auth3", "Link": { "Address": "tcp:auth3.sample.example.com:37300", "KeyManagement": { "AutoTrustKey": "Never" } } },
+    { "From": "$Worker2", "To": "$Auth3", "Link": { "Address": "tcp:auth3.sample.example.com:37300" } },
+    { "From": "$Auth3", "To": "$Front", "Link": { "AuthCenterRemote": true, "KeyManagement": { "AutoTrustKey": "Never" } } },
+    { "From": "$Auth3", "To": "$Admin", "Link": { "AuthCenterRemote": true, "KeyManagement": { "AutoTrustKey": "Never" } } },
+    { "From": "$Auth3", "To": "$Worker-{Name}", "Link": { "KeyManagement": { "AutoTrustKey": "Never" } } },
+    { "From": "$Auth3", "To": "$Worker2", "Link": { "KeyManagement": { "AutoTrustKey": "Never" } } }
+  ]
+}

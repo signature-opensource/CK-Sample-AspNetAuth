@@ -4,7 +4,9 @@
   // compile time keys; the keys of its party go in the "CK-AppIdentity" section): edit this file, not the projections.
 
   // A development configuration: the full name of each party is "Sample/Auth3/$<App>/#Dev" (the environment is "#Dev"
-  // by default), whatever the run mode of the host.
+  // by default), whatever the run mode of the host. The other deployments are overlays of it, in the Deployment folder
+  // (Deployment/#Production): the values marked "$PER_DEPLOYMENT" below, and the addresses and URLs (declared by their
+  // packages), must be written by each deployment itself.
   "Domain": "Sample/Auth3",
 
   // The defaults of every App (an App's own value wins).
@@ -30,10 +32,15 @@
       "Aspects": {
         "SqlServer": {
           "DefaultDatabaseConnectionString": "Server=.;Database=CKSampleAuth3;Integrated Security=True;TrustServerCertificate=true",
-          "$LOCK": { "DefaultDatabaseConnectionString": "Compile" }
+          "$LOCK": { "DefaultDatabaseConnectionString": "Compile" },
+          // Each deployment has its database.
+          "$PER_DEPLOYMENT": [ "DefaultDatabaseConnectionString" ]
         }
       },
       "App": {
+        // What a deployment can't inherit from the development: the demo data, the mail pickup directory, the passkeys'
+        // domain and the route hosts (development full names).
+        "$PER_DEPLOYMENT": [ "Demo", "Local:MailSender", "Local:AuthCenter:Passkey:RpId", "Local:AuthCenter:RouteHosts" ],
         // A run property (CK.Cris.DynamicConfiguration): the initial count of the runners of the Cris commands executed
         // in the background; an operator changes it while Auth3 runs (IConfigurePropertyCommand), the change is kept in
         // the store of Auth3 (unless this value changes: the latest decision wins).
@@ -158,6 +165,8 @@
 
     "Worker2/Worker2.Builder": {
       "App": {
+        // The full name of the AuthCenter and its anchor are the ones of a deployment.
+        "$PER_DEPLOYMENT": [ "Local:AuthCenterRemote:Party", "Local:KeyManagement:TrustAnchors" ],
         "Local": {
           // The AuthCenter of the System is Auth3: it is designated by its full name and anchored ("#Dev": its
           // checkpoint is read from its running status in the dev store). Worker2 verifies what the AuthCenter states, whatever
@@ -180,6 +189,9 @@
       }
     }
   },
+
+  // The trust on first use of the development is never inherited by a deployment.
+  "$PER_DEPLOYMENT": [ "Links:[*]:Link:KeyManagement:AutoTrustKey" ],
 
   // The links between the parties: a link is the remote entry that "From" has for "To" (in the "Parties" of "From"). Each
   // side of a connection is a link of its own.
