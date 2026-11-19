@@ -8,35 +8,35 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!-- The Remote side of the AuthCenter feature: this back-office is the second remote of Auth3. -->
-    <PackageReference Include="CK.AppIdentity.AuthCenter.Remote" Version="4.0.0-0.uc.0.ci.31" />
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.0.ci.128" />
-    <PackageReference Include="CK.AspNet" Version="25.0.0-0.uc.0.ci.22" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Remote" Version="4.0.0-0.uc.0.ci.34" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.0.ci.130" />
+    <PackageReference Include="CK.AspNet" Version="25.0.0-0.uc.0.ci.24" />
     <!-- The "HttpEndpoint" feature: the web server of this party (Local:HttpEndpoint). -->
-    <PackageReference Include="CK.AppIdentity.HttpEndpoint" Version="25.0.0-0.uc.0.ci.22" />
+    <PackageReference Include="CK.AppIdentity.HttpEndpoint" Version="25.0.0-0.uc.0.ci.24" />
     <!-- The HTTP side of the authentication and the Basic login form (the administrators sign in with their password). -->
-    <PackageReference Include="CK.Cris.AspNet.Authentication" Version="3.0.0-0.uc.0.ci.168" />
-    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.uc.0.ci.168" />
+    <PackageReference Include="CK.Cris.AspNet.Authentication" Version="3.0.0-0.uc.0.ci.169" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.uc.0.ci.169" />
     <!-- The user management: the users of a workspace, their banishment, their invitation. Its commands are handled by the
          AuthCenter (dispatched to it, with the user's proof). -->
-    <PackageReference Include="CK.Ng.Admin.UserManagement" Version="3.0.0-0.uc.0.ci.152" />
-    <PackageReference Include="CK.Ng.Admin.UserManagement.UserBanned" Version="3.0.0-0.uc.0.ci.152" />
-    <PackageReference Include="CK.Ng.Admin.UserManagement.UserInvitation" Version="3.0.0-0.uc.0.ci.152" />
-    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="3.0.0-0.uc.0.ci.168" />
-    <PackageReference Include="CK.Ng.UserProfile.UserBanned" Version="3.0.0-0.uc.0.ci.168" />
+    <PackageReference Include="CK.Ng.Admin.UserManagement" Version="3.0.0-0.uc.0.ci.153" />
+    <PackageReference Include="CK.Ng.Admin.UserManagement.UserBanned" Version="3.0.0-0.uc.0.ci.153" />
+    <PackageReference Include="CK.Ng.Admin.UserManagement.UserInvitation" Version="3.0.0-0.uc.0.ci.153" />
+    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="3.0.0-0.uc.0.ci.169" />
+    <PackageReference Include="CK.Ng.UserProfile.UserBanned" Version="3.0.0-0.uc.0.ci.169" />
     <!-- The approval page of the System (app-identity/enlist): the Admin hosts the "Enlistment" route; it handles the approval
          itself (it checks the operator at the Critical level) and sends it down to the holder of the pending approval. -->
-    <PackageReference Include="CK.Ng.AppIdentity.Enlistment" Version="3.0.0-0.uc.0.ci.152" />
-    <PackageReference Include="CK.AppIdentity.Enlistment" Version="4.0.0-0.uc.0.ci.31" />
+    <PackageReference Include="CK.Ng.AppIdentity.Enlistment" Version="3.0.0-0.uc.0.ci.153" />
+    <PackageReference Include="CK.AppIdentity.Enlistment" Version="4.0.0-0.uc.0.ci.34" />
     <!-- The approval is countersigned by the AuthCenter (Auth3), in the operator's request. -->
-    <PackageReference Include="CK.AppIdentity.AuthCenter.Enlistment" Version="4.0.0-0.uc.0.ci.31" />
-    <PackageReference Include="CK.Ng.AppIdentity.Tenants" Version="3.0.0-0.uc.0.ci.152" />
-    <PackageReference Include="CK.AppIdentity.Tenants" Version="4.0.0-0.uc.0.ci.31" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Enlistment" Version="4.0.0-0.uc.0.ci.34" />
+    <PackageReference Include="CK.Ng.AppIdentity.Tenants" Version="3.0.0-0.uc.0.ci.153" />
+    <PackageReference Include="CK.AppIdentity.Tenants" Version="4.0.0-0.uc.0.ci.34" />
     <!-- The commands of the dynamic configuration: sent to the applications of the System (Auth3). -->
-    <PackageReference Include="CK.IO.DynamicConfiguration" Version="3.0.0-0.uc.0.ci.93" />
+    <PackageReference Include="CK.IO.DynamicConfiguration" Version="3.0.0-0.uc.0.ci.94" />
     <!-- The application shell (side bar, top bar with the UserInfoBox). -->
-    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.uc.0.ci.134" />
+    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.uc.0.ci.135" />
     <!-- Serves the client application (app.MapClients()): its dev server in Development, its "dist" otherwise. -->
-    <PackageReference Include="CK.TS.AspNet.Clients" Version="3.0.1-0.uc.0.ci.90" />
+    <PackageReference Include="CK.TS.AspNet.Clients" Version="3.0.1-0.uc.0.ci.91" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Sample.Shared\Sample.Shared.csproj" />
