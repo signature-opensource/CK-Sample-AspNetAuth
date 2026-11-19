@@ -4,19 +4,19 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.127" />
-    <PackageReference Include="CK.AppBuilder" Version="37.0.0-0.uc.0.ci.21" />
-    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.0.ci.166" />
-    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.0.ci.166" />
-    <PackageReference Include="CK.Cris.DynamicConfiguration.Engine" Version="3.0.0-0.uc.0.ci.166" />
-    <PackageReference Include="CK.Poco.Exchange.Engine" Version="37.0.0-0.uc.0.ci.21" />
-    <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="37.0.0-0.uc.0.ci.21" />
-    <PackageReference Include="CK.Setupable.Engine" Version="37.0.0-0.uc.0.ci.22" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="37.0.0-0.uc.0.ci.22" />
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.128" />
+    <PackageReference Include="CK.AppBuilder" Version="37.0.0-0.uc.0.ci.23" />
+    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.0.ci.167" />
+    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.0.ci.167" />
+    <PackageReference Include="CK.Cris.DynamicConfiguration.Engine" Version="3.0.0-0.uc.0.ci.167" />
+    <PackageReference Include="CK.Poco.Exchange.Engine" Version="37.0.0-0.uc.0.ci.23" />
+    <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="37.0.0-0.uc.0.ci.23" />
+    <PackageReference Include="CK.Setupable.Engine" Version="37.0.0-0.uc.0.ci.24" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="37.0.0-0.uc.0.ci.24" />
     <!-- The mail templates (CK.UserProfile.UserPassword.Lost, CK.UserManagement.UserInvitation) and the translations of the
          server messages. -->
-    <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.0.ci.52" />
-    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.0.ci.56" />
+    <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.0.ci.53" />
+    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.0.ci.57" />
     <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
     <ProjectReference Include="..\Auth3.App\Auth3.App.csproj" />
   </ItemGroup>
