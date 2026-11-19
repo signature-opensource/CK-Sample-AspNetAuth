@@ -232,11 +232,11 @@ public class SampleTests
         var p = properties.EnumerateArray().Select( Value ).Single( x => x.GetProperty( "path" ).GetString() == path );
         p.GetProperty( "value" ).GetString().ShouldBe( "2" );
         // ...and changes one: the current value is the optimistic concurrency.
-        var changed = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.DynamicConfiguration.IConfigurePropertyCommand",{"actorId":{{browser.ActorId}},"targetPartyFullName":"{{target}}","propertyPath":"{{path}}","value":4,"currentValue":2}]""" ) );
-        changed.GetProperty( "success" ).GetBoolean().ShouldBeTrue( changed.ToString() );
+        var changed = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.DynamicConfiguration.IConfigurePropertyCommand",{"actorId":{{browser.ActorId}},"targetPartyFullName":"{{target}}","propertyPath":"{{path}}","value":"4","currentValue":"2"}]""" ) );
+        IsSuccess( changed ).ShouldBeTrue( changed.ToString() );
         (await WaitForAsync( () => _auth3.Services.GetRequiredService<CrisExecutionHost>().ParallelRunnerCount == 4 ? "4" : null )).ShouldNotBeNull();
-        var conflict = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.DynamicConfiguration.IConfigurePropertyCommand",{"actorId":{{browser.ActorId}},"targetPartyFullName":"{{target}}","propertyPath":"{{path}}","value":5,"currentValue":2}]""" ) );
-        conflict.GetProperty( "success" ).GetBoolean().ShouldBeFalse();
+        var conflict = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.DynamicConfiguration.IConfigurePropertyCommand",{"actorId":{{browser.ActorId}},"targetPartyFullName":"{{target}}","propertyPath":"{{path}}","value":"5","currentValue":"2"}]""" ) );
+        IsSuccess( conflict ).ShouldBeFalse( conflict.ToString() );
         conflict.ToString().ShouldContain( "is '4'" );
 
         // Kept when Auth3 restarts (its configured value didn't change).
@@ -250,8 +250,8 @@ public class SampleTests
         // Back to 2 (the next runs start with it): the Admin reconnects to the restarted Auth3 first.
         (await WaitForAsync( () =>
         {
-            var r = Value( browser.SendAsync( "/.cris", $$"""["CK.IO.DynamicConfiguration.IConfigurePropertyCommand",{"actorId":{{browser.ActorId}},"targetPartyFullName":"{{target}}","propertyPath":"{{path}}","value":2,"currentValue":4}]""" ).Result );
-            return r.ValueKind == JsonValueKind.Object && r.GetProperty( "success" ).GetBoolean() ? "reset" : null;
+            var r = Value( browser.SendAsync( "/.cris", $$"""["CK.IO.DynamicConfiguration.IConfigurePropertyCommand",{"actorId":{{browser.ActorId}},"targetPartyFullName":"{{target}}","propertyPath":"{{path}}","value":"2","currentValue":"4"}]""" ).Result );
+            return IsSuccess( r ) ? "reset" : null;
         } )).ShouldNotBeNull( "The Admin reaches the restarted Auth3." );
         (await WaitForAsync( () => _auth3.Services.GetRequiredService<CrisExecutionHost>().ParallelRunnerCount == 2 ? "2" : null )).ShouldNotBeNull();
     }
