@@ -63,9 +63,7 @@
             // The hosts of the routes of the System, known at deployment: a route is accepted only toward an authorized host
             // (any party can announce a route). The Admin hosts the approval page: its target is the one it announces.
             "RouteHosts": {
-              "Enlistment": [ "Sample/Auth3/$Admin/#Dev" ],
-              // Worker2 holds the tenants: the tenants page of the Admin reaches it along this route.
-              "Tenants": [ "Sample/Auth3/$Worker2/#Dev" ]
+              "Enlistment": [ "Sample/Auth3/$Admin/#Dev" ]
             }
           },
           // The links of the mails (an invitation, a lost password) open the client application of the party through which

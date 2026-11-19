@@ -849,14 +849,14 @@ public class SampleTests
                 (await worker2Party.RemoveTenantInstanceAsync( TestHelper.Monitor, template.GetFullName( "Acme" ) )).ShouldBeTrue();
             }
 
-            // The Admin (the tenants page) finds Worker2: the host of the "Tenants" route, authorized by Auth3.
+            // The Admin (the tenants page) finds Worker2 through its hub: a remote of Auth3 that accepts the tenant commands.
             (await WaitForAsync( () =>
             {
                 var hosts = Value( browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Tenants.IGetTenantHostsQCommand",{"actorId":{{browser.ActorId}}}]""" ).Result );
                 return hosts.ValueKind == JsonValueKind.Array && hosts.EnumerateArray().Any( h => h.GetString() == worker2Name ) ? "found" : null;
-            } )).ShouldNotBeNull( "Worker2 hosts the Tenants route, that reaches the Admin through Auth3." );
+            } )).ShouldNotBeNull( "Worker2 is a remote of Auth3, the hub of the Admin, and accepts the tenant commands." );
 
-            // Created from the Admin: the command travels Admin > Auth3 > Worker2 along "Tenants".
+            // Created from the Admin: the command goes Admin > Auth3 > Worker2 (through the hub).
             var created = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Tenants.ICreateTenantInstanceCommand",{"actorId":{{browser.ActorId}},"targetPartyFullName":"{{JsonEncodedText.Encode( worker2Name )}}","templateName":"Sample/Auth3/Customers","name":"Acme"}]""" ) );
             created.ValueKind.ShouldBe( JsonValueKind.String, created.ToString() );
             var acmeName = created.GetString()!;

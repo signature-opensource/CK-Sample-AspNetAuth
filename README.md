@@ -168,11 +168,11 @@ Worker2, with its own identity (its keys), created again at each start (its inde
 owns the domain `Sample/Auth3/Customers`: no other party of the System is directly under it.
 
 - **The tenants page** of the Admin (`http://localhost:5302/app-identity/tenants`, CK.Ng.AppIdentity.Tenants): once
-  signed in at the Critical level, it lists Worker2 (the host of the "Tenants" route, that Auth3 authorizes in its
-  `RouteHosts`), its template and its tenants. The operator creates a tenant (a name), moves it to another index, or
-  removes it (its keys are deleted: a new tenant of the same name is a new identity).
-- **The commands travel along the route:** the Admin is not linked to Worker2, the tenant commands go Admin > Auth3 >
-  Worker2 (CK.AppIdentity.Tenants, referenced by Worker2 and by the Admin).
+  signed in at the Critical level, it lists Worker2, its template and its tenants. The operator creates a tenant (a
+  name), moves it to another index, or removes it (its keys are deleted: a new tenant of the same name is a new identity).
+- **Through the hub:** the Authentication Center is the hub of the System's administration. The Admin is not linked to
+  Worker2: it finds it among the remotes of Auth3 that accept the tenant commands, and the tenant commands go Admin >
+  Auth3 > Worker2 (CK.AppIdentity.Tenants, referenced by Worker2 for its handlers and by the Admin for the discovery).
 - **A known limit:** a tenant of Worker2 has no link to Auth3. One peer can't be a remote of two local parties of the
   same application (a remote is found by the full name of the caller), and Worker2 itself is the remote of Auth3.
 
