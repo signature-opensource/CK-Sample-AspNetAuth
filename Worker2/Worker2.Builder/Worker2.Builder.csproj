@@ -7,8 +7,8 @@
   <ItemGroup>
     <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.127" />
     <PackageReference Include="CK.AppBuilder" Version="37.0.0-0.uc.0.ci.21" />
-    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.0.ci.163" />
-    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.0.ci.163" />
+    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.0.ci.164" />
+    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.0.ci.164" />
     <PackageReference Include="CK.Poco.Exchange.Engine" Version="37.0.0-0.uc.0.ci.21" />
     <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="37.0.0-0.uc.0.ci.21" />
     <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.0.ci.56" />
