@@ -888,6 +888,9 @@ public class SampleTests
         {
             await worker2.StopAsync();
             worker2.Dispose();
+            // Auth3 forgets Worker2 (the operator clears its pin): the enlistment of Worker2 is the subject of another test.
+            var auth3 = _auth3.Services.GetRequiredService<ApplicationIdentityService>();
+            auth3.Remotes.Single( r => r.PartyName == "$Worker2" ).GetRequiredFeature<IRemoteKeys>().SetTrustedIdentity( TestHelper.Monitor, null );
         }
     }
 }
