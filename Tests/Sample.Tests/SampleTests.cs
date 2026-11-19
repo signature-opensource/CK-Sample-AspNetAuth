@@ -237,7 +237,7 @@ public class SampleTests
         (await WaitForAsync( () => _auth3.Services.GetRequiredService<CrisExecutionHost>().ParallelRunnerCount == 4 ? "4" : null )).ShouldNotBeNull();
         var conflict = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.DynamicConfiguration.IConfigurePropertyCommand",{"actorId":{{browser.ActorId}},"targetPartyFullName":"{{target}}","propertyPath":"{{path}}","value":"5","currentValue":"2"}]""" ) );
         IsSuccess( conflict ).ShouldBeFalse( conflict.ToString() );
-        conflict.ToString().ShouldContain( "is '4'" );
+        Value( conflict ).GetProperty( "userMessages" )[0][1].GetString().ShouldContain( "is '4', not '2'" );
 
         // Kept when Auth3 restarts (its configured value didn't change).
         await _auth3.StopAsync();
