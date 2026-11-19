@@ -6,17 +6,17 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- What the hosts share: a party command handled by every party (IWhoAmIQCommand). -->
-    <PackageReference Include="CK.Cris.Authentication" Version="3.0.0-0.uc.0.ci.164" />
+    <PackageReference Include="CK.Cris.Authentication" Version="3.0.0-0.uc.0.ci.166" />
     <PackageReference Include="CK.AppIdentity.Abstractions" Version="3.0.0-0.uc.0.ci.127" />
     <!-- The application's Poco leaves (IUserProfile, ICombinedWorkspaceUser): Auth3 materializes them, the
          fronts read them. Every party knows the same Poco, with the same properties. -->
-    <PackageReference Include="CK.IO.UserProfile" Version="3.0.0-0.uc.0.ci.164" />
-    <PackageReference Include="CK.IO.UserProfile.Workspace" Version="18.0.0-0.uc.0.ci.75" />
-    <PackageReference Include="CK.IO.User.PreferredCulture" Version="3.0.0-0.uc.0.ci.81" />
-    <PackageReference Include="CK.IO.User.UserPassword.Reset" Version="31.0.0-0.uc.0.ci.88" />
-    <PackageReference Include="CK.IO.User.UserBanned" Version="4.0.0-0.uc.0.ci.77" />
-    <PackageReference Include="CK.IO.UserManagement.UserBanned" Version="3.0.0-0.uc.0.ci.111" />
-    <PackageReference Include="CK.IO.Admin" Version="3.0.0-0.uc.0.ci.111" />
-    <PackageReference Include="CK.IO.UserManagement.UserInvitation" Version="3.0.0-0.uc.0.ci.111" />
+    <PackageReference Include="CK.IO.UserProfile" Version="3.0.0-0.uc.0.ci.165" />
+    <PackageReference Include="CK.IO.UserProfile.Workspace" Version="18.0.0-0.uc.0.ci.76" />
+    <PackageReference Include="CK.IO.User.PreferredCulture" Version="3.0.0-0.uc.0.ci.82" />
+    <PackageReference Include="CK.IO.User.UserPassword.Reset" Version="31.0.0-0.uc.0.ci.89" />
+    <PackageReference Include="CK.IO.User.UserBanned" Version="4.0.0-0.uc.0.ci.78" />
+    <PackageReference Include="CK.IO.UserManagement.UserBanned" Version="3.0.0-0.uc.0.ci.112" />
+    <PackageReference Include="CK.IO.Admin" Version="3.0.0-0.uc.0.ci.112" />
+    <PackageReference Include="CK.IO.UserManagement.UserInvitation" Version="3.0.0-0.uc.0.ci.112" />
   </ItemGroup>
 </Project>
