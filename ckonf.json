@@ -34,6 +34,10 @@
         }
       },
       "App": {
+        // A run property (CK.Cris.DynamicConfiguration): the initial count of the runners of the Cris commands executed
+        // in the background; an operator changes it while Auth3 runs (IConfigurePropertyCommand), the change is kept in
+        // the store of Auth3 (unless this value changes: the latest decision wins).
+        "CrisExecutionHost": { "ParallelRunnerCount": 2 },
         "Defaults": {
           // The fronts (the remotes without an address) connect here.
           "Transport": { "ListeningAddress": [ "tcp:127.0.0.1:37300" ] }
