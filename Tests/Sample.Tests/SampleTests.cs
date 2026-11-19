@@ -200,6 +200,21 @@ public class SampleTests
     }
 
     [Test]
+    public void the_connection_string_of_Auth3_is_burnt_by_the_build()
+    {
+        // The central ckonf.json locks it to the Compile level ("$LOCK" of the SqlServer aspect): it is not in the host's
+        // appsettings.json, it is in the generated code (the running Auth3 uses its database: the other tests).
+        var connectionString = "SqlServer:DefaultDatabaseConnectionString";
+        File.ReadAllText( TestHelper.SolutionFolder.Combine( "Auth3/Auth3.Host/appsettings.json" ) ).ShouldNotContain( "DefaultDatabaseConnectionString" );
+        // A configured value is ignored (with a warning): the build wins.
+        using var host = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
+        {
+            [connectionString] = "Server=nowhere;Database=Other"
+        } ), TestHelper.SolutionFolder.Combine( "Auth3/Auth3.Host" ), Assembly.Load( "Auth3.Host" ) );
+        host.Services.GetRequiredService<IConfiguration>()[connectionString].ShouldBe( "Server=.;Database=CKSampleAuth3;Integrated Security=True;TrustServerCertificate=true" );
+    }
+
+    [Test]
     public async Task the_user_manages_its_login_methods_at_Auth3_through_the_front_Async()
     {
         // The front has no database: these commands are posted to "/.cris" and dispatched to Auth3 (that handles

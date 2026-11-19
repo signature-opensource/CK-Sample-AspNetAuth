@@ -23,10 +23,15 @@
   "Builders": {
 
     "Auth3/Auth3.Builder": {
-      // The Builder aspects: the database of the engine run; its connection string is projected in the "SqlServer"
-      // section of the host's appsettings.json.
+      // The Builder aspects: the database of the engine run. Its connection string is a run time setting of the host
+      // ("SqlServer:DefaultDatabaseConnectionString", read at start); the "$LOCK" restricts it to the Compile level: it
+      // is burnt in the generated code instead of being projected in the host's appsettings.json (a value configured
+      // there is ignored with a warning).
       "Aspects": {
-        "SqlServer": { "DefaultDatabaseConnectionString": "Server=.;Database=CKSampleAuth3;Integrated Security=True;TrustServerCertificate=true" }
+        "SqlServer": {
+          "DefaultDatabaseConnectionString": "Server=.;Database=CKSampleAuth3;Integrated Security=True;TrustServerCertificate=true",
+          "$LOCK": { "DefaultDatabaseConnectionString": "Compile" }
+        }
       },
       "App": {
         "Defaults": {
