@@ -2,7 +2,10 @@
 {
   "Aspects": {
     "SqlServer": {
-      "DefaultDatabaseConnectionString": "Server=.;Database=CKSampleAuth3;Integrated Security=True;TrustServerCertificate=true"
+      "DefaultDatabaseConnectionString": "Server=.;Database=CKSampleAuth3;Integrated Security=True;TrustServerCertificate=true",
+      "$LOCK": {
+        "DefaultDatabaseConnectionString": "Compile"
+      }
     }
   },
   "App": {
