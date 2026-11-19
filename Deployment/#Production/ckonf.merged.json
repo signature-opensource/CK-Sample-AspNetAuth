@@ -1,0 +1,245 @@
+// Generated from ckonf.json, Deployment/#Production/ckonf.json (from the root of the solution): do not edit.
+{
+  "Domain": "Sample/Auth3",
+  "Defaults": {
+    "App": {
+      "Logging": {
+        "LogLevel": {
+          "Default": "Warning"
+        }
+      },
+      "CK-Monitoring": {
+        "GlobalDefaultFilter": "Debug",
+        "GrandOutput": {
+          "Handlers": {
+            "Console": true,
+            "TextFile": {
+              "Path": "Text"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Builders": {
+    "Worker/Worker.Builder": {
+      "App": {
+        "InstanceCount": 2,
+        "MaxInstanceCount": 4,
+        "CK-Monitoring": {
+          "GrandOutput": {
+            "Handlers": {
+              "TextFile": {
+                "Path": "Text/{Name}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Auth3/Auth3.Builder": {
+      "Aspects": {
+        "SqlServer": {
+          "$LOCK": {
+            "DefaultDatabaseConnectionString": "Compile"
+          },
+          "DefaultDatabaseConnectionString": {
+            "$SECRET": "Auth3:Database"
+          }
+        }
+      },
+      "App": {
+        "CrisExecutionHost": {
+          "ParallelRunnerCount": 2
+        },
+        "Defaults": {
+          "Transport": {
+            "ListeningAddress": [
+              "tcp:0.0.0.0:37300"
+            ]
+          }
+        },
+        "Local": {
+          "AuthCenter": {
+            "SessionLifetime": "1.00:00:00",
+            "Oidc": {
+              "Duende": {
+                "Authority": "https://demo.duendesoftware.com",
+                "ClientId": "interactive.confidential",
+                "ClientSecret": "secret",
+                "Scopes": "openid profile email",
+                "GetClaimsFromUserInfoEndpoint": true,
+                "AllowAccountCreation": true
+              }
+            },
+            "Passkey": {
+              "RpName": "CK Sample",
+              "RpId": "sample.example.com"
+            },
+            "RouteHosts": {
+              "Enlistment": [
+                "Sample/Auth3/$Admin/#Production"
+              ]
+            }
+          },
+          "MailSender": {
+            "MailKit": {
+              "NoReply": {
+                "SendEmail": true,
+                "UsePickupDirectory": false,
+                "Host": "smtp.sample.example.com",
+                "From": "noreply@sample.example.com"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Front/Front.Builder": {
+      "App": {
+        "Local": {
+          "PartyClient": {
+            "App": {
+              "NgApp": true,
+              "Hosting": {
+                "RequestPath": "/",
+                "DevServerPort": 4200
+              }
+            },
+            "MiniApp": {
+              "Types": [
+                "CK.Ng.Cris.AspNet.CrisAspNetPackage, CK.Ng.Cris.AspNet",
+                "CK.Sample.Front.IFrontInfoQCommand, Front.App",
+                "CK.TS.Angular.NgAppClientFeature, CK.TS.Angular",
+                "CK.TypeScript.HostingClientFeature, CK.TS.AspNet.Clients"
+              ],
+              "NgApp": true,
+              "Hosting": {
+                "DevServerPort": 4201
+              }
+            }
+          },
+          "HttpEndpoint": {
+            "Urls": "http://*:5300"
+          }
+        }
+      }
+    },
+    "Admin/Admin.Builder": {
+      "App": {
+        "Local": {
+          "PartyClient": {
+            "App": {
+              "NgApp": true,
+              "Hosting": {
+                "RequestPath": "/",
+                "DevServerPort": 4300
+              }
+            }
+          },
+          "HttpEndpoint": {
+            "Urls": "http://*:5302"
+          }
+        }
+      }
+    },
+    "Worker2/Worker2.Builder": {
+      "App": {
+        "Parties": [
+          {
+            "DomainName": "Sample/Auth3/Customers/{Name}",
+            "PartyName": "${Name}",
+            "InstanceCount": 0,
+            "MaxInstanceCount": 5
+          }
+        ],
+        "Local": {
+          "AuthCenterRemote": {
+            "Party": "Sample/Auth3/$Auth3/#Production"
+          },
+          "KeyManagement": {}
+        }
+      }
+    }
+  },
+  "Links": [
+    {
+      "From": "$Front",
+      "To": "$Auth3",
+      "Link": {
+        "AuthCenterRemote": true,
+        "Address": "tcp:auth3.sample.example.com:37300",
+        "KeyManagement": {
+          "AutoTrustKey": "Never"
+        }
+      }
+    },
+    {
+      "From": "$Admin",
+      "To": "$Auth3",
+      "Link": {
+        "AuthCenterRemote": true,
+        "Address": "tcp:auth3.sample.example.com:37300",
+        "KeyManagement": {
+          "AutoTrustKey": "Never"
+        }
+      }
+    },
+    {
+      "From": "$Worker-{Name}",
+      "To": "$Auth3",
+      "Link": {
+        "Address": "tcp:auth3.sample.example.com:37300",
+        "KeyManagement": {
+          "AutoTrustKey": "Never"
+        }
+      }
+    },
+    {
+      "From": "$Worker2",
+      "To": "$Auth3",
+      "Link": {
+        "Address": "tcp:auth3.sample.example.com:37300"
+      }
+    },
+    {
+      "From": "$Auth3",
+      "To": "$Front",
+      "Link": {
+        "AuthCenterRemote": true,
+        "KeyManagement": {
+          "AutoTrustKey": "Never"
+        }
+      }
+    },
+    {
+      "From": "$Auth3",
+      "To": "$Admin",
+      "Link": {
+        "AuthCenterRemote": true,
+        "KeyManagement": {
+          "AutoTrustKey": "Never"
+        }
+      }
+    },
+    {
+      "From": "$Auth3",
+      "To": "$Worker-{Name}",
+      "Link": {
+        "KeyManagement": {
+          "AutoTrustKey": "Never"
+        }
+      }
+    },
+    {
+      "From": "$Auth3",
+      "To": "$Worker2",
+      "Link": {
+        "KeyManagement": {
+          "AutoTrustKey": "Never"
+        }
+      }
+    }
+  ],
+  "Environment": "#Production"
+}
