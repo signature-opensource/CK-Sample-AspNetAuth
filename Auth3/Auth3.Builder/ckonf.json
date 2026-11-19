@@ -10,6 +10,9 @@
   },
   "App": {
     "FullName": "Sample/Auth3/$Auth3/#Dev",
+    "CrisExecutionHost": {
+      "ParallelRunnerCount": 2
+    },
     "Defaults": {
       "Transport": {
         "ListeningAddress": [
