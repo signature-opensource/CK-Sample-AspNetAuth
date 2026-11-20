@@ -22,6 +22,14 @@
       }
     }
   },
+  "Deployment": {
+    "Builders": [
+      "Front/Auth3.Front.Builder",
+      "Admin/Auth3.Admin.Builder",
+      "Worker/Auth3.Worker.Builder",
+      "Worker2/Auth3.Worker2.Builder"
+    ]
+  },
   "Builders": {
     "Worker/Auth3.Worker.Builder": {
       "App": {

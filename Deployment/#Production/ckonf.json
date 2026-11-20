@@ -4,6 +4,11 @@
   // environment is the name of its folder: the full name of each party is "Sample/Auth3/$<App>/#Production".
   // It writes the values per deployment (the "$PER_DEPLOYMENT" of the central file, the addresses and the URLs): the build
   // refuses to inherit them. Its merged configuration is ckonf.merged.json, next to it (generated: do not edit).
+  // Its assets are built by Deployment/GenerateAssets.cs (CK.AppDeployment): one published host per deployed builder.
+  // Auth3 is not deployed: its build sets up its database (the SQL layer can't generate the scripts yet).
+  "Deployment": {
+    "Builders": [ "Front/Auth3.Front.Builder", "Admin/Auth3.Admin.Builder", "Worker/Auth3.Worker.Builder", "Worker2/Auth3.Worker2.Builder" ]
+  },
   "Builders": {
     "Auth3/Auth3.Auth3.Builder": {
       // The database of the deployment: a secret (its value is the configuration key "Secrets:Auth3:Database" of the host).
