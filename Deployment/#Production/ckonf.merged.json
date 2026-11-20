@@ -28,7 +28,18 @@
       "Admin/Auth3.Admin.Builder",
       "Worker/Auth3.Worker.Builder",
       "Worker2/Auth3.Worker2.Builder"
-    ]
+    ],
+    "Publish": {
+      "RuntimeIdentifier": "linux-x64"
+    },
+    "Apps": {
+      "Auth3.Worker2": {
+        "Publish": {
+          "SelfContained": true,
+          "PublishSingleFile": true
+        }
+      }
+    }
   },
   "Builders": {
     "Auth3/Auth3.Auth3.Builder": {
