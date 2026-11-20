@@ -31,21 +31,6 @@
     ]
   },
   "Builders": {
-    "Worker/Auth3.Worker.Builder": {
-      "App": {
-        "InstanceCount": 2,
-        "MaxInstanceCount": 4,
-        "CK-Monitoring": {
-          "GrandOutput": {
-            "Handlers": {
-              "TextFile": {
-                "Path": "Text/{Name}"
-              }
-            }
-          }
-        }
-      }
-    },
     "Auth3/Auth3.Auth3.Builder": {
       "Aspects": {
         "SqlServer": {
@@ -150,6 +135,21 @@
             "Urls": "http://*:5302"
           }
         }
+      }
+    },
+    "Worker/Auth3.Worker.Builder": {
+      "App": {
+        "CK-Monitoring": {
+          "GrandOutput": {
+            "Handlers": {
+              "TextFile": {
+                "Path": "Text/{Name}"
+              }
+            }
+          }
+        },
+        "InstanceCount": 3,
+        "MaxInstanceCount": 6
       }
     },
     "Worker2/Auth3.Worker2.Builder": {
