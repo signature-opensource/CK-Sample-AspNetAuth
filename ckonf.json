@@ -3,11 +3,15 @@
   // generated from its entry below when the builder runs (then the appsettings.json of its host, from its App, without the
   // compile time keys; the keys of its party go in the "CK-AppIdentity" section): edit this file, not the projections.
 
-  // A development configuration: the full name of each party is "Sample/Auth3/$<App>/#Dev" (the environment is "#Dev"
+  // A development configuration: the full name of each party is "Sample/Auth3/$<Party>/#Dev" (the environment is "#Dev"
   // by default), whatever the run mode of the host. The other deployments are overlays of it, in the Deployment folder
   // (Deployment/#Production): the values marked "$PER_DEPLOYMENT" below, and the addresses and URLs (declared by their
   // packages), must be written by each deployment itself.
   "Domain": "Sample/Auth3",
+  // The name of an App (and of its projects) is the identity of its party, its domain then its party name ('/' mapped to
+  // '.'), without this prefix: "Auth3.Front" is the party "$Front" of "Sample/Auth3" (Auth3.Front.App, Auth3.Front.Builder,
+  // Auth3.Front.Host).
+  "GlobalDomainPrefix": "Sample",
 
   // The defaults of every App (an App's own value wins).
   "Defaults": {
@@ -20,11 +24,11 @@
     }
   },
 
-  // The builders, keyed by the path of their folder. Each one builds one App, named after it ("Auth3/Auth3.Builder"
-  // builds the App "Auth3": the Auth3.App and Auth3.Host projects, the party "$Auth3").
+  // The builders, keyed by the path of their folder. Each one builds one App, named after it ("Auth3/Auth3.Auth3.Builder"
+  // builds the App "Auth3.Auth3": the Auth3.Auth3.App and Auth3.Auth3.Host projects, the party "$Auth3").
   "Builders": {
 
-    "Auth3/Auth3.Builder": {
+    "Auth3/Auth3.Auth3.Builder": {
       // The Builder aspects: the database of the engine run. Its connection string is a run time setting of the host
       // ("SqlServer:DefaultDatabaseConnectionString", read at start); the "$LOCK" restricts it to the Compile level: it
       // is burnt in the generated code instead of being projected in the host's appsettings.json (a value configured
@@ -106,7 +110,7 @@
       }
     },
 
-    "Front/Front.Builder": {
+    "Front/Auth3.Front.Builder": {
       // This application is a remote of an AuthCenter (CK.AppIdentity.AuthCenter.Remote), and a web server: its
       // "HttpEndpoint" feature (CK.AppIdentity.HttpEndpoint) starts the web application of its endpoint.
       "App": {
@@ -126,7 +130,7 @@
             "MiniApp": {
               "Types": [
                 "CK.Ng.Cris.AspNet.CrisAspNetPackage, CK.Ng.Cris.AspNet",
-                "CK.Sample.Front.IFrontInfoQCommand, Front.App",
+                "CK.Sample.Front.IFrontInfoQCommand, Auth3.Front.App",
                 "CK.TS.Angular.NgAppClientFeature, CK.TS.Angular",
                 "CK.TypeScript.HostingClientFeature, CK.TS.AspNet.Clients"
               ],
@@ -138,20 +142,20 @@
       }
     },
 
-    "Admin/Admin.Builder": {
+    "Admin/Auth3.Admin.Builder": {
       // This application is a remote of an AuthCenter (CK.AppIdentity.AuthCenter.Remote), and a web server: its
       // "HttpEndpoint" feature (CK.AppIdentity.HttpEndpoint) starts the web application of its endpoint.
       "App": {
         "Local": {
           // Its endpoint: the SPA and its "/.cris" endpoints share this origin (no CORS).
           "HttpEndpoint": { "Urls": "http://localhost:5302" },
-          // Its client application (Admin.Host/Clients/App), served at "/" (the Front's client applications use 4200 and 4201).
+          // Its client application (Auth3.Admin.Host/Clients/App), served at "/" (the Front's client applications use 4200 and 4201).
           "PartyClient": { "App": { "NgApp": true, "Hosting": { "RequestPath": "/", "DevServerPort": 4300 } } }
         }
       }
     },
 
-    "Worker/Worker.Builder": {
+    "Worker/Auth3.Worker.Builder": {
       // An Opened fleet of workers: one build, one process per instance. Two are configured ("$Worker-1" and "$Worker-2",
       // started with "--Instance=1" or "--Instance=2"; #Dev/Start.ps1 starts both), two more may exist ("$Worker-3" and
       // "$Worker-4", started by hand: "dotnet run -- --Instance=3"): Auth3 accepts them as candidates, an operator
@@ -163,7 +167,7 @@
       }
     },
 
-    "Worker2/Worker2.Builder": {
+    "Worker2/Auth3.Worker2.Builder": {
       "App": {
         // The full name of the AuthCenter and its anchor are the ones of a deployment.
         "$PER_DEPLOYMENT": [ "Local:AuthCenterRemote:Party", "Local:KeyManagement:TrustAnchors" ],

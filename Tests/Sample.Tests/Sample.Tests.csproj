@@ -13,10 +13,10 @@
   </ItemGroup>
   <ItemGroup>
     <!-- The four hosts of the sample, run in this process. -->
-    <ProjectReference Include="..\..\Auth3\Auth3.Host\Auth3.Host.csproj" />
-    <ProjectReference Include="..\..\Front\Front.Host\Front.Host.csproj" />
-    <ProjectReference Include="..\..\Admin\Admin.Host\Admin.Host.csproj" />
-    <ProjectReference Include="..\..\Worker\Worker.Host\Worker.Host.csproj" />
-    <ProjectReference Include="..\..\Worker2\Worker2.Host\Worker2.Host.csproj" />
+    <ProjectReference Include="..\..\Auth3\Auth3.Auth3.Host\Auth3.Auth3.Host.csproj" />
+    <ProjectReference Include="..\..\Front\Auth3.Front.Host\Auth3.Front.Host.csproj" />
+    <ProjectReference Include="..\..\Admin\Auth3.Admin.Host\Auth3.Admin.Host.csproj" />
+    <ProjectReference Include="..\..\Worker\Auth3.Worker.Host\Auth3.Worker.Host.csproj" />
+    <ProjectReference Include="..\..\Worker2\Auth3.Worker2.Host\Auth3.Worker2.Host.csproj" />
   </ItemGroup>
 </Project>

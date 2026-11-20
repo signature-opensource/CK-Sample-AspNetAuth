@@ -8,32 +8,32 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/Admin/">
-    <Project Path="Admin/Admin.App/Admin.App.csproj" />
-    <Project Path="Admin/Admin.Builder/Admin.Builder.csproj" />
-    <Project Path="Admin/Admin.Host/Admin.Host.csproj" />
+    <Project Path="Admin/Auth3.Admin.App/Auth3.Admin.App.csproj" />
+    <Project Path="Admin/Auth3.Admin.Builder/Auth3.Admin.Builder.csproj" />
+    <Project Path="Admin/Auth3.Admin.Host/Auth3.Admin.Host.csproj" />
   </Folder>
   <Folder Name="/Auth3/">
-    <Project Path="Auth3/Auth3.App/Auth3.App.csproj" />
-    <Project Path="Auth3/Auth3.Builder/Auth3.Builder.csproj" />
-    <Project Path="Auth3/Auth3.Host/Auth3.Host.csproj" />
+    <Project Path="Auth3/Auth3.Auth3.App/Auth3.Auth3.App.csproj" />
+    <Project Path="Auth3/Auth3.Auth3.Builder/Auth3.Auth3.Builder.csproj" />
+    <Project Path="Auth3/Auth3.Auth3.Host/Auth3.Auth3.Host.csproj" />
   </Folder>
   <Folder Name="/Front/">
-    <Project Path="Front/Front.App/Front.App.csproj" />
+    <Project Path="Front/Auth3.Front.App/Auth3.Front.App.csproj" />
     <Project Path="Shared/Sample.Shared/Sample.Shared.csproj" />
-    <Project Path="Front/Front.Builder/Front.Builder.csproj" />
-    <Project Path="Front/Front.Host/Front.Host.csproj" />
+    <Project Path="Front/Auth3.Front.Builder/Auth3.Front.Builder.csproj" />
+    <Project Path="Front/Auth3.Front.Host/Auth3.Front.Host.csproj" />
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/Sample.Tests/Sample.Tests.csproj" />
   </Folder>
   <Folder Name="/Worker/">
-    <Project Path="Worker/Worker.App/Worker.App.csproj" />
-    <Project Path="Worker/Worker.Builder/Worker.Builder.csproj" />
-    <Project Path="Worker/Worker.Host/Worker.Host.csproj" />
+    <Project Path="Worker/Auth3.Worker.App/Auth3.Worker.App.csproj" />
+    <Project Path="Worker/Auth3.Worker.Builder/Auth3.Worker.Builder.csproj" />
+    <Project Path="Worker/Auth3.Worker.Host/Auth3.Worker.Host.csproj" />
   </Folder>
   <Folder Name="/Worker2/">
-    <Project Path="Worker2/Worker2.App/Worker2.App.csproj" />
-    <Project Path="Worker2/Worker2.Builder/Worker2.Builder.csproj" />
-    <Project Path="Worker2/Worker2.Host/Worker2.Host.csproj" />
+    <Project Path="Worker2/Auth3.Worker2.App/Auth3.Worker2.App.csproj" />
+    <Project Path="Worker2/Auth3.Worker2.Builder/Auth3.Worker2.Builder.csproj" />
+    <Project Path="Worker2/Auth3.Worker2.Host/Auth3.Worker2.Host.csproj" />
   </Folder>
 </Solution>

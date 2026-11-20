@@ -73,14 +73,14 @@ public class SampleTests
             ["CK-AppIdentity:Parties:0:Address"] = Auth3Address,
             // The UI smoke test runs on the built client applications (never their dev server).
             ["Clients:UseDist"] = "true"
-        } ), TestHelper.SolutionFolder.Combine( "Front/Front.Host" ), Assembly.Load( "Front.Host" ) );
+        } ), TestHelper.SolutionFolder.Combine( "Front/Auth3.Front.Host" ), Assembly.Load( "Auth3.Front.Host" ) );
         await _front.StartAsync();
         _admin = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["CK-AppIdentity:Local:HttpEndpoint:Urls"] = AdminUrl,
             ["CK-AppIdentity:Parties:0:Address"] = Auth3Address,
             ["Clients:UseDist"] = "true"
-        } ), TestHelper.SolutionFolder.Combine( "Admin/Admin.Host" ), Assembly.Load( "Admin.Host" ) );
+        } ), TestHelper.SolutionFolder.Combine( "Admin/Auth3.Admin.Host" ), Assembly.Load( "Auth3.Admin.Host" ) );
         await _admin.StartAsync();
         await WaitForTheFrontsAsync();
     }
@@ -113,7 +113,7 @@ public class SampleTests
             // (the one of their endpoint). The RP ID "localhost" is the configured one.
             // A short Critical level for the Basic logins: the UI smoke test sees its end (--critical-wait).
             ["CK-AppIdentity:Local:AuthCenter:CriticalLifetimes:Basic"] = "00:00:15"
-        } ), TestHelper.SolutionFolder.Combine( "Auth3/Auth3.Host" ), Assembly.Load( "Auth3.Host" ) );
+        } ), TestHelper.SolutionFolder.Combine( "Auth3/Auth3.Auth3.Host" ), Assembly.Load( "Auth3.Auth3.Host" ) );
     }
 
     [OneTimeTearDown]
@@ -205,12 +205,12 @@ public class SampleTests
         // The central ckonf.json locks it to the Compile level ("$LOCK" of the SqlServer aspect): it is not in the host's
         // appsettings.json, it is in the generated code (the running Auth3 uses its database: the other tests).
         var connectionString = "SqlServer:DefaultDatabaseConnectionString";
-        File.ReadAllText( TestHelper.SolutionFolder.Combine( "Auth3/Auth3.Host/appsettings.json" ) ).ShouldNotContain( "DefaultDatabaseConnectionString" );
+        File.ReadAllText( TestHelper.SolutionFolder.Combine( "Auth3/Auth3.Auth3.Host/appsettings.json" ) ).ShouldNotContain( "DefaultDatabaseConnectionString" );
         // A configured value is ignored (with a warning): the build wins.
         using var host = CKomposableAppHost.Build( [], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             [connectionString] = "Server=nowhere;Database=Other"
-        } ), TestHelper.SolutionFolder.Combine( "Auth3/Auth3.Host" ), Assembly.Load( "Auth3.Host" ) );
+        } ), TestHelper.SolutionFolder.Combine( "Auth3/Auth3.Auth3.Host" ), Assembly.Load( "Auth3.Auth3.Host" ) );
         host.Services.GetRequiredService<IConfiguration>()[connectionString].ShouldBe( "Server=.;Database=CKSampleAuth3;Integrated Security=True;TrustServerCertificate=true" );
     }
 
@@ -482,7 +482,7 @@ public class SampleTests
     }
 
     /// <summary>
-    /// The UI smoke test (Front.Host/Clients/App/ui-smoke/ui-smoke.mjs) on the built Angular application, in a headless
+    /// The UI smoke test (Auth3.Front.Host/Clients/App/ui-smoke/ui-smoke.mjs) on the built Angular application, in a headless
     /// browser: the public page, the login page (with the "Test" OpenID Connect button), a wrong password, the Weak login
     /// (its hello is refused), the Basic login (the private page in the back-office layout), the "Sign-in methods" tab of
     /// the profile (a named passkey registered and renamed), the Architecture page (a command dispatched to the
@@ -494,14 +494,14 @@ public class SampleTests
     [CancelAfter( 180_000 )]
     public async Task the_Angular_application_passes_the_UI_smoke_test_Async( CancellationToken cancellation )
     {
-        var app = TestHelper.SolutionFolder.Combine( "Front/Front.Host/Clients/App" );
+        var app = TestHelper.SolutionFolder.Combine( "Front/Auth3.Front.Host/Clients/App" );
         var index = app.Combine( "dist/App/browser/index.html" );
         if( !File.Exists( index ) )
         {
-            Assert.Ignore( "The Angular application is not built (yarn build in Front/Front.Host/Clients/App)." );
+            Assert.Ignore( "The Angular application is not built (yarn build in Front/Auth3.Front.Host/Clients/App)." );
         }
         // The test serves the dist as it is: it may be older than the ck-gen (rewritten at each run, its dates can't tell).
-        var built = $"The Angular application was built at {File.GetLastWriteTime( index ):yyyy-MM-dd HH:mm:ss}: an older build than the last front change fails here (yarn build in Front/Front.Host/Clients/App).";
+        var built = $"The Angular application was built at {File.GetLastWriteTime( index ):yyyy-MM-dd HH:mm:ss}: an older build than the last front change fails here (yarn build in Front/Auth3.Front.Host/Clients/App).";
         var screenshots = TestHelper.TestProjectFolder.AppendPart( "UISmoke" );
         var start = new ProcessStartInfo( "node" )
         {
@@ -666,7 +666,7 @@ public class SampleTests
         using var worker = CKomposableAppHost.Build( ["--Instance=2"], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["CK-AppIdentity:Parties:0:Address"] = Auth3Address
-        } ), TestHelper.SolutionFolder.Combine( "Worker/Worker.Host" ), Assembly.Load( "Worker.Host" ) );
+        } ), TestHelper.SolutionFolder.Combine( "Worker/Auth3.Worker.Host" ), Assembly.Load( "Auth3.Worker.Host" ) );
         await worker.StartAsync();
         try
         {
@@ -739,7 +739,7 @@ public class SampleTests
         using var worker = CKomposableAppHost.Build( ["--Instance=3"], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["CK-AppIdentity:Parties:0:Address"] = Auth3Address
-        } ), TestHelper.SolutionFolder.Combine( "Worker/Worker.Host" ), Assembly.Load( "Worker.Host" ) );
+        } ), TestHelper.SolutionFolder.Combine( "Worker/Auth3.Worker.Host" ), Assembly.Load( "Auth3.Worker.Host" ) );
         await worker.StartAsync();
         try
         {
@@ -861,7 +861,7 @@ public class SampleTests
         {
             ["CK-AppIdentity:Parties:1:Address"] = Auth3Address,
             [$"CK-AppIdentity:Local:KeyManagement:TrustAnchors:{auth3.FullName}"] = auth3.GetRequiredFeature<ILocalKeys>().Checkpoint.ToString()
-        } ), TestHelper.SolutionFolder.Combine( "Worker2/Worker2.Host" ), Assembly.Load( "Worker2.Host" ) );
+        } ), TestHelper.SolutionFolder.Combine( "Worker2/Auth3.Worker2.Host" ), Assembly.Load( "Auth3.Worker2.Host" ) );
     }
 
     // Starts Worker2 and, when Auth3 doesn't trust it yet, approves it on the approval page (an operator signed in at the

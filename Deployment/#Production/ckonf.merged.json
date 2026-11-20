@@ -22,7 +22,7 @@
     }
   },
   "Builders": {
-    "Worker/Worker.Builder": {
+    "Worker/Auth3.Worker.Builder": {
       "App": {
         "InstanceCount": 2,
         "MaxInstanceCount": 4,
@@ -37,7 +37,7 @@
         }
       }
     },
-    "Auth3/Auth3.Builder": {
+    "Auth3/Auth3.Auth3.Builder": {
       "Aspects": {
         "SqlServer": {
           "$LOCK": {
@@ -95,7 +95,7 @@
         }
       }
     },
-    "Front/Front.Builder": {
+    "Front/Auth3.Front.Builder": {
       "App": {
         "Local": {
           "PartyClient": {
@@ -109,7 +109,7 @@
             "MiniApp": {
               "Types": [
                 "CK.Ng.Cris.AspNet.CrisAspNetPackage, CK.Ng.Cris.AspNet",
-                "CK.Sample.Front.IFrontInfoQCommand, Front.App",
+                "CK.Sample.Front.IFrontInfoQCommand, Auth3.Front.App",
                 "CK.TS.Angular.NgAppClientFeature, CK.TS.Angular",
                 "CK.TypeScript.HostingClientFeature, CK.TS.AspNet.Clients"
               ],
@@ -125,7 +125,7 @@
         }
       }
     },
-    "Admin/Admin.Builder": {
+    "Admin/Auth3.Admin.Builder": {
       "App": {
         "Local": {
           "PartyClient": {
@@ -143,7 +143,7 @@
         }
       }
     },
-    "Worker2/Worker2.Builder": {
+    "Worker2/Auth3.Worker2.Builder": {
       "App": {
         "Parties": [
           {

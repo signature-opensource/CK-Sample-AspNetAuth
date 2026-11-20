@@ -58,7 +58,7 @@ party of an invitation, CK.DB.AppIdentity).
 | `Weak` | CK.DB.Actor.WeakActor | `Operator`: passwordless, at the Unsafe level (the application's commands that require Normal refuse it). |
 | `Oidc.<Suffix>` | CK.DB.User.UserOidc | `Oidc.Duende` out of the box: "Continue with Duende", then `bob` / `bob` at the Duende demo server (its first login creates the user `Bob-Smith`). Other schemes: see below. An unknown identity creates its user only for a scheme with `AllowAccountCreation` (`SampleAccountCreation`): otherwise, only an identity bound to a user can log in. Critical level only when the provider authenticated the user recently (the `auth_time` of its identity token): a login on an older provider session is Normal. |
 
-The demo data is created at the start of Auth3 when missing (`DemoData`, a real object of `Auth3.App`: its
+The demo data is created at the start of Auth3 when missing (`DemoData`, a real object of `Auth3.Auth3.App`: its
 `OnHostStartAsync`): Albert (with his password), the
 weak actor Operator, and the workspace "Demo" that Albert administers (the Admin's user management).
 
@@ -81,7 +81,7 @@ It is made of standard packages: the sample's own code is minimal.
 | `/profile` (Normal level at least, the "Profile" item of the user info box) | The profile: the user name, and the "Sign-in methods" tab: the methods of the user and their last use, the password (change, add, remove), the passkeys (list, rename, delete, add) and the linked accounts (what the providers shared, unlink, link another provider). | CK.Ng.UserProfile (+ `.UserPassword`, `.UserPasskey`, `.UserOidc`) |
 | `/auth/logout` | The sign out. | CK.Ng.Cris.AspNet.Authentication |
 
-The sample's code ([Front.App](Front/Front.App)): the `IHelloCommand` (Normal level) and its handler,
+The sample's code ([Auth3.Front.App](Front/Auth3.Front.App)): the `IHelloCommand` (Normal level) and its handler,
 `HomeComponent` (the hello card, routed in the private page), `PublicHomeComponent`
 (routed in the public page), `ArchitectureComponent` and its commands (`Architecture/`), and `Res/private-page.t`, a
 transformer that puts the private page in the back-office layout (and adds the Architecture item to its side bar).
@@ -90,7 +90,7 @@ The commands of the profile (`IGetUserProfileQCommand`, `IUpdateUserCommand`, th
 `IGetPasskeysQCommand`, `IAddPasswordCommand`, `IUnlinkOidcIdentityCommand`...) are handled by the AuthCenter: the
 browser posts them to the Front's `/.cris`, that dispatches them with the user's proof (the token and its binding
 secret), and Auth3 verifies this proof. The profile's query is the application's
-(`Auth3.App/User/UserQueries`: the groups and the grant levels, the banishment, the temporary password).
+(`Auth3.Auth3.App/User/UserQueries`: the groups and the grant levels, the banishment, the temporary password).
 
 ## The Admin application
 
@@ -98,7 +98,7 @@ The back-office of CK-Ng-Admin: the login page (the Basic form), the private pag
 bar proposes the user management to an administrator of the current workspace, and the user management
 (CK.Ng.Admin.UserManagement, `.UserBanned`, `.UserInvitation`). Its commands are handled by Auth3
 (CK.UserManagement and its packages, and the application's listing of the workspace users:
-`Auth3.App/WorkspaceUsers`). Log in as `Albert` / `pass`: he administers the "Demo" workspace.
+`Auth3.Auth3.App/WorkspaceUsers`). Log in as `Albert` / `pass`: he administers the "Demo" workspace.
 
 The mails (an invitation, a lost password) are written in Auth3's pickup directory (`Mails`, nothing is sent)
 and their links open the client application of the party through which the request was made: the Admin, where the
@@ -128,7 +128,7 @@ with the code that the waiting party shows (see
   operator approves it. Each Worker trusts Auth3 at its first contact (`"Once"`): Auth3 is where it is
   configured to go.
 - **More Workers may come.** The fleet is Opened (`"MaxInstanceCount": 4`): `$Worker-3` and `$Worker-4` are not
-  configured, they are started by hand (`dotnet run -- --Instance=3` in `Worker/Worker.Host`). Auth3 accepts such a
+  configured, they are started by hand (`dotnet run -- --Instance=3` in `Worker/Auth3.Worker.Host`). Auth3 accepts such a
   caller as a candidate, an operator approves it on the same page ("A new instance of $Worker-{Name}"). Its approved
   identity is kept by Auth3 (pinned in the store): it is still a remote of Auth3 after a restart. The approval page lists
   the approved instances, "Remove" forgets one (it can be approved again).
@@ -197,11 +197,11 @@ their manifests (`#Dev/Parties`) and the launcher **`#Dev/Start.ps1`**. It runs 
 `-SkipBuild` starts what is already built, `-NoBrowser` does not open the browser. By hand:
 
 1. Build the solution.
-2. Out of Development, build the Angular applications: `yarn build` in `Front/Front.Host/Clients/App`,
-   `Front/Front.Host/Clients/MiniApp` and `Admin/Admin.Host/Clients/App` (in Development, the dev servers compile them).
-3. Start `Auth3.Host`, then `Front.Host` and `Admin.Host`, and open `http://localhost:5300`: log in as `Albert` / `pass`
+2. Out of Development, build the Angular applications: `yarn build` in `Front/Auth3.Front.Host/Clients/App`,
+   `Front/Auth3.Front.Host/Clients/MiniApp` and `Admin/Auth3.Admin.Host/Clients/App` (in Development, the dev servers compile them).
+3. Start `Auth3.Auth3.Host`, then `Auth3.Front.Host` and `Auth3.Admin.Host`, and open `http://localhost:5300`: log in as `Albert` / `pass`
    (Basic), as `Operator` (Weak), or with "Continue with Duende" then `bob` / `bob` (OpenID Connect, logs in as `Bob-Smith`,
-   created at the first login). The Admin is `http://localhost:5302`. `Worker.Host` and `Worker2.Host` log their enlistment URL
+   created at the first login). The Admin is `http://localhost:5302`. `Auth3.Worker.Host` and `Auth3.Worker2.Host` log their enlistment URL
    and their approval code (see [the enlistment](#the-enlistment)).
 
 ### The client applications
@@ -245,11 +245,11 @@ scopes `openid profile email`. "Continue with Duende" then `bob` / `bob` creates
 logs in as this user afterwards. A database created before this change still binds Albert to bob (the former demo
 binding): remove its `CK.tUserOidc` row (`SchemeSuffix` "Duende", `Sub` "2") to see the creation. It needs the Internet and depends on a server that we do not control:
 no test uses it (the tests use a fake provider).
-The logo of its button is the sample's (`Front/Front.App/Res/ts-assets`, mapped to `login-providers/duende.png`): the
+The logo of its button is the sample's (`Front/Auth3.Front.App/Res/ts-assets`, mapped to `login-providers/duende.png`): the
 login page looks for `login-providers/<suffix>.png`, and an application adds the logos of its own schemes this way.
 
 A real provider has a real secret: its scheme is configured next to Duende's in the `ckonf.json`, but its secret is a
-handle, the name of a secret, never its value (the handle is projected in the `appsettings.json` of Auth3.Host, the host
+handle, the name of a secret, never its value (the handle is projected in the `appsettings.json` of Auth3.Auth3.Host, the host
 resolves it when it starts: see CK.AppHost). For Google:
 
 ```jsonc
@@ -268,8 +268,8 @@ the parties; a missing secret fails the start of Auth3):
 { "Google": { "ClientSecret": "..." } }
 ```
 
-The `Demo` keys bind Albert to your account: they go in the user-secrets of Auth3.Host (`dotnet user-secrets` in
-`Auth3/Auth3.Host`):
+The `Demo` keys bind Albert to your account: they go in the user-secrets of Auth3.Auth3.Host (`dotnet user-secrets` in
+`Auth3/Auth3.Auth3.Host`):
 
 ```json
 {
@@ -286,7 +286,7 @@ client secret (it redeems the code); the Front forwards the start of the login a
 
 The demo runs without a proxy: the browser talks to the Front and the Admin directly. In a deployment, a reverse proxy
 usually terminates TLS in front of them: the browser is on `https://front.example.com`, the party receives `http`
-requests from the proxy. Two keys of the party's configuration handle it, for example in the `"Front/Front.Builder"` entry of the `ckonf.json` of the solution:
+requests from the proxy. Two keys of the party's configuration handle it, for example in the `"Front/Auth3.Front.Builder"` entry of the `ckonf.json` of the solution:
 
 ```jsonc
 "Local": {
@@ -320,7 +320,7 @@ AuthCenter's builder.
 
 ### The UI smoke test
 
-[Front/Front.Host/Clients/App/ui-smoke/ui-smoke.mjs](Front/Front.Host/Clients/App/ui-smoke/ui-smoke.mjs) drives the
+[Front/Auth3.Front.Host/Clients/App/ui-smoke/ui-smoke.mjs](Front/Auth3.Front.Host/Clients/App/ui-smoke/ui-smoke.mjs) drives the
 built Angular application in a headless Edge or Chrome (DevTools protocol, no dependency): the public page, the login
 page, a wrong password, the Weak login (its hello is refused), the Basic login (the private page in the back-office
 layout), the "Sign-in methods" tab of the profile (the password, the linked account, the registration of a named passkey
@@ -329,7 +329,7 @@ user info box, a reload, the end of the Critical level (with `--critical-wait <s
 registration button, in a popup), the sign out, the passkey login and the deletion of the passkey. It takes a screenshot at each step (and on
 failure).
 
-- `yarn smoke` (in `Front/Front.Host/Clients/App`) runs it against the running hosts (`--url`, default
+- `yarn smoke` (in `Front/Auth3.Front.Host/Clients/App`) runs it against the running hosts (`--url`, default
   `http://localhost:5300`; `--oidc <Suffix>` also checks the button of an OpenID Connect scheme; the browser is found at
   its usual places, or `--browser` / `CK_BROWSER`).
 - `the_Angular_application_passes_the_UI_smoke_test_Async` (Sample.Tests) runs it against the hosts of the tests. It is

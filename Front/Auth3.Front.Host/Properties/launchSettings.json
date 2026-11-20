@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Auth3.Front.Host": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

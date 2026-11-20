@@ -5,7 +5,7 @@
   // It writes the values per deployment (the "$PER_DEPLOYMENT" of the central file, the addresses and the URLs): the build
   // refuses to inherit them. Its merged configuration is ckonf.merged.json, next to it (generated: do not edit).
   "Builders": {
-    "Auth3/Auth3.Builder": {
+    "Auth3/Auth3.Auth3.Builder": {
       // The database of the deployment: a secret (its value is the configuration key "Secrets:Auth3:Database" of the host).
       "Aspects": { "SqlServer": { "DefaultDatabaseConnectionString": { "$SECRET": "Auth3:Database" } } },
       "App": {
@@ -31,9 +31,9 @@
         "Demo": null
       }
     },
-    "Front/Front.Builder": { "App": { "Local": { "HttpEndpoint": { "Urls": "http://*:5300" } } } },
-    "Admin/Admin.Builder": { "App": { "Local": { "HttpEndpoint": { "Urls": "http://*:5302" } } } },
-    "Worker2/Worker2.Builder": {
+    "Front/Auth3.Front.Builder": { "App": { "Local": { "HttpEndpoint": { "Urls": "http://*:5300" } } } },
+    "Admin/Auth3.Admin.Builder": { "App": { "Local": { "HttpEndpoint": { "Urls": "http://*:5302" } } } },
+    "Worker2/Auth3.Worker2.Builder": {
       "App": {
         "Local": {
           "AuthCenterRemote": { "Party": "Sample/Auth3/$Auth3/#Production" },

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Auth3.Worker2.Host": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
