@@ -38,6 +38,8 @@
     },
     "Front/Auth3.Front.Builder": { "App": { "Local": { "HttpEndpoint": { "Urls": "http://*:5300" } } } },
     "Admin/Auth3.Admin.Builder": { "App": { "Local": { "HttpEndpoint": { "Urls": "http://*:5302" } } } },
+    // The size of the fleet of workers (a value per deployment): 3 configured instances, 3 more dynamic ones at most.
+    "Worker/Auth3.Worker.Builder": { "App": { "InstanceCount": 3, "MaxInstanceCount": 6 } },
     "Worker2/Auth3.Worker2.Builder": {
       "App": {
         "Local": {
