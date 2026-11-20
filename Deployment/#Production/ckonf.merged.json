@@ -160,7 +160,14 @@
           }
         },
         "InstanceCount": 3,
-        "MaxInstanceCount": 6
+        "MaxInstanceCount": 6,
+        "Local": {
+          "KeyManagement": {
+            "EnlistTicket": {
+              "$SECRET?": "Enlist:Worker-{Name}"
+            }
+          }
+        }
       }
     },
     "Worker2/Auth3.Worker2.Builder": {
@@ -177,7 +184,11 @@
           "AuthCenterRemote": {
             "Party": "Sample/Auth3/$Auth3/#Production"
           },
-          "KeyManagement": {}
+          "KeyManagement": {
+            "EnlistTicket": {
+              "$SECRET?": "Enlist:Worker2"
+            }
+          }
         }
       }
     }
