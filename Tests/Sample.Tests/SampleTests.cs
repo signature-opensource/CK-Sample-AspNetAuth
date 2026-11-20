@@ -808,6 +808,71 @@ public class SampleTests
     }
 
     [Test]
+    public async Task an_expected_Worker_starts_with_its_ticket_and_is_trusted_without_a_code_Async()
+    {
+        var auth3 = _auth3.Services.GetRequiredService<ApplicationIdentityService>();
+        // "$Worker-4": the last dynamic instance of the Opened fleet ("MaxInstanceCount": 4), expected by the operator.
+        string worker4 = auth3.FullName.Path.Replace( "$Auth3", "$Worker-4" );
+
+        // The operator expects it on the approval page of the Admin: the ticket is opened there, registered on Auth3.
+        using var browser = new Browser( AdminUrl );
+        await browser.SessionAsync( """["CK.IO.Authentication.Basic.IBasicLoginCommand",{"userName":"Albert","password":"pass","rememberMe":false}]""" );
+        async Task<(string Id, string Ticket)> OpenAsync()
+        {
+            var t = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IOpenEnlistmentTicketCommand",{"actorId":{{browser.ActorId}},"partyFullName":"{{JsonEncodedText.Encode( worker4 )}}","lifetimeHours":1}]""" ) );
+            t.ValueKind.ShouldBe( JsonValueKind.Object, t.ToString() );
+            return (t.GetProperty( "id" ).GetString()!, t.GetProperty( "ticket" ).GetString()!);
+        }
+        async Task<List<JsonElement>> TicketsAsync()
+        {
+            var r = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IGetEnlistmentTicketsQCommand",{"actorId":{{browser.ActorId}}}]""" ) );
+            r.ValueKind.ShouldBe( JsonValueKind.Array, r.ToString() );
+            return r.EnumerateArray().Select( Value ).ToList();
+        }
+        // A ticket opened by mistake is revoked.
+        var mistake = await OpenAsync();
+        Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IRevokeEnlistmentTicketCommand",{"actorId":{{browser.ActorId}},"ticketId":"{{mistake.Id}}"}]""" ) )
+            .GetBoolean().ShouldBeTrue();
+        (await TicketsAsync()).ShouldNotContain( t => t.GetProperty( "id" ).GetString() == mistake.Id );
+
+        var (id, ticket) = await OpenAsync();
+        ticket.ShouldStartWith( "ckt1." );
+        var open = (await TicketsAsync()).Single( t => t.GetProperty( "id" ).GetString() == id );
+        open.GetProperty( "partyFullName" ).GetString().ShouldBe( worker4 );
+        (!open.TryGetProperty( "used", out var notUsed ) || notUsed.ValueKind == JsonValueKind.Null).ShouldBeTrue( "The ticket is open." );
+
+        // The Worker starts with its ticket: an optional secret (what the "#Production" deployment does with
+        // { "$SECRET?": "Enlist:Worker-{Name}" }), given by the operator at its first start.
+        using var worker = CKomposableAppHost.Build( ["--Instance=4"], ( monitor, b, map ) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
+        {
+            ["CK-AppIdentity:Parties:0:Address"] = Auth3Address,
+            ["CK-AppIdentity:Local:KeyManagement:EnlistTicket:$SECRET?"] = "Enlist:Worker-{Name}",
+            ["Secrets:Enlist:Worker-4"] = ticket
+        } ), TestHelper.SolutionFolder.Combine( "Worker/Auth3.Worker.Host" ), Assembly.Load( "Auth3.Worker.Host" ) );
+        await worker.StartAsync();
+        try
+        {
+            var workerParty = worker.Services.GetRequiredService<ApplicationIdentityService>();
+            workerParty.FullName.Path.ShouldBe( worker4 );
+            // Auth3 trusts its key at once: no approval code, no pending approval.
+            (await WaitForAsync( () => workerParty.Remotes.Single().GetRequiredFeature<TransportFeature>().ConnectionAvailability == ConnectionAvailability.Connected ? "connected" : null ))
+                .ShouldNotBeNull( "The expected Worker connects to Auth3 with its ticket." );
+            workerParty.GetRequiredFeature<TransportManagerFeature>().GetPeeringIssues().ShouldNotContain( i => i.ApprovalCode != null );
+            var used = (await TicketsAsync()).Single( t => t.GetProperty( "id" ).GetString() == id );
+            used.GetProperty( "used" ).ValueKind.ShouldBe( JsonValueKind.String, "The ticket is used." );
+            used.GetProperty( "usedByFingerprint" ).GetString().ShouldNotBeNullOrEmpty();
+
+            // It is an approved instance of the fleet: the operator removes it like the other ones.
+            var removed = Value( await browser.SendAsync( "/.cris", $$"""["CK.IO.AppIdentity.Enlistment.IRemovePartyInstanceCommand",{"actorId":{{browser.ActorId}},"partyFullName":"{{JsonEncodedText.Encode( worker4 )}}"}]""" ) );
+            removed.GetInt32().ShouldBe( 1, removed.ToString() );
+        }
+        finally
+        {
+            await worker.StopAsync();
+        }
+    }
+
+    [Test]
     public async Task Worker2_anchors_the_AuthCenter_and_receives_an_authenticated_enlistment_URL_Async()
     {
         var auth3 = _auth3.Services.GetRequiredService<ApplicationIdentityService>();
