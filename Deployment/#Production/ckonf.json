@@ -7,7 +7,10 @@
   // Its assets are built by Deployment/GenerateAssets.cs (CK.AppDeployment): one published host per deployed builder.
   // Auth3 is not deployed: its build sets up its database (the SQL layer can't generate the scripts yet).
   "Deployment": {
-    "Builders": [ "Front/Auth3.Front.Builder", "Admin/Auth3.Admin.Builder", "Worker/Auth3.Worker.Builder", "Worker2/Auth3.Worker2.Builder" ]
+    "Builders": [ "Front/Auth3.Front.Builder", "Admin/Auth3.Admin.Builder", "Worker/Auth3.Worker.Builder", "Worker2/Auth3.Worker2.Builder" ],
+    // The MSBuild properties of the publication of the hosts (applied as-is), then the ones of an App over them.
+    "Publish": { "RuntimeIdentifier": "linux-x64" },
+    "Apps": { "Auth3.Worker2": { "Publish": { "SelfContained": true, "PublishSingleFile": true } } }
   },
   "Builders": {
     "Auth3/Auth3.Auth3.Builder": {
