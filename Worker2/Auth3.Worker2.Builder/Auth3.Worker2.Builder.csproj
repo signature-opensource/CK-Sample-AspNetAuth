@@ -5,10 +5,10 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.149" />
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.150" />
     <PackageReference Include="CK.AppBuilder" Version="37.0.0-0.uc.0.ci.40" />
-    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.0.ci.181" />
-    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.0.ci.181" />
+    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.0.ci.182" />
+    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.0.ci.182" />
     <PackageReference Include="CK.Poco.Exchange.Engine" Version="37.0.0-0.uc.0.ci.40" />
     <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="37.0.0-0.uc.0.ci.40" />
     <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.0.ci.69" />

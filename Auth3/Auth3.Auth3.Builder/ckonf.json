@@ -36,11 +36,6 @@
         "Passkey": {
           "RpId": "localhost",
           "RpName": "CK Sample"
-        },
-        "RouteHosts": {
-          "Enlistment": [
-            "Sample/Auth3/$Admin/#Dev"
-          ]
         }
       },
       "MailSender": {

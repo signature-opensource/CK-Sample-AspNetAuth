@@ -80,11 +80,6 @@
             "Passkey": {
               "RpName": "CK Sample",
               "RpId": "sample.example.com"
-            },
-            "RouteHosts": {
-              "Enlistment": [
-                "Sample/Auth3/$Admin/#Production"
-              ]
             }
           },
           "MailSender": {
