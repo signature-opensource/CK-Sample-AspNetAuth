@@ -42,13 +42,24 @@
     "Front/Auth3.Front.Builder": { "App": { "Local": { "HttpEndpoint": { "Urls": "http://*:5300" } } } },
     "Admin/Auth3.Admin.Builder": { "App": { "Local": { "HttpEndpoint": { "Urls": "http://*:5302" } } } },
     // The size of the fleet of workers (a value per deployment): 3 configured instances, 3 more dynamic ones at most.
-    "Worker/Auth3.Worker.Builder": { "App": { "InstanceCount": 3, "MaxInstanceCount": 6 } },
+    // Each instance may start with its pre-authorized enlistment ticket (an optional secret, given at its first start
+    // only: "Secrets__Enlist__Worker-2"): Auth3 trusts its key at once, no approval code.
+    "Worker/Auth3.Worker.Builder": {
+      "App": {
+        "InstanceCount": 3,
+        "MaxInstanceCount": 6,
+        "Local": { "KeyManagement": { "EnlistTicket": { "$SECRET?": "Enlist:Worker-{Name}" } } }
+      }
+    },
     "Worker2/Auth3.Worker2.Builder": {
       "App": {
         "Local": {
           "AuthCenterRemote": { "Party": "Sample/Auth3/$Auth3/#Production" },
-          // The anchor of Auth3 comes with its first start (the ceremony of the anchors): none yet.
-          "KeyManagement": { "TrustAnchors": null }
+          // The anchor of Auth3 comes with the pre-authorized enlistment ticket of Worker2 (an optional secret, given at
+          // its first start only: "Secrets__Enlist__Worker2"): the ticket carries the checkpoint of Auth3, Auth3 trusts
+          // the key of Worker2 at once (no approval code). An operator opens it on the approval page ("Expect a party")
+          // or with "ckey ticket open Sample/Auth3/$Worker2/#Production" on Auth3.
+          "KeyManagement": { "TrustAnchors": null, "EnlistTicket": { "$SECRET?": "Enlist:Worker2" } }
         }
       }
     }
