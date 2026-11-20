@@ -1,6 +1,7 @@
 // Generated from ckonf.json, Deployment/#Production/ckonf.json (from the root of the solution): do not edit.
 {
   "Domain": "Sample/Auth3",
+  "GlobalDomainPrefix": "Sample",
   "Defaults": {
     "App": {
       "Logging": {

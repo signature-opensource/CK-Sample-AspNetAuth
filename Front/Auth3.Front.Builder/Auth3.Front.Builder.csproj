@@ -5,15 +5,15 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.133" />
-    <PackageReference Include="CK.AppBuilder" Version="37.0.0-0.uc.0.ci.27" />
-    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.0.ci.172" />
-    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.0.ci.172" />
-    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.0.ci.171" />
-    <PackageReference Include="CK.Poco.Exchange.Engine" Version="37.0.0-0.uc.0.ci.27" />
-    <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="37.0.0-0.uc.0.ci.27" />
-    <PackageReference Include="CK.TypeScript.Engine" Version="4.0.0-0.uc.0.ci.22" />
-    <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.0.ci.80" />
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.135" />
+    <PackageReference Include="CK.AppBuilder" Version="37.0.0-0.uc.0.ci.28" />
+    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.0.ci.173" />
+    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.0.ci.173" />
+    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.0.ci.172" />
+    <PackageReference Include="CK.Poco.Exchange.Engine" Version="37.0.0-0.uc.0.ci.28" />
+    <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="37.0.0-0.uc.0.ci.28" />
+    <PackageReference Include="CK.TypeScript.Engine" Version="4.0.0-0.uc.0.ci.23" />
+    <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.0.ci.81" />
     <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
     <ProjectReference Include="..\Auth3.Front.App\Auth3.Front.App.csproj" />
   </ItemGroup>
