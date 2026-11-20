@@ -42,9 +42,9 @@
         }
       },
       "App": {
-        // What a deployment can't inherit from the development: the demo data, the mail pickup directory, the passkeys'
-        // domain and the route hosts (development full names).
-        "$PER_DEPLOYMENT": [ "Demo", "Local:MailSender", "Local:AuthCenter:Passkey:RpId", "Local:AuthCenter:RouteHosts" ],
+        // What a deployment can't inherit from the development: the demo data, the mail pickup directory and the passkeys'
+        // domain.
+        "$PER_DEPLOYMENT": [ "Demo", "Local:MailSender", "Local:AuthCenter:Passkey:RpId" ],
         // A run property (CK.Cris.DynamicConfiguration): the initial count of the runners of the Cris commands executed
         // in the background; an operator changes it while Auth3 runs (IConfigurePropertyCommand), the change is kept in
         // the store of Auth3 (unless this value changes: the latest decision wins).
@@ -80,12 +80,9 @@
               "RpId": "localhost",
               "RpName": "CK Sample"
               // The accepted origins are the ones of the parties (their public URL, announced: the Front, the Admin).
-            },
-            // The hosts of the routes of the System, known at deployment: a route is accepted only toward an authorized host
-            // (any party can announce a route). The Admin hosts the approval page: its target is the one it announces.
-            "RouteHosts": {
-              "Enlistment": [ "Sample/Auth3/$Admin/#Dev" ]
             }
+            // The approval page of the System is the Admin (the "Enlistment" fact of its client application): Auth3 reads it
+            // from the description of the Admin and states its URL to the System. Nothing to configure.
           },
           // The links of the mails (an invitation, a lost password) open the client application of the party through which
           // the request was made (its public URL, announced): the Admin, where the registration and the password recovery

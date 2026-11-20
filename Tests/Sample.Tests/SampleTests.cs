@@ -684,12 +684,9 @@ public class SampleTests
             issue.EnlistUrl.ShouldBe( $"{AdminUrl}/app-identity/enlist?party={Uri.EscapeDataString( workerParty.FullName )}" );
             var code = issue.ApprovalCode!;
 
-            // The pending approval of Auth3 travelled the "Enlistment" route up to the Admin.
-            var item = await WaitForAsync( () => admin.Description.Collected.TryGetValue( TransportFeatureDriver.EnlistmentRouteName, out var items )
-                                                    ? items.FirstOrDefault()
-                                                    : null );
-            item.ShouldNotBeNull( "The pending approval reached the approval page." );
-            item.Path.ShouldBe( [auth3.FullName, admin.FullName] );
+            // Auth3 holds the pending approval: the approval page asks it (Auth3 is the hub of the System).
+            var item = await WaitForAsync( () => TransportFeatureDriver.GetHeldPendingApprovals( auth3 ).FirstOrDefault( a => a.PartyFullName == workerParty.FullName.Path ) );
+            item.ShouldNotBeNull( "Auth3 holds the pending approval." );
 
             // The operator signs in on the Admin (a password: the Critical level) and enters the code.
             using var browser = new Browser( AdminUrl );
@@ -723,7 +720,7 @@ public class SampleTests
             // Auth3 trusts the Worker's key: the Worker connects, and the pending approval disappears.
             (await WaitForAsync( () => workerParty.Remotes.Single().GetRequiredFeature<TransportFeature>().ConnectionAvailability == ConnectionAvailability.Connected ? "connected" : null ))
                 .ShouldNotBeNull( "The approved Worker connects to Auth3." );
-            (await WaitForAsync( () => admin.Description.Collected.Count == 0 ? "gone" : null )).ShouldNotBeNull();
+            (await WaitForAsync( () => TransportFeatureDriver.GetHeldPendingApprovals( auth3 ).Count == 0 ? "gone" : null )).ShouldNotBeNull();
             (await PendingAsync()).ShouldBeEmpty( "The Worker is enlisted: nothing waits anymore." );
         }
         finally
@@ -896,10 +893,8 @@ public class SampleTests
             issue.IsEnlistUrlAuthenticated.ShouldBeTrue( "The approval page is stated by the AuthCenter that Worker2 anchors." );
             issue.EnlistUrl.ShouldBe( $"{AdminUrl}/app-identity/enlist?party={Uri.EscapeDataString( worker2Party.FullName )}" );
             var code = issue.ApprovalCode!;
-            (await WaitForAsync( () => admin.Description.Collected.TryGetValue( TransportFeatureDriver.EnlistmentRouteName, out var items )
-                                          ? items.FirstOrDefault( i => i.Value.Contains( "Worker2" ) )
-                                          : null ))
-                .ShouldNotBeNull( "The pending approval reached the approval page." );
+            (await WaitForAsync( () => TransportFeatureDriver.GetHeldPendingApprovals( auth3 ).FirstOrDefault( a => a.PartyFullName.Contains( "Worker2" ) ) ))
+                .ShouldNotBeNull( "Auth3 holds the pending approval of Worker2." );
 
             // The operator approves Worker2 on the page: Auth3 pins it.
             using var browser = new Browser( AdminUrl );
