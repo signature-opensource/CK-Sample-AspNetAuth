@@ -38,8 +38,27 @@
         "Demo": null
       }
     },
-    "Front/Auth3.Front.Builder": { "App": { "Local": { "HttpEndpoint": { "Urls": "http://*:5300" } } } },
-    "Admin/Auth3.Admin.Builder": { "App": { "Local": { "HttpEndpoint": { "Urls": "http://*:5302" } } } },
+    // No key is trusted on first use in production (the links below): every party linked to Auth3 starts with its
+    // pre-authorized enlistment ticket (an optional secret, given at its first start only). The ticket carries the anchor
+    // of Auth3, and Auth3 trusts the key that proves it. The Admin's ticket comes first, opened on Auth3 with
+    // "ckey ticket open Sample/Auth3/$Admin/#Production" (the approval page is the Admin's: it isn't running yet); the
+    // others are opened on the approval page ("Expect a party") or with ckey.
+    "Front/Auth3.Front.Builder": {
+      "App": {
+        "Local": {
+          "HttpEndpoint": { "Urls": "http://*:5300" },
+          "KeyManagement": { "EnlistTicket": { "$SECRET?": "Enlist:Front" } }
+        }
+      }
+    },
+    "Admin/Auth3.Admin.Builder": {
+      "App": {
+        "Local": {
+          "HttpEndpoint": { "Urls": "http://*:5302" },
+          "KeyManagement": { "EnlistTicket": { "$SECRET?": "Enlist:Admin" } }
+        }
+      }
+    },
     // The size of the fleet of workers (a value per deployment): 3 configured instances, 3 more dynamic ones at most.
     // Each instance may start with its pre-authorized enlistment ticket (an optional secret, given at its first start
     // only: "Secrets__Enlist__Worker-2"): Auth3 trusts its key at once, no approval code.

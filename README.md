@@ -132,21 +132,20 @@ with the code that the waiting party shows (see
   caller as a candidate, an operator approves it on the same page ("A new instance of $Worker-{Name}"). Its approved
   identity is kept by Auth3 (pinned in the store): it is still a remote of Auth3 after a restart. The approval page lists
   the approved instances, "Remove" forgets one (it can be approved again).
-- **Worker2 anchors the AuthCenter.** It designates Auth3 as its AuthCenter (`"Local:AuthCenterParty"`) and anchors
-  it (`"Local:TrustAnchors"`: `"#Dev"`, the checkpoint of Auth3's key event log read from its running status in
-  `#Dev/Store`): no trust on first use, Auth3 is verified from its anchor.
+- **Worker2 anchors the AuthCenter.** It designates Auth3 as its AuthCenter (`"Local:AuthCenterRemote:Party"`) and
+  anchors it (`"Local:KeyManagement:TrustAnchors"`: `"#Dev"`, the checkpoint of Auth3's key event log read from its
+  running status in `#Dev/Store`): no trust on first use, Auth3 is verified from its anchor.
   Auth3 refuses Worker2 until an operator approves it, like the Worker. The difference is the enlistment URL: the
   AuthCenter states the approval page of the System (CK.AppIdentity.AuthCenter.Enlistment), Worker2 verifies the
   statement with its anchor, so its URL is authenticated (`PeeringIssue.IsEnlistUrlAuthenticated`): a fake page can't be
   handed to it. The Worker reads the same URL, not authenticated.
 - **The Admin has the approval page.** Its client application references
   [CK.Ng.AppIdentity.Enlistment](https://github.com/signature-opensource/CK-Ng-Admin/blob/stable/CK.Ng.AppIdentity.Enlistment/README.md):
-  the Admin hosts the "Enlistment" route of the System, and the pending approval of Auth3 travels the route up to
-  it. A route is accepted only toward an authorized host: the AuthCenter (Auth3) authorizes the Admin in its
-  `"AuthCenter:RouteHosts"`, and every party that has the AuthCenter follows its signed System list. The Admin handles the
-  approval itself (CK.AppIdentity.Enlistment: the operator at the Critical level) and sends it
-  down to Auth3. The approval is countersigned by the AuthCenter (Auth3) in the operator's request
-  (CK.AppIdentity.AuthCenter.Enlistment), and Auth3 requires the countersignature.
+  its client application has the "Enlistment" fact, so the Admin is the approval page of the System: Auth3 reads it
+  from the Admin's description and states its URL, nothing is configured. The page asks Auth3 for the pending approvals
+  (its own and the ones of its connected remotes). The Admin handles the approval itself (CK.AppIdentity.Enlistment:
+  the operator at the Critical level) and sends it to Auth3. The approval is countersigned by the AuthCenter (Auth3) in
+  the operator's request (CK.AppIdentity.AuthCenter.Enlistment), and Auth3 requires the countersignature.
 - **The demo:** `#Dev/Start.ps1` prints what the Workers wait for ("'Sample/Auth3/$Auth3/#Dev' must accept this party:
   open http://localhost:5302/app-identity/enlist?party=..., the approval code is ..."). Open the link, sign in as
   `Albert` / `pass` and enter the code: the page shows "Approved" for Auth3, and the Worker connects (the same
@@ -156,6 +155,13 @@ with the code that the waiting party shows (see
 - **No right is checked:** any user at the Critical level on the Admin can approve a party. An application restricts it
   with a validator of `IApprovePartyCommand`.
 - **To replay it,** delete `#Dev/Store`: Auth3 forgets the Workers' keys (and every identity is reset).
+- **In a deployment** (`Deployment/#Production`), no key is trusted on first use and no party shows a code to an
+  operator: every party linked to Auth3 starts with a pre-authorized enlistment ticket, an optional secret given at its
+  first start only (`"KeyManagement": { "EnlistTicket": { "$SECRET?": "Enlist:Front" } }`, the value
+  `Secrets__Enlist__Front`). The ticket carries the anchor of Auth3, and Auth3 trusts the key that proves it. The
+  Admin's ticket comes first: it is opened on Auth3's machine with `ckey ticket open Sample/Auth3/$Admin/#Production`
+  (the approval page is the Admin's, it isn't running yet); the next ones are opened on the approval page ("Expect a
+  party") or with `ckey`.
 
 `SampleTests` runs it end to end: the Worker learns its URL and its code, the operator approves it on the Admin; Worker2
 learns an authenticated URL and is approved the same way.
