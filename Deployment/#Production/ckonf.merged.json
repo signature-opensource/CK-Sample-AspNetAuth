@@ -121,6 +121,11 @@
           },
           "HttpEndpoint": {
             "Urls": "http://*:5300"
+          },
+          "KeyManagement": {
+            "EnlistTicket": {
+              "$SECRET?": "Enlist:Front"
+            }
           }
         }
       }
@@ -139,6 +144,11 @@
           },
           "HttpEndpoint": {
             "Urls": "http://*:5302"
+          },
+          "KeyManagement": {
+            "EnlistTicket": {
+              "$SECRET?": "Enlist:Admin"
+            }
           }
         }
       }
