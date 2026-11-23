@@ -6,17 +6,17 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- What the hosts share: a party command handled by every party (IWhoAmIQCommand). -->
-    <PackageReference Include="CK.Cris.Authentication" Version="3.0.0-0.uc.0.ci.183" />
-    <PackageReference Include="CK.AppIdentity.Abstractions" Version="3.0.0-0.uc.0.ci.151" />
+    <PackageReference Include="CK.Cris.Authentication" Version="3.0.0-0.uc.0.ci.184" />
+    <PackageReference Include="CK.AppIdentity.Abstractions" Version="3.0.0-0.uc.0.ci.153" />
     <!-- The application's Poco leaves (IUserProfile, ICombinedWorkspaceUser): Auth3 materializes them, the
          fronts read them. Every party knows the same Poco, with the same properties. -->
-    <PackageReference Include="CK.IO.UserProfile" Version="3.0.0-0.uc.0.ci.191" />
-    <PackageReference Include="CK.IO.UserProfile.Workspace" Version="18.0.0-0.uc.0.ci.92" />
-    <PackageReference Include="CK.IO.User.PreferredCulture" Version="3.0.0-0.uc.0.ci.98" />
-    <PackageReference Include="CK.IO.User.UserPassword.Reset" Version="31.0.0-0.uc.0.ci.105" />
-    <PackageReference Include="CK.IO.User.UserBanned" Version="4.0.0-0.uc.0.ci.94" />
-    <PackageReference Include="CK.IO.UserManagement.UserBanned" Version="3.0.0-0.uc.0.ci.135" />
-    <PackageReference Include="CK.IO.Admin" Version="3.0.0-0.uc.0.ci.135" />
-    <PackageReference Include="CK.IO.UserManagement.UserInvitation" Version="3.0.0-0.uc.0.ci.135" />
+    <PackageReference Include="CK.IO.UserProfile" Version="3.0.0-0.uc.0.ci.192" />
+    <PackageReference Include="CK.IO.UserProfile.Workspace" Version="18.0.0-0.uc.0.ci.93" />
+    <PackageReference Include="CK.IO.User.PreferredCulture" Version="3.0.0-0.uc.0.ci.99" />
+    <PackageReference Include="CK.IO.User.UserPassword.Reset" Version="31.0.0-0.uc.0.ci.106" />
+    <PackageReference Include="CK.IO.User.UserBanned" Version="4.0.0-0.uc.0.ci.95" />
+    <PackageReference Include="CK.IO.UserManagement.UserBanned" Version="3.0.0-0.uc.0.ci.136" />
+    <PackageReference Include="CK.IO.Admin" Version="3.0.0-0.uc.0.ci.136" />
+    <PackageReference Include="CK.IO.UserManagement.UserInvitation" Version="3.0.0-0.uc.0.ci.136" />
   </ItemGroup>
 </Project>
