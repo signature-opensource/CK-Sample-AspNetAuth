@@ -8,44 +8,44 @@
   <ItemGroup>
     <!-- The Local side of the AuthCenter feature (this application IS Auth3): sessions, tokens, the operations of its remotes,
          their caller party and the verification of the user's proof. -->
-    <PackageReference Include="CK.AppIdentity.AuthCenter.Local" Version="4.0.0-0.uc.1.ci.69" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Local" Version="4.0.0-0.uc.1.ci.70" />
     <!-- The OpenID Connect scheme family ("Package First": its "AuthCenter:Oidc" section requires it). -->
-    <PackageReference Include="CK.AppIdentity.AuthCenter.Oidc" Version="4.0.0-0.uc.1.ci.69" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Oidc" Version="4.0.0-0.uc.1.ci.70" />
     <!-- The passkey (WebAuthn) scheme family: the ceremonies and their verification ("AuthCenter:Passkey" section). -->
-    <PackageReference Include="CK.AppIdentity.AuthCenter.Passkey" Version="4.0.0-0.uc.1.ci.69" />
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.1.ci.162" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Passkey" Version="4.0.0-0.uc.1.ci.70" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.1.ci.164" />
     <!-- The dynamic configuration: the run properties (CrisExecutionHost:ParallelRunnerCount) changed by a command, kept in the store. -->
-    <PackageReference Include="CK.Cris.DynamicConfiguration" Version="3.0.0-0.uc.1.ci.190" />
-    <PackageReference Include="CK.AppIdentity.DynamicConfiguration" Version="4.0.0-0.uc.1.ci.69" />
+    <PackageReference Include="CK.Cris.DynamicConfiguration" Version="3.0.0-0.uc.1.ci.191" />
+    <PackageReference Include="CK.AppIdentity.DynamicConfiguration" Version="4.0.0-0.uc.1.ci.70" />
     <!-- The enlistment: Auth3 holds the pending approval of the Worker, approved from the Admin's approval page. -->
-    <PackageReference Include="CK.AppIdentity.Enlistment" Version="4.0.0-0.uc.1.ci.69" />
+    <PackageReference Include="CK.AppIdentity.Enlistment" Version="4.0.0-0.uc.1.ci.70" />
     <!-- The AuthCenter in the enlistment: it countersigns the approvals and states the approval page of the System (an
          authenticated enlistment URL for Worker2, that anchors it). -->
-    <PackageReference Include="CK.AppIdentity.AuthCenter.Enlistment" Version="4.0.0-0.uc.1.ci.69" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Enlistment" Version="4.0.0-0.uc.1.ci.70" />
     <!-- The login providers: Basic (user name and password), Oidc, Passkey, Weak (passwordless operators, Unsafe level). -->
-    <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.uc.1.ci.112" />
-    <PackageReference Include="CK.DB.User.UserOidc" Version="31.0.0-0.uc.1.ci.121" />
-    <PackageReference Include="CK.DB.User.UserPasskey" Version="0.0.0-0.uc.1.ci.103" />
-    <PackageReference Include="CK.DB.Actor.WeakActor" Version="3.0.0-0.uc.1.ci.102" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.uc.1.ci.113" />
+    <PackageReference Include="CK.DB.User.UserOidc" Version="31.0.0-0.uc.1.ci.122" />
+    <PackageReference Include="CK.DB.User.UserPasskey" Version="0.0.0-0.uc.1.ci.104" />
+    <PackageReference Include="CK.DB.Actor.WeakActor" Version="3.0.0-0.uc.1.ci.103" />
     <!-- The server side of the fronts' features: the commands of the Front's profile page and of the Admin's user
          management are handled here, where the database is (dispatched by the fronts, with the user's proof). -->
-    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.uc.1.ci.198" />
-    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.uc.1.ci.198" />
-    <PackageReference Include="CK.UserManagement" Version="3.0.0-0.uc.1.ci.142" />
-    <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.uc.1.ci.142" />
-    <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.uc.1.ci.142" />
-    <PackageReference Include="CK.Cris.Workspace" Version="18.0.0-0.uc.1.ci.99" />
+    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.uc.1.ci.199" />
+    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.uc.1.ci.199" />
+    <PackageReference Include="CK.UserManagement" Version="3.0.0-0.uc.1.ci.143" />
+    <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.uc.1.ci.143" />
+    <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.uc.1.ci.143" />
+    <PackageReference Include="CK.Cris.Workspace" Version="18.0.0-0.uc.1.ci.100" />
     <!-- Their database: the workspaces (and their zones, ACLs), the names, the preferred culture, the e-mails, the
          banishments, the invitations and the temporary passwords. -->
-    <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.uc.1.ci.99" />
-    <PackageReference Include="CK.DB.User.NamedUser" Version="31.0.0-0.uc.1.ci.105" />
-    <PackageReference Include="CK.DB.User.PreferredCulture" Version="3.0.0-0.uc.1.ci.105" />
-    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="31.0.0-0.uc.1.ci.105" />
-    <PackageReference Include="CK.DB.User.UserBanned" Version="4.0.0-0.uc.1.ci.101" />
-    <PackageReference Include="CK.DB.UserInvitation" Version="3.0.0-0.uc.1.ci.118" />
-    <PackageReference Include="CK.DB.User.UserPassword.Reset" Version="31.0.0-0.uc.1.ci.112" />
+    <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.uc.1.ci.100" />
+    <PackageReference Include="CK.DB.User.NamedUser" Version="31.0.0-0.uc.1.ci.106" />
+    <PackageReference Include="CK.DB.User.PreferredCulture" Version="3.0.0-0.uc.1.ci.106" />
+    <PackageReference Include="CK.DB.Actor.ActorEMail" Version="31.0.0-0.uc.1.ci.106" />
+    <PackageReference Include="CK.DB.User.UserBanned" Version="4.0.0-0.uc.1.ci.102" />
+    <PackageReference Include="CK.DB.UserInvitation" Version="3.0.0-0.uc.1.ci.119" />
+    <PackageReference Include="CK.DB.User.UserPassword.Reset" Version="31.0.0-0.uc.1.ci.113" />
     <!-- The application's queries (User/UserQueries, WorkspaceUsers/WorkspaceUsersQueries) and the batch's transaction. -->
-    <PackageReference Include="CK.SqlServer.Dapper" Version="18.0.0-0.uc.1.ci.75" />
+    <PackageReference Include="CK.SqlServer.Dapper" Version="18.0.0-0.uc.1.ci.76" />
     <PackageReference Include="CK.SqlServer.Transaction" Version="15.0.0-0.uc.1.ci.28" />
   </ItemGroup>
   <ItemGroup>
