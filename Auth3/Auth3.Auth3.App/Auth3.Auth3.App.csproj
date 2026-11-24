@@ -13,6 +13,9 @@
     <PackageReference Include="CK.AppIdentity.AuthCenter.Oidc" Version="4.0.0-0.uc.2.ci.79" />
     <!-- The passkey (WebAuthn) scheme family: the ceremonies and their verification ("AuthCenter:Passkey" section). -->
     <PackageReference Include="CK.AppIdentity.AuthCenter.Passkey" Version="4.0.0-0.uc.2.ci.79" />
+    <!-- The "Password" ("Basic" scheme) and "Weak" scheme families: their providers are the database packages below. -->
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Password" Version="4.0.0-0.uc.2.ci.79" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Weak" Version="4.0.0-0.uc.2.ci.79" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.2.ci.173" />
     <!-- The dynamic configuration: the run properties (CrisExecutionHost:ParallelRunnerCount) changed by a command, kept in the store. -->
     <PackageReference Include="CK.Cris.DynamicConfiguration" Version="3.0.0-0.uc.2.ci.199" />
