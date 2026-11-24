@@ -219,5 +219,6 @@
     // A link to the fleet is a remote of Auth3 for each of its instances (and its dynamic instances, once approved).
     { "From": "$Auth3", "To": "$Worker-{Name}", "Link": { "KeyManagement": { "AutoTrustKey": "Never" } } },
     { "From": "$Auth3", "To": "$Worker2", "Link": { "KeyManagement": { "AutoTrustKey": "Never" } } }
-  ]
+  ],
+  "$configurator": { "World":"https://github.com/signature-opensource/CK-Stack", "Version":"2026.11.24.1-0.uc.0.ci.0" }
 }
