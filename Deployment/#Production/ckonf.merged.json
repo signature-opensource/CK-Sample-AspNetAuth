@@ -22,6 +22,10 @@
       }
     }
   },
+  "$configurator": {
+    "World": "https://github.com/signature-opensource/CK-Stack",
+    "Version": "2026.11.24.1-0.uc.0.ci.0"
+  },
   "Deployment": {
     "Builders": [
       "Front/Auth3.Front.Builder",
