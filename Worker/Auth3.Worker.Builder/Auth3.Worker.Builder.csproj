@@ -5,13 +5,13 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.2.ci.169" />
-    <PackageReference Include="CK.AppBuilder" Version="37.0.0-0.uc.2.ci.59" />
-    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.2.ci.195" />
-    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.2.ci.195" />
-    <PackageReference Include="CK.Poco.Exchange.Engine" Version="37.0.0-0.uc.2.ci.59" />
-    <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="37.0.0-0.uc.2.ci.59" />
-    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.2.ci.83" />
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.2.ci.173" />
+    <PackageReference Include="CK.AppBuilder" Version="37.0.1-0.uc.0.ci.2" />
+    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.2.ci.199" />
+    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.2.ci.199" />
+    <PackageReference Include="CK.Poco.Exchange.Engine" Version="37.0.0-0.uc.2.ci.64" />
+    <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="37.0.0-0.uc.2.ci.64" />
+    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.2.ci.87" />
     <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
     <ProjectReference Include="..\Auth3.Worker.App\Auth3.Worker.App.csproj" />
   </ItemGroup>
