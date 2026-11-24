@@ -24,7 +24,7 @@ parties and of their links (see
 [the App builder model](https://github.com/signature-opensource/CK-ResourceSpace/blob/stable/CK.Engine.Configuration/AppBuilder/README.md#the-central-configuration)).
 When a builder runs, it generates its own `ckonf.json` from its entry, then the `appsettings.json` of its host (a
 projection, without the compile time keys; see
-[CK.AppBuilder](https://github.com/signature-opensource/CK-StObj/blob/stable/CK.AppBuilder/README.md)): edit the
+[CK.AppBuilder](https://github.com/signature-opensource/CK-AppBuilder/blob/stable/CK.AppBuilder/README.md)): edit the
 `ckonf.json` of the solution, not the projections.
 
 [Shared/Sample.Shared](Shared/Sample.Shared) is referenced by every `*.App`: its `IWhoAmIQCommand` is a party command
