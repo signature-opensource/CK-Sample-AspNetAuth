@@ -72,13 +72,15 @@
           "AuthCenter": {
             "SessionLifetime": "1.00:00:00",
             "Oidc": {
-              "Duende": {
-                "Authority": "https://demo.duendesoftware.com",
-                "ClientId": "interactive.confidential",
-                "ClientSecret": "secret",
-                "Scopes": "openid profile email",
-                "GetClaimsFromUserInfoEndpoint": true,
-                "AllowAccountCreation": true
+              "Schemes": {
+                "Duende": {
+                  "Authority": "https://demo.duendesoftware.com",
+                  "ClientId": "interactive.confidential",
+                  "ClientSecret": "secret",
+                  "Scopes": "openid profile email",
+                  "GetClaimsFromUserInfoEndpoint": true,
+                  "AllowAccountCreation": true
+                }
               }
             },
             "Passkey": {
