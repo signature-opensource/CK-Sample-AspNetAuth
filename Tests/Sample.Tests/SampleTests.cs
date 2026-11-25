@@ -101,11 +101,11 @@ public class SampleTests
         return CKomposableAppHost.Build( [], (monitor, b, map) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
             ["CK-AppIdentity:Defaults:Transport:ListeningAddress:0"] = Auth3Address,
-            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:Authority"] = _idp.BaseUrl,
-            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientId"] = FakeIdentityProvider.ClientId,
-            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:ClientSecret"] = FakeIdentityProvider.ClientSecret,
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Schemes:Test:Authority"] = _idp.BaseUrl,
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Schemes:Test:ClientId"] = FakeIdentityProvider.ClientId,
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Schemes:Test:ClientSecret"] = FakeIdentityProvider.ClientSecret,
             // An unknown identity of the "Test" scheme creates its user (SampleAccountCreation).
-            ["CK-AppIdentity:Local:AuthCenter:Oidc:Test:AllowAccountCreation"] = "true",
+            ["CK-AppIdentity:Local:AuthCenter:Oidc:Schemes:Test:AllowAccountCreation"] = "true",
             // Albert is bound to the "albert-sub" identity of the "Test" scheme.
             ["Demo:OidcScheme"] = "Test",
             ["Demo:OidcSub"] = "albert-sub",

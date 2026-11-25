@@ -58,21 +58,23 @@
           "AuthCenter": {
             "SessionLifetime": "1.00:00:00",
             "Oidc": {
-              // The public demo server of Duende IdentityServer, with its public test client (a known, risk-free secret):
-              // log in as bob / bob. Its first login creates the user "Bob-Smith" (SampleAccountCreation, named from the
-              // "name" claim that the demo server returns from its UserInfo endpoint only).
-              "Duende": {
-                "Authority": "https://demo.duendesoftware.com",
-                "ClientId": "interactive.confidential",
-                "ClientSecret": "secret",
-                "Scopes": "openid profile email",
-                "GetClaimsFromUserInfoEndpoint": true,
-                "AllowAccountCreation": true
-                // The callback is the endpoint of the party through which the user logs in (the Front): derived from the
-                // public URL that this party announces. Register "http://localhost:5300/.auth/oidc/callback" at the provider.
+              "Schemes": {
+                // The public demo server of Duende IdentityServer, with its public test client (a known, risk-free secret):
+                // log in as bob / bob. Its first login creates the user "Bob-Smith" (SampleAccountCreation, named from the
+                // "name" claim that the demo server returns from its UserInfo endpoint only).
+                "Duende": {
+                  "Authority": "https://demo.duendesoftware.com",
+                  "ClientId": "interactive.confidential",
+                  "ClientSecret": "secret",
+                  "Scopes": "openid profile email",
+                  "GetClaimsFromUserInfoEndpoint": true,
+                  "AllowAccountCreation": true
+                  // The callback is the endpoint of the party through which the user logs in (the Front): derived from the
+                  // public URL that this party announces. Register "http://localhost:5300/.auth/oidc/callback" at the provider.
+                }
+                // Another scheme (a real provider) holds its secret as a handle, { "$SECRET": "Google:ClientSecret" }, whose value
+                // is in "#Dev/Secrets.json" (see the README).
               }
-              // Another scheme (a real provider) holds its secret as a handle, { "$SECRET": "Google:ClientSecret" }, whose value
-              // is in "#Dev/Secrets.json" (see the README).
             },
             "Passkey": {
               // The passkeys are bound to this domain: changing it orphans every registered passkey (a deployment constant).
