@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- The bootstrap of the host (Program.cs) and the conventions of the host project. -->
-    <PackageReference Include="CK.AppHost" Version="25.0.0-0.uc.3.ci.78" />
+    <PackageReference Include="CK.AppHost" Version="25.0.0-0.uc.3.ci.79" />
     <ProjectReference Include="..\Auth3.Admin.App\Auth3.Admin.App.csproj" />
     <ProjectReference Include="..\Auth3.Admin.Builder\Auth3.Admin.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />
   </ItemGroup>
