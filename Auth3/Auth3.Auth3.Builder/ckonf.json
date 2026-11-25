@@ -42,11 +42,13 @@
       },
       "MailSender": {
         "MailKit": {
-          "NoReply": {
-            "SendEmail": false,
-            "UsePickupDirectory": true,
-            "PickupDirectory": "Mails",
-            "From": "noreply@sample.local"
+          "Senders": {
+            "NoReply": {
+              "SendEmail": false,
+              "UsePickupDirectory": true,
+              "PickupDirectory": "Mails",
+              "From": "noreply@sample.local"
+            }
           }
         }
       }

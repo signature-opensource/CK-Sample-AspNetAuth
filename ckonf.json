@@ -92,11 +92,13 @@
           // The mails are written in a pickup directory (a demo: nothing is sent).
           "MailSender": {
             "MailKit": {
-              "NoReply": {
-                "SendEmail": false,
-                "UsePickupDirectory": true,
-                "PickupDirectory": "Mails",
-                "From": "noreply@sample.local"
+              "Senders": {
+                "NoReply": {
+                  "SendEmail": false,
+                  "UsePickupDirectory": true,
+                  "PickupDirectory": "Mails",
+                  "From": "noreply@sample.local"
+                }
               }
             }
           }

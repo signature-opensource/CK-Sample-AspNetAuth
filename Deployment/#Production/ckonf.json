@@ -24,12 +24,14 @@
           },
           "MailSender": {
             "MailKit": {
-              "NoReply": {
-                "SendEmail": true,
-                "UsePickupDirectory": false,
-                "PickupDirectory": null,
-                "Host": "smtp.sample.example.com",
-                "From": "noreply@sample.example.com"
+              "Senders": {
+                "NoReply": {
+                  "SendEmail": true,
+                  "UsePickupDirectory": false,
+                  "PickupDirectory": null,
+                  "Host": "smtp.sample.example.com",
+                  "From": "noreply@sample.example.com"
+                }
               }
             }
           }
