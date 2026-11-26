@@ -4,16 +4,16 @@
   // environment is the name of its folder: the full name of each party is "Sample/Auth3/$<App>/#Production".
   // It writes the values per deployment (the "$PER_DEPLOYMENT" of the central file, the addresses and the URLs): the build
   // refuses to inherit them. Its merged configuration is ckonf.merged.json, next to it (generated: do not edit).
-  // Its assets are built by Deployment/GenerateAssets.cs (CK.AppDeployment): one published host per deployed builder.
+  // Its assets are built by Deployment/GenerateAssets.cs (CK.AppDeployment): one published host per App of a deployed AppContext.
   // Auth3 is not deployed: its build sets up its database (the SQL layer can't generate the scripts yet).
   "Deployment": {
-    "Builders": [ "Front/Auth3.Front.Builder", "Admin/Auth3.Admin.Builder", "Worker/Auth3.Worker.Builder", "Worker2/Auth3.Worker2.Builder" ],
+    "AppContexts": [ "Front", "Admin", "Worker", "Worker2" ],
     // The MSBuild properties of the publication of the hosts (applied as-is), then the ones of an App over them.
     "Publish": { "RuntimeIdentifier": "linux-x64" },
-    "Apps": { "Auth3.Worker2": { "Publish": { "SelfContained": true, "PublishSingleFile": true } } }
+    "Apps": { "$Worker2": { "Publish": { "SelfContained": true, "PublishSingleFile": true } } }
   },
-  "Builders": {
-    "Auth3/Auth3.Auth3.Builder": {
+  "AppContexts": {
+    "Auth3": {
       // The database of the deployment: a secret (its value is the configuration key "Secrets:Auth3:Database" of the host).
       "Aspects": { "SqlServer": { "DefaultDatabaseConnectionString": { "$SECRET": "Auth3:Database" } } },
       "App": {
@@ -45,7 +45,7 @@
     // of Auth3, and Auth3 trusts the key that proves it. The Admin's ticket comes first, opened on Auth3 with
     // "ckey ticket open Sample/Auth3/$Admin/#Production" (the approval page is the Admin's: it isn't running yet); the
     // others are opened on the approval page ("Expect a party") or with ckey.
-    "Front/Auth3.Front.Builder": {
+    "Front": {
       "App": {
         "Local": {
           "HttpEndpoint": { "Urls": "http://*:5300" },
@@ -53,7 +53,7 @@
         }
       }
     },
-    "Admin/Auth3.Admin.Builder": {
+    "Admin": {
       "App": {
         "Local": {
           "HttpEndpoint": { "Urls": "http://*:5302" },
@@ -64,14 +64,14 @@
     // The size of the fleet of workers (a value per deployment): 3 configured instances, 3 more dynamic ones at most.
     // Each instance may start with its pre-authorized enlistment ticket (an optional secret, given at its first start
     // only: "Secrets__Enlist__Worker-2"): Auth3 trusts its key at once, no approval code.
-    "Worker/Auth3.Worker.Builder": {
+    "Worker": {
       "App": {
         "InstanceCount": 3,
         "MaxInstanceCount": 6,
         "Local": { "KeyManagement": { "EnlistTicket": { "$SECRET?": "Enlist:Worker-{Name}" } } }
       }
     },
-    "Worker2/Auth3.Worker2.Builder": {
+    "Worker2": {
       "App": {
         "Local": {
           "AuthCenterRemote": { "Party": "Sample/Auth3/$Auth3/#Production" },

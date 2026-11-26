@@ -9,6 +9,6 @@
     <!-- The bootstrap of the host (Program.cs) and the conventions of the host project. -->
     <PackageReference Include="CK.AppHost" Version="25.0.0-0.uc.4" />
     <ProjectReference Include="..\Auth3.Worker2.App\Auth3.Worker2.App.csproj" />
-    <ProjectReference Include="..\Auth3.Worker2.Builder\Auth3.Worker2.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="..\Worker2.Builder\Worker2.Builder.csproj" ReferenceOutputAssembly="false" Private="false" />
   </ItemGroup>
 </Project>

@@ -13,16 +13,17 @@ client. It replaces the WebFrontAuth samples.
 | [Worker](Worker) | A fleet of two parties (`$Worker-1`, `$Worker-2`: one build, one process per instance) that must be enlisted: Auth3 never trusts their key automatically, an operator approves each of them on the Admin (see [the enlistment](#the-enlistment)). No database, no web server: a .NET generic host. | Nobody: they connect to Auth3. |
 | [Worker2](Worker2) | The same, with a trust anchor of Auth3 (its AuthCenter) instead of a trust on first use: it receives an authenticated enlistment URL (see [the enlistment](#the-enlistment)). It holds run-time tenant domains (see [the tenants of Worker2](#the-tenants-of-worker2)). | Nobody: it connects to Auth3. |
 
-Each host is three projects (the CK pattern): `*.App` (the model: packages, commands, services), `*.Builder` (it runs
-the CK engine after its build: the generated code of the host, the database of Auth3, the TypeScript and the
-Angular application of the Front and of the Admin) and `*.Host` (the program). The five hosts are the same: their
+Each party is an AppContext of the solution (its folder: `Front/`...) with one App, and three projects (the CK pattern):
+`Auth3.*.App` (the model: packages, commands, services), `*.Builder` (the Builder of the AppContext: it runs the CK
+engine after its build: the generated code of the host, the database of Auth3, the TypeScript and the Angular
+application of the Front and of the Admin) and `Auth3.*.Host` (the program). The five hosts are the same: their
 `Program.cs` is `await CK.Core.CKomposableAppHost.RunAsync( args );` and their project references
 [CK.AppHost](https://github.com/signature-opensource/CK-AspNet/blob/stable/CK.AppHost/README.md) (the bootstrap and the
 conventions of a host project), their `*.App` and their `*.Builder`. What a host does is in its packages, its `*.App` and
-its configuration: its entry in the [`ckonf.json`](ckonf.json) of the solution, the central configuration of the five
-parties and of their links (see
+its configuration: its AppContext in the [`ckonf.json`](ckonf.json) of the solution, the central configuration of the
+five parties and of their links (see
 [the App builder model](https://github.com/signature-opensource/CK-ResourceSpace/blob/stable/CK.Engine.Configuration/AppBuilder/README.md#the-central-configuration)).
-When a builder runs, it generates its own `ckonf.json` from its entry, then the `appsettings.json` of its host (a
+When a Builder runs, it generates its own `ckonf.json` from its AppContext, then the `appsettings.json` of its host (a
 projection, without the compile time keys; see
 [CK.AppBuilder](https://github.com/signature-opensource/CK-AppBuilder/blob/stable/CK.AppBuilder/README.md)): edit the
 `ckonf.json` of the solution, not the projections.
@@ -292,7 +293,7 @@ client secret (it redeems the code); the Front forwards the start of the login a
 
 The demo runs without a proxy: the browser talks to the Front and the Admin directly. In a deployment, a reverse proxy
 usually terminates TLS in front of them: the browser is on `https://front.example.com`, the party receives `http`
-requests from the proxy. Two keys of the party's configuration handle it, for example in the `"Front/Auth3.Front.Builder"` entry of the `ckonf.json` of the solution:
+requests from the proxy. Two keys of the party's configuration handle it, for example in the `"Front"` AppContext of the `ckonf.json` of the solution:
 
 ```jsonc
 "Local": {
