@@ -1,1 +1,1 @@
-await CK.Core.CKomposableAppHost.RunAsync( args );
+return CK.Core.CKomposableAppHost.Run( args );

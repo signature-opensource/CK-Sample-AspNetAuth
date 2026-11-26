@@ -17,7 +17,7 @@ Each party is an AppContext of the solution (its folder: `Front/`...) with one A
 `Auth3.*.App` (the model: packages, commands, services), `*.Builder` (the Builder of the AppContext: it runs the CK
 engine after its build: the generated code of the host, the database of Auth3, the TypeScript and the Angular
 application of the Front and of the Admin) and `Auth3.*.Host` (the program). The five hosts are the same: their
-`Program.cs` is `await CK.Core.CKomposableAppHost.RunAsync( args );` and their project references
+`Program.cs` is `return CK.Core.CKomposableAppHost.Run( args );` and their project references
 [CK.AppHost](https://github.com/signature-opensource/CK-AspNet/blob/stable/CK.AppHost/README.md) (the bootstrap and the
 conventions of a host project), their `*.App` and their `*.Builder`. What a host does is in its packages, its `*.App` and
 its configuration: its AppContext in the [`ckonf.json`](ckonf.json) of the solution, the central configuration of the
