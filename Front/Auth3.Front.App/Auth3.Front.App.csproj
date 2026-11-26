@@ -22,12 +22,12 @@
     <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Weak" Version="3.0.0-0.uc.4.ci.217" />
     <!-- The profile page and its "Sign-in methods" tab: the password, the passkeys and the linked accounts. Their commands are
          handled by Auth3 (dispatched to it, with the user's proof). -->
-    <PackageReference Include="CK.Ng.UserProfile" Version="3.0.0-0.uc.4.ci.221" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="3.0.0-0.uc.4.ci.221" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPasskey" Version="3.0.0-0.uc.4.ci.221" />
-    <PackageReference Include="CK.Ng.UserProfile.UserOidc" Version="3.0.0-0.uc.4.ci.221" />
+    <PackageReference Include="CK.Ng.UserProfile" Version="3.0.0-0.uc.4.ci.222" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="3.0.0-0.uc.4.ci.222" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPasskey" Version="3.0.0-0.uc.4.ci.222" />
+    <PackageReference Include="CK.Ng.UserProfile.UserOidc" Version="3.0.0-0.uc.4.ci.222" />
     <!-- The application shell (side bar, top bar with the UserInfoBox) and the public page (where a weak actor lands). -->
-    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.uc.4.ci.180" />
+    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.uc.4.ci.181" />
     <PackageReference Include="CK.Ng.PublicPage" Version="3.0.1-0.uc.4.ci.128" />
     <!-- Serves the client applications (app.MapClients()): their dev server in Development, their "dist" otherwise. -->
     <PackageReference Include="CK.TS.AspNet.Clients" Version="3.0.1-0.uc.4.ci.144" />
