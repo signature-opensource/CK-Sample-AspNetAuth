@@ -56,6 +56,8 @@
     "Demo": {
       "AlbertPassword": "pass"
     },
+    "AppProject": "../Auth3.Auth3.App",
+    "HostProject": "../Auth3.Auth3.Host",
     "Parties": [
       {
         "PartyName": "$Front",

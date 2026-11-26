@@ -28,6 +28,8 @@
         }
       }
     },
+    "AppProject": "../Auth3.Front.App",
+    "HostProject": "../Auth3.Front.Host",
     "Parties": [
       {
         "PartyName": "$Auth3",

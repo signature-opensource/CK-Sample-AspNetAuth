@@ -16,6 +16,8 @@
         }
       }
     },
+    "AppProject": "../Auth3.Admin.App",
+    "HostProject": "../Auth3.Admin.Host",
     "Parties": [
       {
         "PartyName": "$Auth3",

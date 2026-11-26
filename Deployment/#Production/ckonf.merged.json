@@ -27,17 +27,17 @@
     "Version": "2026.11.24.1-0.uc.0.ci.0"
   },
   "Deployment": {
-    "Builders": [
-      "Front/Auth3.Front.Builder",
-      "Admin/Auth3.Admin.Builder",
-      "Worker/Auth3.Worker.Builder",
-      "Worker2/Auth3.Worker2.Builder"
+    "AppContexts": [
+      "Front",
+      "Admin",
+      "Worker",
+      "Worker2"
     ],
     "Publish": {
       "RuntimeIdentifier": "linux-x64"
     },
     "Apps": {
-      "Auth3.Worker2": {
+      "$Worker2": {
         "Publish": {
           "SelfContained": true,
           "PublishSingleFile": true
@@ -45,8 +45,9 @@
       }
     }
   },
-  "Builders": {
-    "Auth3/Auth3.Auth3.Builder": {
+  "AppContexts": {
+    "Auth3": {
+      "RootPath": "Auth3",
       "Aspects": {
         "SqlServer": {
           "$LOCK": {
@@ -103,7 +104,8 @@
         }
       }
     },
-    "Front/Auth3.Front.Builder": {
+    "Front": {
+      "RootPath": "Front",
       "App": {
         "Local": {
           "PartyClient": {
@@ -138,7 +140,8 @@
         }
       }
     },
-    "Admin/Auth3.Admin.Builder": {
+    "Admin": {
+      "RootPath": "Admin",
       "App": {
         "Local": {
           "PartyClient": {
@@ -161,7 +164,8 @@
         }
       }
     },
-    "Worker/Auth3.Worker.Builder": {
+    "Worker": {
+      "RootPath": "Worker",
       "App": {
         "CK-Monitoring": {
           "GrandOutput": {
@@ -183,7 +187,8 @@
         }
       }
     },
-    "Worker2/Auth3.Worker2.Builder": {
+    "Worker2": {
+      "RootPath": "Worker2",
       "App": {
         "Parties": [
           {

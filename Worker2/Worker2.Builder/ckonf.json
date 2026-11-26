@@ -24,6 +24,8 @@
         "Address": "tcp:127.0.0.1:37300"
       }
     ],
+    "AppProject": "../Auth3.Worker2.App",
+    "HostProject": "../Auth3.Worker2.Host",
     "Logging": {
       "LogLevel": {
         "Default": "Warning"
