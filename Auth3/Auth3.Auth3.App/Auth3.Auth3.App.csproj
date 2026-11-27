@@ -32,8 +32,8 @@
     <PackageReference Include="CK.DB.Actor.WeakActor" Version="3.0.0-0.uc.4.ci.121" />
     <!-- The server side of the fronts' features: the commands of the Front's profile page and of the Admin's user
          management are handled here, where the database is (dispatched by the fronts, with the user's proof). -->
-    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.uc.4.ci.225" />
-    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.uc.4.ci.225" />
+    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.uc.4.ci.226" />
+    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.uc.4.ci.226" />
     <PackageReference Include="CK.UserManagement" Version="3.0.0-0.uc.4.ci.163" />
     <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.uc.4.ci.163" />
     <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.uc.4.ci.163" />

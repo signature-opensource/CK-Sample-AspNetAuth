@@ -10,7 +10,7 @@
     <PackageReference Include="CK.AppIdentity.Abstractions" Version="3.0.0-0.uc.4.ci.206" />
     <!-- The application's Poco leaves (IUserProfile, ICombinedWorkspaceUser): Auth3 materializes them, the
          fronts read them. Every party knows the same Poco, with the same properties. -->
-    <PackageReference Include="CK.IO.UserProfile" Version="3.0.0-0.uc.4.ci.225" />
+    <PackageReference Include="CK.IO.UserProfile" Version="3.0.0-0.uc.4.ci.226" />
     <PackageReference Include="CK.IO.UserProfile.Workspace" Version="18.0.0-0.uc.4.ci.118" />
     <PackageReference Include="CK.IO.User.PreferredCulture" Version="3.0.0-0.uc.4.ci.124" />
     <PackageReference Include="CK.IO.User.UserPassword.Reset" Version="31.0.0-0.uc.4.ci.131" />

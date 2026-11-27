@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.4.ci.206" />
-    <PackageReference Include="CK.AppBuilder" Version="37.0.1-0.uc.1.ci.29" />
+    <PackageReference Include="CK.AppBuilder" Version="37.0.1-0.uc.1.ci.30" />
     <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.uc.4.ci.218" />
     <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.uc.4.ci.218" />
     <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.4.ci.222" />
