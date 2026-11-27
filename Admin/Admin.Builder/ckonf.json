@@ -8,11 +8,11 @@
       },
       "PartyClient": {
         "App": {
-          "NgApp": true,
-          "Hosting": {
+          "NgApp": {
             "RequestPath": "/",
             "DevServerPort": 4300
-          }
+          },
+          "Hosting": true
         }
       }
     },

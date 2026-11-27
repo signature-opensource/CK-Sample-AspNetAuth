@@ -125,7 +125,7 @@
           // their DevServerPort in Development, by their built files otherwise.
           "PartyClient": {
             // The application (the authentication, the profile, the home page), served at "/".
-            "App": { "NgApp": true, "Hosting": { "RequestPath": "/", "DevServerPort": 4200 } },
+            "App": { "NgApp": { "RequestPath": "/", "DevServerPort": 4200 }, "Hosting": true },
             // A client application without authentication, served at "/mini-app/": it sends the IFrontInfoQCommand. It lists
             // its types (the types drive): the Cris client package (and what it requires), not the App's pages, authentication
             // and styles, and its client features (NgApp and Hosting: a key doesn't bring its feature in a restricted set).
@@ -136,8 +136,8 @@
                 "CK.TS.Angular.NgAppClientFeature, CK.TS.Angular",
                 "CK.TypeScript.HostingClientFeature, CK.TS.AspNet.Clients"
               ],
-              "NgApp": true,
-              "Hosting": { "DevServerPort": 4201 }
+              "NgApp": { "DevServerPort": 4201 },
+              "Hosting": true
             }
           }
         }
@@ -153,7 +153,7 @@
           // Its endpoint: the SPA and its "/.cris" endpoints share this origin (no CORS).
           "HttpEndpoint": { "Urls": "http://localhost:5302" },
           // Its client application (Auth3.Admin.Host/Clients/App), served at "/" (the Front's client applications use 4200 and 4201).
-          "PartyClient": { "App": { "NgApp": true, "Hosting": { "RequestPath": "/", "DevServerPort": 4300 } } }
+          "PartyClient": { "App": { "NgApp": { "RequestPath": "/", "DevServerPort": 4300 }, "Hosting": true } }
         }
       }
     },
