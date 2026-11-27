@@ -110,11 +110,11 @@
         "Local": {
           "PartyClient": {
             "App": {
-              "NgApp": true,
-              "Hosting": {
+              "NgApp": {
                 "RequestPath": "/",
                 "DevServerPort": 4200
-              }
+              },
+              "Hosting": true
             },
             "MiniApp": {
               "Types": [
@@ -123,10 +123,10 @@
                 "CK.TS.Angular.NgAppClientFeature, CK.TS.Angular",
                 "CK.TypeScript.HostingClientFeature, CK.TS.AspNet.Clients"
               ],
-              "NgApp": true,
-              "Hosting": {
+              "NgApp": {
                 "DevServerPort": 4201
-              }
+              },
+              "Hosting": true
             }
           },
           "HttpEndpoint": {
@@ -146,11 +146,11 @@
         "Local": {
           "PartyClient": {
             "App": {
-              "NgApp": true,
-              "Hosting": {
+              "NgApp": {
                 "RequestPath": "/",
                 "DevServerPort": 4300
-              }
+              },
+              "Hosting": true
             }
           },
           "HttpEndpoint": {
