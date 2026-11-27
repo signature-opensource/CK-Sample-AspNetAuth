@@ -51,7 +51,7 @@
         "CrisExecutionHost": { "ParallelRunnerCount": 2 },
         "Defaults": {
           // The fronts (the remotes without an address) connect here.
-          "Transport": { "ListeningAddress": [ "tcp:127.0.0.1:37300" ] }
+          "Transport": { "ListeningAddress": { "tcp": "127.0.0.1:37300" } }
         },
         // This application is the "AuthCenter" (CK.AppIdentity.AuthCenter.Local).
         "Local": {

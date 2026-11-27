@@ -17,7 +17,7 @@
       // The database of the deployment: a secret (its value is the configuration key "Secrets:Auth3:Database" of the host).
       "Aspects": { "SqlServer": { "DefaultDatabaseConnectionString": { "$SECRET": "Auth3:Database" } } },
       "App": {
-        "Defaults": { "Transport": { "ListeningAddress": [ "tcp:0.0.0.0:37300" ] } },
+        "Defaults": { "Transport": { "ListeningAddress": { "tcp": "0.0.0.0:37300" } } },
         "Local": {
           "AuthCenter": {
             "Passkey": { "RpId": "sample.example.com" }

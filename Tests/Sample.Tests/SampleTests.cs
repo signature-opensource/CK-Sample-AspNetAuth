@@ -100,7 +100,7 @@ public class SampleTests
     {
         return CKomposableAppHost.Build( [], (monitor, b, map) => b.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
         {
-            ["CK-AppIdentity:Defaults:Transport:ListeningAddress:0"] = Auth3Address,
+            ["CK-AppIdentity:Defaults:Transport:ListeningAddress:tcp"] = Auth3Address["tcp:".Length..],
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Schemes:Test:Authority"] = _idp.BaseUrl,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Schemes:Test:ClientId"] = FakeIdentityProvider.ClientId,
             ["CK-AppIdentity:Local:AuthCenter:Oidc:Schemes:Test:ClientSecret"] = FakeIdentityProvider.ClientSecret,

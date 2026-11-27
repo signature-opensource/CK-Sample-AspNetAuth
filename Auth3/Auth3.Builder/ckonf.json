@@ -15,9 +15,9 @@
     },
     "Defaults": {
       "Transport": {
-        "ListeningAddress": [
-          "tcp:127.0.0.1:37300"
-        ]
+        "ListeningAddress": {
+          "tcp": "127.0.0.1:37300"
+        }
       }
     },
     "Local": {
