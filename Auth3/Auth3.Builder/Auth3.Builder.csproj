@@ -4,18 +4,18 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.cris-auth.1.ci.64" />
-    <PackageReference Include="CK.AppBuilder" Version="36.0.0-0.cris-auth.1.ci.45" />
-    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.cris-auth.1.ci.130" />
-    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.cris-auth.1.ci.130" />
-    <PackageReference Include="CK.Poco.Exchange.Engine" Version="36.0.0-0.cris-auth.1.ci.45" />
-    <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="36.0.0-0.cris-auth.1.ci.45" />
-    <PackageReference Include="CK.Setupable.Engine" Version="36.0.0-0.cris-auth.1.ci.66" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="36.0.0-0.cris-auth.1.ci.66" />
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.linux.0.ci.71" />
+    <PackageReference Include="CK.AppBuilder" Version="36.0.0-0.linux.0.ci.51" />
+    <PackageReference Include="CK.Cris.Engine" Version="3.0.0-0.linux.0.ci.135" />
+    <PackageReference Include="CK.Cris.Executor.Engine" Version="3.0.0-0.linux.0.ci.135" />
+    <PackageReference Include="CK.Poco.Exchange.Engine" Version="36.0.0-0.linux.0.ci.51" />
+    <PackageReference Include="CK.Poco.Exc.Json.Engine" Version="36.0.0-0.linux.0.ci.51" />
+    <PackageReference Include="CK.Setupable.Engine" Version="36.0.0-0.linux.0.ci.72" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="36.0.0-0.linux.0.ci.72" />
     <!-- The mail templates (CK.UserProfile.UserPassword.Lost, CK.UserManagement.UserInvitation) and the translations of the
          server messages. -->
-    <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.cris-auth.1.ci.29" />
-    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.cris-auth.1.ci.32" />
+    <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.linux.0.ci.33" />
+    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.linux.0.ci.36" />
     <!-- Declaring dependencies here enables change detection in source projects and automatic code source regeneration into the .Host project. -->
     <ProjectReference Include="..\Auth3.App\Auth3.App.csproj" />
   </ItemGroup>
